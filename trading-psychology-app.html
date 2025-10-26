@@ -1,0 +1,1675 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trading Psychology Protocol - Dr. Ellis Hartwin</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .app-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            overflow: hidden;
+        }
+
+        .app-header {
+            background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+            color: white;
+            padding: 25px 30px;
+            border-bottom: 4px solid #3498db;
+        }
+
+        .app-header h1 {
+            font-size: 28px;
+            margin-bottom: 5px;
+        }
+
+        .app-header .subtitle {
+            font-size: 14px;
+            opacity: 0.8;
+        }
+
+        .nav-tabs {
+            display: flex;
+            background: #34495e;
+            overflow-x: auto;
+        }
+
+        .nav-tab {
+            padding: 15px 25px;
+            color: white;
+            cursor: pointer;
+            border: none;
+            background: transparent;
+            transition: all 0.3s;
+            white-space: nowrap;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .nav-tab:hover {
+            background: rgba(255,255,255,0.1);
+        }
+
+        .nav-tab.active {
+            background: white;
+            color: #2c3e50;
+            border-top: 3px solid #3498db;
+        }
+
+        .tab-content {
+            display: none;
+            padding: 30px;
+            animation: fadeIn 0.3s;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .section {
+            margin-bottom: 30px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            border-left: 4px solid #3498db;
+        }
+
+        .section h2 {
+            color: #2c3e50;
+            margin-bottom: 15px;
+            font-size: 20px;
+        }
+
+        .warning-section {
+            background: #fff3cd;
+            border-left-color: #ffc107;
+        }
+
+        .danger-section {
+            background: #f8d7da;
+            border-left-color: #dc3545;
+        }
+
+        .success-section {
+            background: #d4edda;
+            border-left-color: #28a745;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 5px;
+            color: #2c3e50;
+            font-size: 14px;
+        }
+
+        input[type="text"],
+        input[type="number"],
+        input[type="time"],
+        input[type="date"],
+        textarea,
+        select {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #ddd;
+            border-radius: 6px;
+            font-size: 14px;
+            transition: border-color 0.3s;
+        }
+
+        input:focus,
+        textarea:focus,
+        select:focus {
+            outline: none;
+            border-color: #3498db;
+        }
+
+        textarea {
+            min-height: 80px;
+            resize: vertical;
+            font-family: inherit;
+        }
+
+        .inline-group {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+        }
+
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            padding: 10px;
+            background: white;
+            border-radius: 6px;
+            margin-bottom: 8px;
+        }
+
+        .checkbox-group input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            margin-right: 10px;
+            cursor: pointer;
+        }
+
+        .checkbox-group label {
+            margin: 0;
+            cursor: pointer;
+            font-weight: normal;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.3s;
+            margin-right: 10px;
+            margin-bottom: 10px;
+        }
+
+        .btn-primary {
+            background: #3498db;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #2980b9;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(52, 152, 219, 0.4);
+        }
+
+        .btn-success {
+            background: #28a745;
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: #218838;
+        }
+
+        .btn-danger {
+            background: #dc3545;
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #c82333;
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: #5a6268;
+        }
+
+        .alert {
+            padding: 15px 20px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+            font-weight: 500;
+        }
+
+        .alert-danger {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .alert-warning {
+            background: #fff3cd;
+            color: #856404;
+            border: 1px solid #ffeaa7;
+        }
+
+        .alert-success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .alert-info {
+            background: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+
+        .stat-card h3 {
+            font-size: 32px;
+            color: #3498db;
+            margin-bottom: 5px;
+        }
+
+        .stat-card p {
+            color: #6c757d;
+            font-size: 14px;
+        }
+
+        .trade-card {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            border: 2px solid #ddd;
+        }
+
+        .trade-card.win {
+            border-left: 5px solid #28a745;
+        }
+
+        .trade-card.loss {
+            border-left: 5px solid #dc3545;
+        }
+
+        .trade-card.breakeven {
+            border-left: 5px solid #ffc107;
+        }
+
+        .protocol-status {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 15px;
+            background: white;
+            border-radius: 6px;
+            margin-bottom: 10px;
+        }
+
+        .status-indicator {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            display: inline-block;
+            margin-right: 8px;
+        }
+
+        .status-indicator.green {
+            background: #28a745;
+        }
+
+        .status-indicator.red {
+            background: #dc3545;
+        }
+
+        .status-indicator.yellow {
+            background: #ffc107;
+        }
+
+        .timer-display {
+            font-size: 24px;
+            font-weight: bold;
+            color: #3498db;
+            text-align: center;
+            padding: 20px;
+            background: white;
+            border-radius: 8px;
+            margin: 15px 0;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 30px;
+            background: #e9ecef;
+            border-radius: 15px;
+            overflow: hidden;
+            margin: 10px 0;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #3498db, #2ecc71);
+            transition: width 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 12px;
+        }
+
+        .log-entry {
+            background: white;
+            padding: 15px;
+            border-radius: 6px;
+            margin-bottom: 10px;
+            border-left: 4px solid #3498db;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .log-entry:hover {
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            transform: translateX(5px);
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.6);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            max-width: 600px;
+            max-height: 80vh;
+            overflow-y: auto;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #e9ecef;
+        }
+
+        .modal-close {
+            font-size: 28px;
+            cursor: pointer;
+            color: #6c757d;
+            line-height: 1;
+        }
+
+        .modal-close:hover {
+            color: #dc3545;
+        }
+
+        @media (max-width: 768px) {
+            .inline-group {
+                grid-template-columns: 1fr;
+            }
+
+            .app-header h1 {
+                font-size: 22px;
+            }
+
+            .nav-tab {
+                padding: 12px 15px;
+                font-size: 12px;
+            }
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        .circuit-breaker-warning {
+            background: #dc3545;
+            color: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+            text-align: center;
+            font-size: 18px;
+            font-weight: bold;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <div class="app-header">
+            <h1>Trading Psychology Protocol</h1>
+            <div class="subtitle">Dr. Ellis Hartwin - Patient: Sean</div>
+        </div>
+
+        <div class="nav-tabs">
+            <button class="nav-tab active" onclick="switchTab('dashboard')">Dashboard</button>
+            <button class="nav-tab" onclick="switchTab('pre-market')">Pre-Market</button>
+            <button class="nav-tab" onclick="switchTab('trade-entry')">Trade Entry</button>
+            <button class="nav-tab" onclick="switchTab('end-of-day')">End of Day</button>
+            <button class="nav-tab" onclick="switchTab('history')">History</button>
+            <button class="nav-tab" onclick="switchTab('protocols')">Protocols</button>
+            <button class="nav-tab" onclick="switchTab('statistics')">Statistics</button>
+        </div>
+
+        <!-- Dashboard Tab -->
+        <div id="dashboard" class="tab-content active">
+            <div id="circuitBreakerAlert"></div>
+
+            <div class="section">
+                <h2>Today's Session Status</h2>
+                <div id="todayStatus"></div>
+            </div>
+
+            <div class="section">
+                <h2>Quick Stats</h2>
+                <div class="inline-group">
+                    <div class="stat-card">
+                        <h3 id="tradesThisWeek">0</h3>
+                        <p>Trades This Week</p>
+                    </div>
+                    <div class="stat-card">
+                        <h3 id="winRateThisWeek">0%</h3>
+                        <p>Win Rate This Week</p>
+                    </div>
+                    <div class="stat-card">
+                        <h3 id="rulesAdherence">0%</h3>
+                        <p>Rules Adherence</p>
+                    </div>
+                    <div class="stat-card">
+                        <h3 id="currentPhase">Phase 1</h3>
+                        <p>Recovery Protocol</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="section">
+                <h2>Active Protocols</h2>
+                <div class="protocol-status">
+                    <span><span class="status-indicator green"></span>Trading Recovery Protocol - Phase 1</span>
+                    <span>Active</span>
+                </div>
+                <div class="protocol-status">
+                    <span><span class="status-indicator green"></span>Maximum 2 Trades Per Day</span>
+                    <span id="tradesRemaining">2 Remaining</span>
+                </div>
+                <div class="protocol-status">
+                    <span><span class="status-indicator green"></span>Micro Position Sizing (0.25x)</span>
+                    <span>Active</span>
+                </div>
+            </div>
+
+            <div class="section">
+                <h2>Today's Actions</h2>
+                <button class="btn btn-primary" onclick="switchTab('pre-market')">Start Pre-Market Analysis</button>
+                <button class="btn btn-success" onclick="switchTab('trade-entry')">Enter Trade</button>
+                <button class="btn btn-secondary" onclick="switchTab('end-of-day')">End of Day Review</button>
+            </div>
+        </div>
+
+        <!-- Pre-Market Tab -->
+        <div id="pre-market" class="tab-content">
+            <div class="alert alert-info">
+                <strong>Important:</strong> Complete all sections before looking at charts. This is your foundation for the day.
+            </div>
+
+            <div class="section">
+                <h2>Morning Mental State Check ⏰ (15 minutes minimum)</h2>
+                <div class="timer-display" id="mentalCheckTimer">Timer: 00:00</div>
+                <button class="btn btn-primary" id="startMentalCheckTimer" onclick="startTimer('mentalCheck', 900)">Start 15-Minute Timer</button>
+
+                <div class="form-group">
+                    <label>Date</label>
+                    <input type="date" id="sessionDate" required>
+                </div>
+
+                <div class="inline-group">
+                    <div class="form-group">
+                        <label>Sleep Hours</label>
+                        <input type="number" id="sleepHours" step="0.5" min="0" max="12" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Emotional State (1-10)</label>
+                        <input type="number" id="emotionalState" min="1" max="10" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Stress Level (1-10)</label>
+                        <input type="number" id="stressLevel" min="1" max="10" required>
+                    </div>
+                </div>
+
+                <div id="emotionalWarning" class="alert alert-danger hidden">
+                    <strong>⚠️ TRADING PROHIBITED!</strong> Your emotional state is 7/10 or higher. Do NOT trade today.
+                </div>
+
+                <div class="form-group">
+                    <label>Sobriety Status</label>
+                    <select id="sobrietyStatus" required>
+                        <option value="">Select...</option>
+                        <option value="clear">Confirmed - Clear minded</option>
+                        <option value="concern">Have concerns - Should not trade</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>Personal Obligations Today</label>
+                    <textarea id="obligations" placeholder="Any appointments, meetings, or obligations in next 4 hours?"></textarea>
+                </div>
+            </div>
+
+            <div class="section">
+                <h2>Previous Day Review</h2>
+                <div class="form-group">
+                    <label>What Worked Yesterday</label>
+                    <textarea id="whatWorked" placeholder="Successes from yesterday"></textarea>
+                </div>
+                <div class="form-group">
+                    <label>What Didn't Work Yesterday</label>
+                    <textarea id="whatDidntWork" placeholder="Mistakes or areas to improve"></textarea>
+                </div>
+            </div>
+
+            <div class="section">
+                <h2>Pre-Market Technical Analysis ⏰ (15 minutes minimum)</h2>
+                <div class="timer-display" id="technicalAnalysisTimer">Timer: 00:00</div>
+                <button class="btn btn-primary" id="startTechnicalTimer" onclick="startTimer('technical', 900)">Start 15-Minute Timer</button>
+
+                <div class="inline-group">
+                    <div class="form-group">
+                        <label>Daily Trend</label>
+                        <select id="dailyTrend" required>
+                            <option value="">Select...</option>
+                            <option value="bullish">Bullish</option>
+                            <option value="bearish">Bearish</option>
+                            <option value="ranging">Ranging</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>4hr Structure</label>
+                        <select id="fourHourStructure" required>
+                            <option value="">Select...</option>
+                            <option value="bullish">Bullish</option>
+                            <option value="bearish">Bearish</option>
+                            <option value="ranging">Ranging</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Key Levels Identified</label>
+                    <textarea id="keyLevels" placeholder="Support and resistance levels, order blocks, FVGs" required></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label>Today's Trading Plan</label>
+                    <textarea id="tradingPlan" placeholder="What setups am I watching? What's my bias?" required></textarea>
+                </div>
+
+                <div class="inline-group">
+                    <div class="form-group">
+                        <label>Max Risk Per Trade ($)</label>
+                        <input type="number" id="maxRiskPerTrade" step="0.01" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Max Total Risk Today ($)</label>
+                        <input type="number" id="maxTotalRisk" step="0.01" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Max Trades Allowed Today</label>
+                        <input type="number" id="maxTrades" value="2" min="1" max="2" readonly>
+                    </div>
+                </div>
+            </div>
+
+            <button class="btn btn-success" onclick="savePreMarket()">Save Pre-Market Analysis</button>
+        </div>
+
+        <!-- Trade Entry Tab -->
+        <div id="trade-entry" class="tab-content">
+            <div id="preMarketCheck" class="alert alert-warning">
+                <strong>⚠️ Pre-Market Check Required!</strong> Complete your pre-market analysis before entering trades.
+            </div>
+
+            <div id="circuitBreakerBlock" class="hidden">
+                <div class="circuit-breaker-warning">
+                    ⛔ CIRCUIT BREAKER ACTIVE - NO TRADING ALLOWED ⛔
+                </div>
+            </div>
+
+            <div class="section">
+                <h2>Pre-Trade Checklist - ALL MUST BE CHECKED</h2>
+
+                <div class="danger-section">
+                    <h3 style="margin-bottom: 15px;">Timeframe Alignment (ALL must align)</h3>
+                    <div class="checkbox-group">
+                        <input type="checkbox" id="check_daily">
+                        <label for="check_daily">Daily trend confirmed and written down</label>
+                    </div>
+                    <div class="checkbox-group">
+                        <input type="checkbox" id="check_4hr">
+                        <label for="check_4hr">4-hour structure aligned with Daily</label>
+                    </div>
+                    <div class="checkbox-group">
+                        <input type="checkbox" id="check_15min">
+                        <label for="check_15min">15-minute confirmation present</label>
+                    </div>
+                    <div class="checkbox-group">
+                        <input type="checkbox" id="check_1min">
+                        <label for="check_1min">1-minute entry setup clear and valid</label>
+                    </div>
+                    <div class="checkbox-group">
+                        <input type="checkbox" id="check_refresh">
+                        <label for="check_refresh">All three timeframes refreshed before entry</label>
+                    </div>
+                </div>
+
+                <div class="warning-section" style="margin-top: 15px;">
+                    <h3 style="margin-bottom: 15px;">Technical Confirmation</h3>
+                    <div class="checkbox-group">
+                        <input type="checkbox" id="check_choch">
+                        <label for="check_choch">CHoCH (Change of Character) validated</label>
+                    </div>
+                    <div class="checkbox-group">
+                        <input type="checkbox" id="check_orderblock">
+                        <label for="check_orderblock">Order block identified at entry point</label>
+                    </div>
+                    <div class="checkbox-group">
+                        <input type="checkbox" id="check_structural">
+                        <label for="check_structural">Entry at validated structural level (not mid-range)</label>
+                    </div>
+                    <div class="checkbox-group">
+                        <input type="checkbox" id="check_invalidation">
+                        <label for="check_invalidation">Clear invalidation level identified</label>
+                    </div>
+                    <div class="checkbox-group">
+                        <input type="checkbox" id="check_rr">
+                        <label for="check_rr">Minimum 2:1 reward/risk ratio confirmed</label>
+                    </div>
+                </div>
+
+                <div class="success-section" style="margin-top: 15px;">
+                    <h3 style="margin-bottom: 15px;">Risk Management & Logistics</h3>
+                    <div class="checkbox-group">
+                        <input type="checkbox" id="check_position">
+                        <label for="check_position">Position size calculated and verified (0.25x normal)</label>
+                    </div>
+                    <div class="checkbox-group">
+                        <input type="checkbox" id="check_stop">
+                        <label for="check_stop">Stop loss level identified and marked</label>
+                    </div>
+                    <div class="checkbox-group">
+                        <input type="checkbox" id="check_target">
+                        <label for="check_target">Target level(s) identified and marked</label>
+                    </div>
+                    <div class="checkbox-group">
+                        <input type="checkbox" id="check_notime">
+                        <label for="check_notime">No time constraints for next hour minimum</label>
+                    </div>
+                    <div class="checkbox-group">
+                        <input type="checkbox" id="check_notfirst15">
+                        <label for="check_notfirst15">Not trading first 15 minutes of session</label>
+                    </div>
+                    <div class="checkbox-group">
+                        <input type="checkbox" id="check_before230">
+                        <label for="check_before230">Not past 2:30 PM Central time</label>
+                    </div>
+                    <div class="checkbox-group">
+                        <input type="checkbox" id="check_waiting">
+                        <label for="check_waiting">Minimum 30-45 minute waiting period observed</label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="section">
+                <h2>Trade Details</h2>
+                <div class="inline-group">
+                    <div class="form-group">
+                        <label>Symbol</label>
+                        <input type="text" id="tradeSymbol" placeholder="MNQH5, MESH5, etc" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Entry Time</label>
+                        <input type="time" id="tradeEntryTime" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Direction</label>
+                        <select id="tradeDirection" required>
+                            <option value="">Select...</option>
+                            <option value="long">Long</option>
+                            <option value="short">Short</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Trade Thesis (Why am I entering?)</label>
+                    <textarea id="tradeThesis" placeholder="Setup, structure, confluence, why this trade aligns with my plan" required></textarea>
+                </div>
+
+                <div class="inline-group">
+                    <div class="form-group">
+                        <label>Position Size</label>
+                        <input type="number" id="tradePositionSize" step="0.01" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Entry Price</label>
+                        <input type="number" id="tradeEntryPrice" step="0.01" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Stop Loss</label>
+                        <input type="number" id="tradeStopLoss" step="0.01" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Target</label>
+                        <input type="number" id="tradeTarget" step="0.01" required>
+                    </div>
+                </div>
+
+                <div class="inline-group">
+                    <div class="form-group">
+                        <label>Risk Amount ($)</label>
+                        <input type="number" id="tradeRiskAmount" step="0.01" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Reward Amount ($)</label>
+                        <input type="number" id="tradeRewardAmount" step="0.01" required>
+                    </div>
+                    <div class="form-group">
+                        <label>R:R Ratio</label>
+                        <input type="text" id="tradeRRRatio" readonly>
+                    </div>
+                </div>
+            </div>
+
+            <button class="btn btn-success" onclick="submitTrade()">Submit Trade Entry</button>
+            <button class="btn btn-danger" onclick="emergencyExit()">Emergency Exit (Felt Uncomfortable)</button>
+        </div>
+
+        <!-- End of Day Tab -->
+        <div id="end-of-day" class="tab-content">
+            <div class="section">
+                <h2>Today's Trades Summary</h2>
+                <div id="todayTradesSummary"></div>
+            </div>
+
+            <div class="section">
+                <h2>Circuit Breaker Check</h2>
+                <div class="form-group">
+                    <label>Did any circuit breaker trigger today?</label>
+                    <select id="circuitBreakerTriggered">
+                        <option value="">Select...</option>
+                        <option value="no">No breakers triggered</option>
+                        <option value="consecutive">Two consecutive losses</option>
+                        <option value="three">Three total trades (or 2 during recovery)</option>
+                        <option value="daily-limit">Daily loss limit hit</option>
+                        <option value="emotional">Emotional state above 7/10</option>
+                        <option value="rules">Broke trading rules</option>
+                        <option value="focus">Unable to focus</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>If yes, what happened and what's the plan?</label>
+                    <textarea id="circuitBreakerNotes" placeholder="Response to circuit breaker"></textarea>
+                </div>
+            </div>
+
+            <div class="section">
+                <h2>End of Day Reflection</h2>
+                <div class="inline-group">
+                    <div class="form-group">
+                        <label>Rules Adherence (%)</label>
+                        <input type="number" id="rulesAdherencePercent" min="0" max="100" placeholder="0-100">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Biggest Win Today (trading or psychological)</label>
+                    <textarea id="biggestWin" placeholder="What went really well?"></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label>Biggest Challenge Today</label>
+                    <textarea id="biggestChallenge" placeholder="What was difficult?"></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label>Plan for Tomorrow</label>
+                    <textarea id="planTomorrow" placeholder="What will I do differently? What will I focus on?"></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label>Additional Notes</label>
+                    <textarea id="additionalNotes" placeholder="Any other observations or thoughts"></textarea>
+                </div>
+            </div>
+
+            <button class="btn btn-success" onclick="saveEndOfDay()">Save End of Day Review</button>
+            <button class="btn btn-primary" onclick="exportTodayPDF()">Export Today's Log as PDF</button>
+        </div>
+
+        <!-- History Tab -->
+        <div id="history" class="tab-content">
+            <div class="section">
+                <h2>Trading History</h2>
+                <div class="inline-group">
+                    <div class="form-group">
+                        <label>Filter by Date Range</label>
+                        <input type="date" id="filterStartDate">
+                    </div>
+                    <div class="form-group">
+                        <label>To</label>
+                        <input type="date" id="filterEndDate">
+                    </div>
+                    <div class="form-group">
+                        <label style="visibility: hidden;">Filter</label>
+                        <button class="btn btn-primary" onclick="filterHistory()">Apply Filter</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="section">
+                <h2>Trade Log</h2>
+                <div id="tradeHistory"></div>
+            </div>
+
+            <div class="section">
+                <h2>Daily Sessions</h2>
+                <div id="sessionHistory"></div>
+            </div>
+        </div>
+
+        <!-- Protocols Tab -->
+        <div id="protocols" class="tab-content">
+            <div class="section danger-section">
+                <h2>ABSOLUTE HARD RULES - NO EXCEPTIONS EVER</h2>
+                <ol style="line-height: 2; margin-left: 20px;">
+                    <li>No trading first 15 minutes of session opening</li>
+                    <li>No trading without completed pre-trade checklist</li>
+                    <li>No trading past 2:30 PM Central time</li>
+                    <li>Maximum 2 trades per day (during recovery phase)</li>
+                    <li>Must wait 30-45 minutes minimum between trades</li>
+                    <li>Exit immediately if uncomfortable after entry</li>
+                    <li>No trading on days with emotional state 7/10 or higher</li>
+                    <li>No trading after any loss until next day (recovery phase)</li>
+                    <li>ALL three timeframes must align - no exceptions</li>
+                    <li>Minimum 2:1 reward/risk ratio on every trade</li>
+                </ol>
+            </div>
+
+            <div class="section warning-section">
+                <h2>Trading Recovery Protocol - Phase 1 (CURRENTLY IN EFFECT)</h2>
+                <h3>Position Sizing Rules</h3>
+                <ul style="line-height: 2; margin-left: 20px;">
+                    <li>Start with 0.25 of normal size (micro positions)</li>
+                    <li>Must achieve 3 consecutive profitable trades before any size increase</li>
+                    <li>Each size increase limited to 25% of previous size</li>
+                    <li>Reset to micro size after ANY two consecutive losses</li>
+                </ul>
+
+                <h3>Daily Trading Limits</h3>
+                <ul style="line-height: 2; margin-left: 20px;">
+                    <li>Maximum 2 trades per day</li>
+                    <li>Minimum 45-minute gap between trades</li>
+                    <li>No trading after any loss until next day</li>
+                    <li>Must achieve profitable week before weekend trading allowed</li>
+                </ul>
+            </div>
+
+            <div class="section success-section">
+                <h2>Advancement Criteria</h2>
+                <h3>Phase 2 Requirements:</h3>
+                <ul style="line-height: 2; margin-left: 20px;">
+                    <li>3 consecutive profitable weeks</li>
+                    <li>Consistent rules adherence above 90%</li>
+                    <li>Can then trade at 50% of normal size</li>
+                    <li>Maximum 3 trades per day allowed</li>
+                </ul>
+            </div>
+
+            <div class="section">
+                <h2>Circuit Breakers - Immediate Trading Stop</h2>
+                <h3>Daily Circuit Breakers:</h3>
+                <ul style="line-height: 2; margin-left: 20px;">
+                    <li>Two consecutive losses</li>
+                    <li>Three total trades for the day (or 2 during recovery protocol)</li>
+                    <li>Daily loss limit of 2R exceeded</li>
+                    <li>Emotional state above 7/10 at any point</li>
+                    <li>Breaking any trading rule</li>
+                    <li>Unable to focus on charts properly</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Statistics Tab -->
+        <div id="statistics" class="tab-content">
+            <div class="section">
+                <h2>Overall Performance Metrics</h2>
+                <div class="inline-group">
+                    <div class="stat-card">
+                        <h3 id="totalTrades">0</h3>
+                        <p>Total Trades</p>
+                    </div>
+                    <div class="stat-card">
+                        <h3 id="overallWinRate">0%</h3>
+                        <p>Win Rate</p>
+                    </div>
+                    <div class="stat-card">
+                        <h3 id="avgRR">0</h3>
+                        <p>Avg R:R</p>
+                    </div>
+                    <div class="stat-card">
+                        <h3 id="profitFactor">0</h3>
+                        <p>Profit Factor</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="section">
+                <h2>Weekly Performance</h2>
+                <div id="weeklyStats"></div>
+            </div>
+
+            <div class="section">
+                <h2>Process Metrics (Most Important)</h2>
+                <div class="inline-group">
+                    <div class="stat-card">
+                        <h3 id="avgRulesAdherence">0%</h3>
+                        <p>Average Rules Adherence</p>
+                    </div>
+                    <div class="stat-card">
+                        <h3 id="avgEmotionalState">0</h3>
+                        <p>Avg Emotional State</p>
+                    </div>
+                    <div class="stat-card">
+                        <h3 id="consecutiveWins">0</h3>
+                        <p>Consecutive Wins</p>
+                    </div>
+                    <div class="stat-card">
+                        <h3 id="emergencyExits">0</h3>
+                        <p>Emergency Exits Used</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="section">
+                <h2>Recovery Protocol Progress</h2>
+                <div class="form-group">
+                    <label>Progress to Phase 2 (Need 3 consecutive profitable weeks)</label>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="phaseProgress" style="width: 0%;">0 / 3 weeks</div>
+                    </div>
+                </div>
+                <div id="phaseProgressDetails"></div>
+            </div>
+
+            <button class="btn btn-primary" onclick="exportAllData()">Export All Data</button>
+            <button class="btn btn-danger" onclick="clearAllData()">Clear All Data</button>
+        </div>
+    </div>
+
+    <!-- Modal for Trade Details -->
+    <div id="tradeDetailModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Trade Details</h2>
+                <span class="modal-close" onclick="closeModal()">&times;</span>
+            </div>
+            <div id="tradeDetailContent"></div>
+        </div>
+    </div>
+
+    <script>
+        // Global state
+        let currentSession = null;
+        let allSessions = [];
+        let allTrades = [];
+        let timers = {};
+
+        // Initialize app
+        document.addEventListener('DOMContentLoaded', function() {
+            loadData();
+            initializeToday();
+            updateDashboard();
+            updateStatistics();
+            document.getElementById('sessionDate').valueAsDate = new Date();
+
+            // Add listeners for emotional state warning
+            document.getElementById('emotionalState').addEventListener('input', checkEmotionalState);
+
+            // Add listeners for R:R calculation
+            document.getElementById('tradeRiskAmount').addEventListener('input', calculateRR);
+            document.getElementById('tradeRewardAmount').addEventListener('input', calculateRR);
+        });
+
+        // Tab switching
+        function switchTab(tabName) {
+            const tabs = document.querySelectorAll('.tab-content');
+            const navTabs = document.querySelectorAll('.nav-tab');
+
+            tabs.forEach(tab => tab.classList.remove('active'));
+            navTabs.forEach(tab => tab.classList.remove('active'));
+
+            document.getElementById(tabName).classList.add('active');
+            event.target.classList.add('active');
+
+            if (tabName === 'dashboard') updateDashboard();
+            if (tabName === 'statistics') updateStatistics();
+            if (tabName === 'history') loadHistory();
+            if (tabName === 'trade-entry') checkPreMarketComplete();
+        }
+
+        // Timer functionality
+        function startTimer(timerName, seconds) {
+            if (timers[timerName]) {
+                clearInterval(timers[timerName].interval);
+            }
+
+            const displayId = timerName === 'mentalCheck' ? 'mentalCheckTimer' : 'technicalAnalysisTimer';
+            const buttonId = timerName === 'mentalCheck' ? 'startMentalCheckTimer' : 'startTechnicalTimer';
+
+            timers[timerName] = {
+                remaining: seconds,
+                interval: setInterval(() => {
+                    timers[timerName].remaining--;
+                    const mins = Math.floor(timers[timerName].remaining / 60);
+                    const secs = timers[timerName].remaining % 60;
+                    document.getElementById(displayId).textContent =
+                        `Timer: ${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+
+                    if (timers[timerName].remaining <= 0) {
+                        clearInterval(timers[timerName].interval);
+                        document.getElementById(displayId).textContent = 'Timer Complete! ✓';
+                        document.getElementById(displayId).style.color = '#28a745';
+                    }
+                }, 1000)
+            };
+
+            document.getElementById(buttonId).textContent = 'Timer Running...';
+            document.getElementById(buttonId).disabled = true;
+        }
+
+        // Check emotional state
+        function checkEmotionalState() {
+            const state = parseInt(document.getElementById('emotionalState').value);
+            const warning = document.getElementById('emotionalWarning');
+
+            if (state >= 7) {
+                warning.classList.remove('hidden');
+            } else {
+                warning.classList.add('hidden');
+            }
+        }
+
+        // Calculate R:R ratio
+        function calculateRR() {
+            const risk = parseFloat(document.getElementById('tradeRiskAmount').value);
+            const reward = parseFloat(document.getElementById('tradeRewardAmount').value);
+
+            if (risk && reward && risk > 0) {
+                const rr = (reward / risk).toFixed(2);
+                document.getElementById('tradeRRRatio').value = `1:${rr}`;
+            }
+        }
+
+        // Save pre-market analysis
+        function savePreMarket() {
+            const emotionalState = parseInt(document.getElementById('emotionalState').value);
+
+            if (emotionalState >= 7) {
+                alert('❌ Cannot proceed with trading. Your emotional state is too high. Take the day off.');
+                return;
+            }
+
+            const sobriety = document.getElementById('sobrietyStatus').value;
+            if (sobriety === 'concern') {
+                alert('❌ Cannot proceed with trading. Sobriety concerns noted. Take the day off.');
+                return;
+            }
+
+            currentSession = {
+                date: document.getElementById('sessionDate').value,
+                sleepHours: document.getElementById('sleepHours').value,
+                emotionalState: emotionalState,
+                stressLevel: document.getElementById('stressLevel').value,
+                sobrietyStatus: sobriety,
+                obligations: document.getElementById('obligations').value,
+                whatWorked: document.getElementById('whatWorked').value,
+                whatDidntWork: document.getElementById('whatDidntWork').value,
+                dailyTrend: document.getElementById('dailyTrend').value,
+                fourHourStructure: document.getElementById('fourHourStructure').value,
+                keyLevels: document.getElementById('keyLevels').value,
+                tradingPlan: document.getElementById('tradingPlan').value,
+                maxRiskPerTrade: document.getElementById('maxRiskPerTrade').value,
+                maxTotalRisk: document.getElementById('maxTotalRisk').value,
+                maxTrades: document.getElementById('maxTrades').value,
+                trades: [],
+                preMarketComplete: true
+            };
+
+            saveData();
+            alert('✅ Pre-market analysis saved! You may now proceed to trade entry.');
+            switchTab('dashboard');
+        }
+
+        // Check if pre-market is complete
+        function checkPreMarketComplete() {
+            const alert = document.getElementById('preMarketCheck');
+            if (currentSession && currentSession.preMarketComplete) {
+                alert.classList.add('hidden');
+            } else {
+                alert.classList.remove('hidden');
+            }
+
+            checkCircuitBreakers();
+        }
+
+        // Check circuit breakers
+        function checkCircuitBreakers() {
+            if (!currentSession) return;
+
+            const trades = currentSession.trades || [];
+            const block = document.getElementById('circuitBreakerBlock');
+
+            // Check if max trades reached
+            if (trades.length >= parseInt(currentSession.maxTrades)) {
+                block.classList.remove('hidden');
+                return;
+            }
+
+            // Check for consecutive losses
+            if (trades.length >= 2) {
+                const lastTwo = trades.slice(-2);
+                if (lastTwo.every(t => t.result === 'loss')) {
+                    block.classList.remove('hidden');
+                    return;
+                }
+            }
+
+            // Check for any loss (during recovery)
+            if (trades.some(t => t.result === 'loss')) {
+                block.classList.remove('hidden');
+                return;
+            }
+
+            block.classList.add('hidden');
+        }
+
+        // Submit trade
+        function submitTrade() {
+            if (!currentSession || !currentSession.preMarketComplete) {
+                alert('❌ You must complete pre-market analysis first!');
+                switchTab('pre-market');
+                return;
+            }
+
+            // Check all checkboxes
+            const checkboxes = [
+                'check_daily', 'check_4hr', 'check_15min', 'check_1min', 'check_refresh',
+                'check_choch', 'check_orderblock', 'check_structural', 'check_invalidation', 'check_rr',
+                'check_position', 'check_stop', 'check_target', 'check_notime',
+                'check_notfirst15', 'check_before230', 'check_waiting'
+            ];
+
+            const unchecked = checkboxes.filter(id => !document.getElementById(id).checked);
+
+            if (unchecked.length > 0) {
+                alert(`❌ You cannot enter this trade!\n\nUnchecked items:\n${unchecked.length} requirements not met.\n\nALL boxes must be checked before entering a trade.`);
+                return;
+            }
+
+            // Validate R:R ratio
+            const rr = document.getElementById('tradeRRRatio').value;
+            if (!rr.includes('1:2') && parseFloat(rr.split(':')[1]) < 2) {
+                alert('❌ Reward:Risk ratio must be at least 2:1!');
+                return;
+            }
+
+            const trade = {
+                id: Date.now(),
+                date: currentSession.date,
+                symbol: document.getElementById('tradeSymbol').value,
+                entryTime: document.getElementById('tradeEntryTime').value,
+                direction: document.getElementById('tradeDirection').value,
+                thesis: document.getElementById('tradeThesis').value,
+                positionSize: document.getElementById('tradePositionSize').value,
+                entryPrice: document.getElementById('tradeEntryPrice').value,
+                stopLoss: document.getElementById('tradeStopLoss').value,
+                target: document.getElementById('tradeTarget').value,
+                riskAmount: document.getElementById('tradeRiskAmount').value,
+                rewardAmount: document.getElementById('tradeRewardAmount').value,
+                rrRatio: rr,
+                status: 'open'
+            };
+
+            currentSession.trades.push(trade);
+            allTrades.push(trade);
+            saveData();
+
+            alert('✅ Trade entered successfully!\n\n⏰ 5-Minute Check Reminder:\nIn 5 minutes, check your emotional state.\nIf you feel ANY discomfort, exit immediately.');
+
+            // Clear form
+            document.querySelectorAll('#trade-entry input[type="text"], #trade-entry input[type="number"], #trade-entry textarea, #trade-entry select').forEach(el => {
+                if (!el.readOnly) el.value = '';
+            });
+            checkboxes.forEach(id => document.getElementById(id).checked = false);
+
+            switchTab('dashboard');
+        }
+
+        // Emergency exit
+        function emergencyExit() {
+            if (confirm('Using the Emergency Exit tool.\n\nThis is the RIGHT decision if you feel uncomfortable.\nThis is a STRENGTH, not a weakness.\n\nDocument what made you uncomfortable so you can learn from it.')) {
+                const reason = prompt('What made you feel uncomfortable?\n(This will help you recognize patterns)');
+
+                if (currentSession && currentSession.trades.length > 0) {
+                    const lastTrade = currentSession.trades[currentSession.trades.length - 1];
+                    if (lastTrade.status === 'open') {
+                        lastTrade.emergencyExit = true;
+                        lastTrade.exitReason = reason;
+                        lastTrade.status = 'closed';
+                        lastTrade.result = 'emergency_exit';
+                        saveData();
+                    }
+                }
+
+                alert('✅ Emergency exit recorded.\n\nYou did the right thing.\nWait 30 minutes before considering any new trades.');
+            }
+        }
+
+        // Save end of day
+        function saveEndOfDay() {
+            if (!currentSession) {
+                alert('No active session to save.');
+                return;
+            }
+
+            currentSession.circuitBreakerTriggered = document.getElementById('circuitBreakerTriggered').value;
+            currentSession.circuitBreakerNotes = document.getElementById('circuitBreakerNotes').value;
+            currentSession.rulesAdherence = document.getElementById('rulesAdherencePercent').value;
+            currentSession.biggestWin = document.getElementById('biggestWin').value;
+            currentSession.biggestChallenge = document.getElementById('biggestChallenge').value;
+            currentSession.planTomorrow = document.getElementById('planTomorrow').value;
+            currentSession.additionalNotes = document.getElementById('additionalNotes').value;
+            currentSession.completed = true;
+
+            allSessions.push(currentSession);
+            saveData();
+
+            alert('✅ End of day review saved!\n\nGreat work completing your documentation.\nReview tomorrow\'s plan before starting.');
+
+            currentSession = null;
+            saveData();
+        }
+
+        // Load/Save data
+        function loadData() {
+            const sessions = localStorage.getItem('tradingSessions');
+            const trades = localStorage.getItem('tradingTrades');
+            const current = localStorage.getItem('currentSession');
+
+            if (sessions) allSessions = JSON.parse(sessions);
+            if (trades) allTrades = JSON.parse(trades);
+            if (current) currentSession = JSON.parse(current);
+        }
+
+        function saveData() {
+            localStorage.setItem('tradingSessions', JSON.stringify(allSessions));
+            localStorage.setItem('tradingTrades', JSON.stringify(allTrades));
+            localStorage.setItem('currentSession', JSON.stringify(currentSession));
+        }
+
+        // Initialize today
+        function initializeToday() {
+            const today = new Date().toISOString().split('T')[0];
+
+            // Check if there's already a session for today
+            const todaySession = allSessions.find(s => s.date === today);
+            if (todaySession && !currentSession) {
+                currentSession = todaySession;
+            }
+        }
+
+        // Update dashboard
+        function updateDashboard() {
+            const today = new Date().toISOString().split('T')[0];
+            const todaySession = currentSession || allSessions.find(s => s.date === today);
+
+            // Today's status
+            const statusDiv = document.getElementById('todayStatus');
+            if (todaySession) {
+                const trades = todaySession.trades || [];
+                statusDiv.innerHTML = `
+                    <div class="protocol-status">
+                        <span><span class="status-indicator ${todaySession.preMarketComplete ? 'green' : 'red'}"></span>Pre-Market Analysis</span>
+                        <span>${todaySession.preMarketComplete ? 'Complete' : 'Not Complete'}</span>
+                    </div>
+                    <div class="protocol-status">
+                        <span><span class="status-indicator ${trades.length > 0 ? 'green' : 'yellow'}"></span>Trades Today</span>
+                        <span>${trades.length} / ${todaySession.maxTrades || 2}</span>
+                    </div>
+                    <div class="protocol-status">
+                        <span><span class="status-indicator ${todaySession.emotionalState <= 6 ? 'green' : 'red'}"></span>Emotional State</span>
+                        <span>${todaySession.emotionalState}/10</span>
+                    </div>
+                `;
+
+                document.getElementById('tradesRemaining').textContent =
+                    `${(todaySession.maxTrades || 2) - trades.length} Remaining`;
+            } else {
+                statusDiv.innerHTML = '<p>No session started today. Begin with Pre-Market Analysis.</p>';
+            }
+
+            // Weekly stats
+            const weekStart = new Date();
+            weekStart.setDate(weekStart.getDate() - weekStart.getDay());
+            const weekTrades = allTrades.filter(t => new Date(t.date) >= weekStart);
+
+            document.getElementById('tradesThisWeek').textContent = weekTrades.length;
+
+            const wins = weekTrades.filter(t => t.result === 'win').length;
+            const winRate = weekTrades.length > 0 ? ((wins / weekTrades.length) * 100).toFixed(0) : 0;
+            document.getElementById('winRateThisWeek').textContent = winRate + '%';
+
+            const weekSessions = allSessions.filter(s => new Date(s.date) >= weekStart && s.rulesAdherence);
+            const avgAdherence = weekSessions.length > 0
+                ? (weekSessions.reduce((sum, s) => sum + parseInt(s.rulesAdherence), 0) / weekSessions.length).toFixed(0)
+                : 0;
+            document.getElementById('rulesAdherence').textContent = avgAdherence + '%';
+
+            // Circuit breaker alert
+            const alertDiv = document.getElementById('circuitBreakerAlert');
+            if (todaySession) {
+                const trades = todaySession.trades || [];
+                if (trades.length >= parseInt(todaySession.maxTrades || 2)) {
+                    alertDiv.innerHTML = '<div class="circuit-breaker-warning">⛔ MAX TRADES REACHED - NO MORE TRADING TODAY ⛔</div>';
+                } else if (trades.some(t => t.result === 'loss')) {
+                    alertDiv.innerHTML = '<div class="circuit-breaker-warning">⛔ LOSS TAKEN - NO MORE TRADING UNTIL TOMORROW ⛔</div>';
+                } else if (parseInt(todaySession.emotionalState) >= 7) {
+                    alertDiv.innerHTML = '<div class="circuit-breaker-warning">⛔ EMOTIONAL STATE TOO HIGH - NO TRADING TODAY ⛔</div>';
+                } else {
+                    alertDiv.innerHTML = '';
+                }
+            }
+        }
+
+        // Update statistics
+        function updateStatistics() {
+            // Overall stats
+            document.getElementById('totalTrades').textContent = allTrades.length;
+
+            const completedTrades = allTrades.filter(t => t.result);
+            const wins = completedTrades.filter(t => t.result === 'win').length;
+            const losses = completedTrades.filter(t => t.result === 'loss').length;
+
+            const winRate = completedTrades.length > 0 ? ((wins / completedTrades.length) * 100).toFixed(0) : 0;
+            document.getElementById('overallWinRate').textContent = winRate + '%';
+
+            // Average R:R
+            const avgRR = completedTrades.length > 0
+                ? (completedTrades.reduce((sum, t) => {
+                    const rr = t.rrRatio ? parseFloat(t.rrRatio.split(':')[1]) : 0;
+                    return sum + rr;
+                }, 0) / completedTrades.length).toFixed(2)
+                : 0;
+            document.getElementById('avgRR').textContent = avgRR;
+
+            // Profit factor (simplified)
+            const totalWinAmount = wins * 2; // Assuming 2R average
+            const totalLossAmount = losses * 1; // Assuming 1R loss
+            const profitFactor = totalLossAmount > 0 ? (totalWinAmount / totalLossAmount).toFixed(2) : 0;
+            document.getElementById('profitFactor').textContent = profitFactor;
+
+            // Process metrics
+            const sessionsWithAdherence = allSessions.filter(s => s.rulesAdherence);
+            const avgAdherence = sessionsWithAdherence.length > 0
+                ? (sessionsWithAdherence.reduce((sum, s) => sum + parseInt(s.rulesAdherence), 0) / sessionsWithAdherence.length).toFixed(0)
+                : 0;
+            document.getElementById('avgRulesAdherence').textContent = avgAdherence + '%';
+
+            const avgEmotional = allSessions.length > 0
+                ? (allSessions.reduce((sum, s) => sum + parseInt(s.emotionalState || 5), 0) / allSessions.length).toFixed(1)
+                : 0;
+            document.getElementById('avgEmotionalState').textContent = avgEmotional;
+
+            // Consecutive wins
+            let consecutive = 0;
+            let maxConsecutive = 0;
+            for (let i = allTrades.length - 1; i >= 0; i--) {
+                if (allTrades[i].result === 'win') {
+                    consecutive++;
+                    maxConsecutive = Math.max(maxConsecutive, consecutive);
+                } else if (allTrades[i].result === 'loss') {
+                    break;
+                }
+            }
+            document.getElementById('consecutiveWins').textContent = consecutive;
+
+            // Emergency exits
+            const emergencyExitCount = allTrades.filter(t => t.emergencyExit).length;
+            document.getElementById('emergencyExits').textContent = emergencyExitCount;
+
+            // Phase progress
+            updatePhaseProgress();
+        }
+
+        // Update phase progress
+        function updatePhaseProgress() {
+            // Get last 3 weeks
+            const weeks = [];
+            for (let i = 0; i < 3; i++) {
+                const weekEnd = new Date();
+                weekEnd.setDate(weekEnd.getDate() - (i * 7));
+                const weekStart = new Date(weekEnd);
+                weekStart.setDate(weekStart.getDate() - 6);
+
+                const weekTrades = allTrades.filter(t => {
+                    const tradeDate = new Date(t.date);
+                    return tradeDate >= weekStart && tradeDate <= weekEnd && t.result;
+                });
+
+                const wins = weekTrades.filter(t => t.result === 'win').length;
+                const totalPL = wins * 2 - (weekTrades.length - wins);
+
+                weeks.push({
+                    start: weekStart.toLocaleDateString(),
+                    end: weekEnd.toLocaleDateString(),
+                    profitable: totalPL > 0,
+                    pl: totalPL,
+                    trades: weekTrades.length
+                });
+            }
+
+            // Count consecutive profitable weeks from most recent
+            let consecutiveProfitable = 0;
+            for (const week of weeks) {
+                if (week.profitable && week.trades > 0) {
+                    consecutiveProfitable++;
+                } else {
+                    break;
+                }
+            }
+
+            const progress = (consecutiveProfitable / 3) * 100;
+            const progressBar = document.getElementById('phaseProgress');
+            progressBar.style.width = progress + '%';
+            progressBar.textContent = `${consecutiveProfitable} / 3 weeks`;
+
+            // Details
+            const detailsDiv = document.getElementById('phaseProgressDetails');
+            detailsDiv.innerHTML = weeks.map((week, i) => `
+                <div class="protocol-status">
+                    <span><span class="status-indicator ${week.profitable ? 'green' : 'red'}"></span>Week ${3-i}: ${week.start} - ${week.end}</span>
+                    <span>${week.profitable ? 'Profitable' : 'Not Profitable'} (${week.trades} trades, ${week.pl > 0 ? '+' : ''}${week.pl}R)</span>
+                </div>
+            `).join('');
+        }
+
+        // Load history
+        function loadHistory() {
+            // Trade history
+            const tradeHistoryDiv = document.getElementById('tradeHistory');
+            if (allTrades.length === 0) {
+                tradeHistoryDiv.innerHTML = '<p>No trades recorded yet.</p>';
+            } else {
+                tradeHistoryDiv.innerHTML = allTrades.slice().reverse().map(trade => `
+                    <div class="trade-card ${trade.result || ''}" onclick="viewTradeDetail(${trade.id})">
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+                            <strong>${trade.symbol} - ${trade.direction?.toUpperCase()}</strong>
+                            <span>${trade.date} ${trade.entryTime}</span>
+                        </div>
+                        <div>${trade.thesis?.substring(0, 100)}...</div>
+                        <div style="margin-top: 10px;">
+                            <strong>Result:</strong> ${trade.result || 'Open'} |
+                            <strong>R:R:</strong> ${trade.rrRatio || 'N/A'}
+                        </div>
+                    </div>
+                `).join('');
+            }
+
+            // Session history
+            const sessionHistoryDiv = document.getElementById('sessionHistory');
+            if (allSessions.length === 0) {
+                sessionHistoryDiv.innerHTML = '<p>No sessions recorded yet.</p>';
+            } else {
+                sessionHistoryDiv.innerHTML = allSessions.slice().reverse().map(session => `
+                    <div class="log-entry" onclick="viewSessionDetail('${session.date}')">
+                        <div style="display: flex; justify-content: space-between;">
+                            <strong>${session.date}</strong>
+                            <span>${session.trades?.length || 0} trades | Adherence: ${session.rulesAdherence || 'N/A'}%</span>
+                        </div>
+                        <div style="margin-top: 5px; color: #6c757d;">
+                            Emotional State: ${session.emotionalState}/10 | Sleep: ${session.sleepHours}hrs
+                        </div>
+                    </div>
+                `).join('');
+            }
+        }
+
+        // View trade detail
+        function viewTradeDetail(tradeId) {
+            const trade = allTrades.find(t => t.id === tradeId);
+            if (!trade) return;
+
+            const content = document.getElementById('tradeDetailContent');
+            content.innerHTML = `
+                <div class="section">
+                    <h3>${trade.symbol} - ${trade.direction?.toUpperCase()}</h3>
+                    <p><strong>Date:</strong> ${trade.date} ${trade.entryTime}</p>
+                    <p><strong>Thesis:</strong> ${trade.thesis}</p>
+                    <p><strong>Position Size:</strong> ${trade.positionSize}</p>
+                    <p><strong>Entry:</strong> ${trade.entryPrice}</p>
+                    <p><strong>Stop Loss:</strong> ${trade.stopLoss}</p>
+                    <p><strong>Target:</strong> ${trade.target}</p>
+                    <p><strong>Risk:</strong> $${trade.riskAmount}</p>
+                    <p><strong>Reward:</strong> $${trade.rewardAmount}</p>
+                    <p><strong>R:R Ratio:</strong> ${trade.rrRatio}</p>
+                    <p><strong>Result:</strong> ${trade.result || 'Open'}</p>
+                    ${trade.emergencyExit ? `<p><strong>Emergency Exit:</strong> Yes</p><p><strong>Reason:</strong> ${trade.exitReason}</p>` : ''}
+                </div>
+            `;
+
+            document.getElementById('tradeDetailModal').classList.add('active');
+        }
+
+        // Close modal
+        function closeModal() {
+            document.getElementById('tradeDetailModal').classList.remove('active');
+        }
+
+        // Export functions
+        function exportTodayPDF() {
+            window.print();
+        }
+
+        function exportAllData() {
+            const data = {
+                sessions: allSessions,
+                trades: allTrades,
+                exportDate: new Date().toISOString()
+            };
+
+            const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `trading-psychology-data-${new Date().toISOString().split('T')[0]}.json`;
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+
+        function clearAllData() {
+            if (confirm('⚠️ WARNING: This will permanently delete ALL your trading data.\n\nThis cannot be undone.\n\nAre you absolutely sure?')) {
+                if (confirm('Final confirmation: Delete all data?')) {
+                    localStorage.clear();
+                    allSessions = [];
+                    allTrades = [];
+                    currentSession = null;
+                    alert('All data cleared.');
+                    location.reload();
+                }
+            }
+        }
+
+        // Filter history
+        function filterHistory() {
+            // Implementation for filtering by date range
+            loadHistory();
+        }
+
+        // View session detail
+        function viewSessionDetail(date) {
+            const session = allSessions.find(s => s.date === date);
+            if (!session) return;
+
+            const content = document.getElementById('tradeDetailContent');
+            content.innerHTML = `
+                <div class="section">
+                    <h3>Session: ${session.date}</h3>
+                    <p><strong>Sleep:</strong> ${session.sleepHours} hours</p>
+                    <p><strong>Emotional State:</strong> ${session.emotionalState}/10</p>
+                    <p><strong>Stress Level:</strong> ${session.stressLevel}/10</p>
+                    <p><strong>Daily Trend:</strong> ${session.dailyTrend}</p>
+                    <p><strong>4hr Structure:</strong> ${session.fourHourStructure}</p>
+                    <p><strong>Trading Plan:</strong> ${session.tradingPlan}</p>
+                    <p><strong>Trades:</strong> ${session.trades?.length || 0}</p>
+                    <p><strong>Rules Adherence:</strong> ${session.rulesAdherence || 'N/A'}%</p>
+                    ${session.biggestWin ? `<p><strong>Biggest Win:</strong> ${session.biggestWin}</p>` : ''}
+                    ${session.biggestChallenge ? `<p><strong>Biggest Challenge:</strong> ${session.biggestChallenge}</p>` : ''}
+                    ${session.planTomorrow ? `<p><strong>Plan for Tomorrow:</strong> ${session.planTomorrow}</p>` : ''}
+                </div>
+            `;
+
+            document.getElementById('tradeDetailModal').classList.add('active');
+        }
+    </script>
+</body>
+</html>
