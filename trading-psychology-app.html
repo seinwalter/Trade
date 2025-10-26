@@ -795,6 +795,201 @@
             background: linear-gradient(180deg, #00ffff, #ff00ff);
             box-shadow: 0 0 15px rgba(0, 255, 255, 0.8);
         }
+
+        /* Screenshot Upload Styles */
+        .screenshot-upload-section {
+            margin-top: 20px;
+            padding: 20px;
+            background: rgba(0, 255, 255, 0.05);
+            border: 2px dashed rgba(0, 255, 255, 0.3);
+            border-radius: 10px;
+            transition: all 0.3s;
+        }
+
+        .screenshot-upload-section:hover {
+            border-color: #00ffff;
+            background: rgba(0, 255, 255, 0.1);
+            box-shadow: 0 0 20px rgba(0, 255, 255, 0.2);
+        }
+
+        .screenshot-upload-section h3 {
+            color: #00ffff;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 16px;
+            margin-bottom: 15px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            text-shadow: 0 0 10px #00ffff;
+        }
+
+        .file-input-wrapper {
+            position: relative;
+            overflow: hidden;
+            display: inline-block;
+            width: 100%;
+        }
+
+        .file-input-wrapper input[type=file] {
+            position: absolute;
+            left: -9999px;
+        }
+
+        .file-input-label {
+            display: block;
+            padding: 15px;
+            background: linear-gradient(135deg, rgba(0, 128, 255, 0.3), rgba(0, 255, 255, 0.3));
+            color: #00ffff;
+            text-align: center;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: 2px solid rgba(0, 255, 255, 0.5);
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .file-input-label:hover {
+            background: linear-gradient(135deg, rgba(0, 128, 255, 0.5), rgba(0, 255, 255, 0.5));
+            box-shadow: 0 0 20px rgba(0, 255, 255, 0.5);
+            transform: translateY(-2px);
+        }
+
+        .file-input-label::before {
+            content: '📸 ';
+            font-size: 20px;
+            margin-right: 8px;
+        }
+
+        .screenshot-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .screenshot-thumbnail {
+            position: relative;
+            border-radius: 8px;
+            overflow: hidden;
+            border: 2px solid rgba(0, 255, 255, 0.3);
+            transition: all 0.3s;
+            cursor: pointer;
+            background: rgba(10, 15, 30, 0.8);
+        }
+
+        .screenshot-thumbnail:hover {
+            border-color: #00ffff;
+            box-shadow: 0 0 25px rgba(0, 255, 255, 0.6);
+            transform: scale(1.05);
+        }
+
+        .screenshot-thumbnail img {
+            width: 100%;
+            height: 150px;
+            object-fit: cover;
+            display: block;
+        }
+
+        .screenshot-thumbnail .delete-btn {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            background: rgba(255, 0, 128, 0.9);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 28px;
+            height: 28px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s;
+            box-shadow: 0 0 10px rgba(255, 0, 128, 0.5);
+        }
+
+        .screenshot-thumbnail .delete-btn:hover {
+            background: #ff0080;
+            box-shadow: 0 0 20px rgba(255, 0, 128, 0.8);
+            transform: scale(1.1);
+        }
+
+        .screenshot-thumbnail .screenshot-label {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(to top, rgba(0, 0, 0, 0.9), transparent);
+            padding: 8px;
+            font-size: 11px;
+            color: #00ffff;
+            text-align: center;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        /* Image Viewer Modal */
+        .image-viewer-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.95);
+            z-index: 2000;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(10px);
+        }
+
+        .image-viewer-modal.active {
+            display: flex;
+        }
+
+        .image-viewer-content {
+            max-width: 95vw;
+            max-height: 95vh;
+            position: relative;
+        }
+
+        .image-viewer-content img {
+            max-width: 100%;
+            max-height: 95vh;
+            border-radius: 12px;
+            box-shadow:
+                0 0 50px rgba(0, 255, 255, 0.5),
+                0 0 100px rgba(120, 0, 255, 0.3);
+            border: 3px solid #00ffff;
+        }
+
+        .image-viewer-close {
+            position: absolute;
+            top: -50px;
+            right: 0;
+            background: linear-gradient(135deg, #ff0080, #ff0040);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            font-size: 24px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s;
+            box-shadow: 0 0 20px rgba(255, 0, 128, 0.8);
+        }
+
+        .image-viewer-close:hover {
+            transform: rotate(90deg) scale(1.1);
+            box-shadow: 0 0 30px rgba(255, 0, 128, 1);
+        }
     </style>
 </head>
 <body>
@@ -918,6 +1113,17 @@
                     <label>Daily Order Blocks & FVGs</label>
                     <textarea id="sundayDailyOrderBlocks" placeholder="Significant order blocks and fair value gaps on Daily" required></textarea>
                 </div>
+
+                <div class="screenshot-upload-section">
+                    <h3>📊 Daily Chart Screenshots</h3>
+                    <div class="file-input-wrapper">
+                        <input type="file" id="sundayDailyScreenshots" accept="image/*" multiple onchange="handleScreenshotUpload(event, 'sundayDaily')">
+                        <label for="sundayDailyScreenshots" class="file-input-label">
+                            Upload Daily Chart Screenshots
+                        </label>
+                    </div>
+                    <div id="sundayDailyScreenshotsGrid" class="screenshot-grid"></div>
+                </div>
             </div>
 
             <div class="section">
@@ -950,6 +1156,17 @@
                 <div class="form-group">
                     <label>4hr Order Blocks & FVGs</label>
                     <textarea id="sunday4hrOrderBlocks" placeholder="Significant order blocks and fair value gaps on 4hr" required></textarea>
+                </div>
+
+                <div class="screenshot-upload-section">
+                    <h3>📈 4-Hour Chart Screenshots</h3>
+                    <div class="file-input-wrapper">
+                        <input type="file" id="sunday4hrScreenshots" accept="image/*" multiple onchange="handleScreenshotUpload(event, 'sunday4hr')">
+                        <label for="sunday4hrScreenshots" class="file-input-label">
+                            Upload 4-Hour Chart Screenshots
+                        </label>
+                    </div>
+                    <div id="sunday4hrScreenshotsGrid" class="screenshot-grid"></div>
                 </div>
             </div>
 
@@ -1125,6 +1342,17 @@
                         <input type="number" id="maxTrades" value="2" min="1" max="2" readonly>
                     </div>
                 </div>
+
+                <div class="screenshot-upload-section">
+                    <h3>📊 Pre-Market Chart Screenshots</h3>
+                    <div class="file-input-wrapper">
+                        <input type="file" id="preMarketScreenshots" accept="image/*" multiple onchange="handleScreenshotUpload(event, 'preMarket')">
+                        <label for="preMarketScreenshots" class="file-input-label">
+                            Upload Chart Analysis Screenshots
+                        </label>
+                    </div>
+                    <div id="preMarketScreenshotsGrid" class="screenshot-grid"></div>
+                </div>
             </div>
 
             <button class="btn btn-success" onclick="savePreMarket()">Save Pre-Market Analysis</button>
@@ -1285,6 +1513,17 @@
                         <input type="text" id="tradeRRRatio" readonly>
                     </div>
                 </div>
+
+                <div class="screenshot-upload-section">
+                    <h3>📸 Trade Setup Screenshots</h3>
+                    <div class="file-input-wrapper">
+                        <input type="file" id="tradeScreenshots" accept="image/*" multiple onchange="handleScreenshotUpload(event, 'trade')">
+                        <label for="tradeScreenshots" class="file-input-label">
+                            Upload Trade Setup Screenshots
+                        </label>
+                    </div>
+                    <div id="tradeScreenshotsGrid" class="screenshot-grid"></div>
+                </div>
             </div>
 
             <button class="btn btn-success" onclick="submitTrade()">Submit Trade Entry</button>
@@ -1346,6 +1585,17 @@
                 <div class="form-group">
                     <label>Additional Notes</label>
                     <textarea id="additionalNotes" placeholder="Any other observations or thoughts"></textarea>
+                </div>
+
+                <div class="screenshot-upload-section">
+                    <h3>📊 End of Day Review Screenshots</h3>
+                    <div class="file-input-wrapper">
+                        <input type="file" id="eodScreenshots" accept="image/*" multiple onchange="handleScreenshotUpload(event, 'eod')">
+                        <label for="eodScreenshots" class="file-input-label">
+                            Upload EOD Analysis Screenshots
+                        </label>
+                    </div>
+                    <div id="eodScreenshotsGrid" class="screenshot-grid"></div>
                 </div>
             </div>
 
@@ -1524,16 +1774,108 @@
         </div>
     </div>
 
+    <!-- Modal for Image Viewer -->
+    <div id="imageViewerModal" class="image-viewer-modal" onclick="closeImageViewer()">
+        <div class="image-viewer-content" onclick="event.stopPropagation()">
+            <button class="image-viewer-close" onclick="closeImageViewer()">×</button>
+            <img id="fullSizeImage" src="" alt="Full size screenshot">
+        </div>
+    </div>
+
     <script>
         // Global state
         let currentSession = null;
         let allSessions = [];
         let allTrades = [];
         let timers = {};
+        let screenshots = {
+            sundayDaily: [],
+            sunday4hr: [],
+            preMarket: [],
+            trade: [],
+            eod: []
+        };
+
+        // Screenshot handling functions
+        function handleScreenshotUpload(event, category) {
+            const files = event.target.files;
+            if (!files || files.length === 0) return;
+
+            Array.from(files).forEach(file => {
+                if (!file.type.startsWith('image/')) {
+                    alert('Please upload only image files');
+                    return;
+                }
+
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const screenshot = {
+                        id: Date.now() + Math.random(),
+                        data: e.target.result,
+                        filename: file.name,
+                        timestamp: new Date().toISOString()
+                    };
+
+                    screenshots[category].push(screenshot);
+                    saveScreenshots();
+                    displayScreenshots(category);
+                };
+                reader.readAsDataURL(file);
+            });
+
+            event.target.value = ''; // Reset file input
+        }
+
+        function displayScreenshots(category) {
+            const gridId = category + 'ScreenshotsGrid';
+            const grid = document.getElementById(gridId);
+            if (!grid) return;
+
+            grid.innerHTML = screenshots[category].map(screenshot => `
+                <div class="screenshot-thumbnail">
+                    <img src="${screenshot.data}" alt="${screenshot.filename}" onclick="viewFullImage('${screenshot.data}')">
+                    <button class="delete-btn" onclick="deleteScreenshot('${category}', '${screenshot.id}')">×</button>
+                    <div class="screenshot-label">${screenshot.filename.substring(0, 15)}${screenshot.filename.length > 15 ? '...' : ''}</div>
+                </div>
+            `).join('');
+        }
+
+        function deleteScreenshot(category, screenshotId) {
+            if (!confirm('Delete this screenshot?')) return;
+
+            screenshots[category] = screenshots[category].filter(s => s.id != screenshotId);
+            saveScreenshots();
+            displayScreenshots(category);
+        }
+
+        function viewFullImage(imageSrc) {
+            document.getElementById('fullSizeImage').src = imageSrc;
+            document.getElementById('imageViewerModal').classList.add('active');
+        }
+
+        function closeImageViewer() {
+            document.getElementById('imageViewerModal').classList.remove('active');
+        }
+
+        function saveScreenshots() {
+            localStorage.setItem('tradingScreenshots', JSON.stringify(screenshots));
+        }
+
+        function loadScreenshots() {
+            const saved = localStorage.getItem('tradingScreenshots');
+            if (saved) {
+                screenshots = JSON.parse(saved);
+                // Display all screenshots
+                Object.keys(screenshots).forEach(category => {
+                    displayScreenshots(category);
+                });
+            }
+        }
 
         // Initialize app
         document.addEventListener('DOMContentLoaded', function() {
             loadData();
+            loadScreenshots();
             initializeToday();
             updateDashboard();
             updateStatistics();
