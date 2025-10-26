@@ -5,6 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Trading Psychology Protocol - Dr. Ellis Hartwin</title>
     <style>
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700;900&family=Rajdhani:wght@300;400;500;600;700&display=swap');
+
         * {
             margin: 0;
             padding: 0;
@@ -12,70 +14,172 @@
         }
 
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            font-family: 'Rajdhani', sans-serif;
+            background: #0a0e27;
+            background-image:
+                radial-gradient(circle at 20% 50%, rgba(120, 0, 255, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 80%, rgba(0, 255, 255, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 40% 20%, rgba(255, 0, 128, 0.1) 0%, transparent 50%);
             min-height: 100vh;
             padding: 20px;
+            color: #e0e0e0;
         }
 
         .app-container {
             max-width: 1200px;
             margin: 0 auto;
-            background: white;
-            border-radius: 12px;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            background: rgba(15, 20, 40, 0.95);
+            border-radius: 20px;
+            box-shadow:
+                0 0 40px rgba(0, 255, 255, 0.3),
+                0 0 80px rgba(120, 0, 255, 0.2),
+                inset 0 0 60px rgba(0, 0, 0, 0.5);
             overflow: hidden;
+            border: 2px solid rgba(0, 255, 255, 0.3);
+            position: relative;
+        }
+
+        .app-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(90deg,
+                transparent,
+                #00ffff,
+                #ff00ff,
+                #00ffff,
+                transparent
+            );
+            animation: scanline 4s linear infinite;
+        }
+
+        @keyframes scanline {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
         }
 
         .app-header {
-            background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
-            color: white;
-            padding: 25px 30px;
-            border-bottom: 4px solid #3498db;
+            background: linear-gradient(135deg, #1a1f3a 0%, #0f1428 100%);
+            color: #00ffff;
+            padding: 30px 30px;
+            border-bottom: 3px solid #00ffff;
+            box-shadow: 0 4px 20px rgba(0, 255, 255, 0.4);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .app-header::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg,
+                transparent,
+                rgba(0, 255, 255, 0.2),
+                transparent
+            );
+            animation: shine 3s infinite;
+        }
+
+        @keyframes shine {
+            0% { left: -100%; }
+            50%, 100% { left: 100%; }
         }
 
         .app-header h1 {
-            font-size: 28px;
-            margin-bottom: 5px;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 32px;
+            margin-bottom: 8px;
+            font-weight: 900;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            text-shadow:
+                0 0 10px #00ffff,
+                0 0 20px #00ffff,
+                0 0 30px #00ffff;
+            animation: glow 2s ease-in-out infinite alternate;
+        }
+
+        @keyframes glow {
+            from { text-shadow: 0 0 10px #00ffff, 0 0 20px #00ffff, 0 0 30px #00ffff; }
+            to { text-shadow: 0 0 20px #00ffff, 0 0 30px #00ffff, 0 0 40px #00ffff, 0 0 50px #ff00ff; }
         }
 
         .app-header .subtitle {
-            font-size: 14px;
-            opacity: 0.8;
+            font-size: 16px;
+            opacity: 0.9;
+            color: #ff00ff;
+            font-weight: 500;
+            text-shadow: 0 0 10px #ff00ff;
         }
 
         .nav-tabs {
             display: flex;
-            background: #34495e;
+            background: linear-gradient(180deg, #0f1428 0%, #1a1f3a 100%);
             overflow-x: auto;
+            border-bottom: 2px solid rgba(0, 255, 255, 0.2);
         }
 
         .nav-tab {
             padding: 15px 25px;
-            color: white;
+            color: #00ffff;
             cursor: pointer;
             border: none;
             background: transparent;
             transition: all 0.3s;
             white-space: nowrap;
-            font-size: 14px;
-            font-weight: 500;
+            font-size: 15px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            position: relative;
+            font-family: 'Rajdhani', sans-serif;
+        }
+
+        .nav-tab::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            width: 0;
+            height: 2px;
+            background: #00ffff;
+            transition: all 0.3s;
+            transform: translateX(-50%);
+            box-shadow: 0 0 10px #00ffff;
         }
 
         .nav-tab:hover {
-            background: rgba(255,255,255,0.1);
+            background: rgba(0, 255, 255, 0.1);
+            text-shadow: 0 0 10px #00ffff;
+        }
+
+        .nav-tab:hover::after {
+            width: 80%;
         }
 
         .nav-tab.active {
-            background: white;
-            color: #2c3e50;
-            border-top: 3px solid #3498db;
+            background: linear-gradient(180deg, rgba(0, 255, 255, 0.2), rgba(255, 0, 255, 0.1));
+            color: #00ffff;
+            text-shadow: 0 0 15px #00ffff;
+            border-top: 2px solid #00ffff;
+        }
+
+        .nav-tab.active::after {
+            width: 100%;
+            background: linear-gradient(90deg, #00ffff, #ff00ff, #00ffff);
         }
 
         .tab-content {
             display: none;
             padding: 30px;
-            animation: fadeIn 0.3s;
+            animation: fadeIn 0.5s, slideUp 0.5s;
+            background: rgba(10, 14, 39, 0.6);
         }
 
         .tab-content.active {
@@ -87,45 +191,101 @@
             to { opacity: 1; }
         }
 
+        @keyframes slideUp {
+            from { transform: translateY(20px); }
+            to { transform: translateY(0); }
+        }
+
         .section {
             margin-bottom: 30px;
-            padding: 20px;
-            background: #f8f9fa;
-            border-radius: 8px;
-            border-left: 4px solid #3498db;
+            padding: 25px;
+            background: rgba(20, 25, 50, 0.8);
+            border-radius: 12px;
+            border-left: 4px solid #00ffff;
+            box-shadow:
+                0 4px 15px rgba(0, 0, 0, 0.5),
+                inset 0 1px 0 rgba(255, 255, 255, 0.1);
+            position: relative;
+            backdrop-filter: blur(10px);
+        }
+
+        .section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: linear-gradient(90deg,
+                transparent,
+                rgba(0, 255, 255, 0.5),
+                transparent
+            );
         }
 
         .section h2 {
-            color: #2c3e50;
-            margin-bottom: 15px;
-            font-size: 20px;
+            color: #00ffff;
+            margin-bottom: 20px;
+            font-size: 24px;
+            font-family: 'Orbitron', sans-serif;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            text-shadow: 0 0 10px #00ffff;
         }
 
         .warning-section {
-            background: #fff3cd;
-            border-left-color: #ffc107;
+            background: rgba(255, 200, 0, 0.1);
+            border-left-color: #ffaa00;
+            box-shadow:
+                0 4px 15px rgba(255, 170, 0, 0.3),
+                inset 0 1px 0 rgba(255, 255, 255, 0.1);
+        }
+
+        .warning-section h2, .warning-section h3 {
+            color: #ffaa00;
+            text-shadow: 0 0 10px #ffaa00;
         }
 
         .danger-section {
-            background: #f8d7da;
-            border-left-color: #dc3545;
+            background: rgba(255, 0, 100, 0.1);
+            border-left-color: #ff0080;
+            box-shadow:
+                0 4px 15px rgba(255, 0, 128, 0.3),
+                inset 0 1px 0 rgba(255, 255, 255, 0.1);
+        }
+
+        .danger-section h2, .danger-section h3 {
+            color: #ff0080;
+            text-shadow: 0 0 10px #ff0080;
         }
 
         .success-section {
-            background: #d4edda;
-            border-left-color: #28a745;
+            background: rgba(0, 255, 128, 0.1);
+            border-left-color: #00ff80;
+            box-shadow:
+                0 4px 15px rgba(0, 255, 128, 0.3),
+                inset 0 1px 0 rgba(255, 255, 255, 0.1);
+        }
+
+        .success-section h2, .success-section h3 {
+            color: #00ff80;
+            text-shadow: 0 0 10px #00ff80;
         }
 
         .form-group {
-            margin-bottom: 15px;
+            margin-bottom: 20px;
         }
 
         label {
             display: block;
             font-weight: 600;
-            margin-bottom: 5px;
-            color: #2c3e50;
-            font-size: 14px;
+            margin-bottom: 8px;
+            color: #00ffff;
+            font-size: 15px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            text-shadow: 0 0 5px rgba(0, 255, 255, 0.5);
         }
 
         input[type="text"],
@@ -135,172 +295,253 @@
         textarea,
         select {
             width: 100%;
-            padding: 10px;
-            border: 2px solid #ddd;
-            border-radius: 6px;
-            font-size: 14px;
-            transition: border-color 0.3s;
+            padding: 12px;
+            border: 2px solid rgba(0, 255, 255, 0.3);
+            border-radius: 8px;
+            font-size: 15px;
+            transition: all 0.3s;
+            background: rgba(10, 15, 30, 0.8);
+            color: #e0e0e0;
+            font-family: 'Rajdhani', sans-serif;
+            font-weight: 500;
         }
 
         input:focus,
         textarea:focus,
         select:focus {
             outline: none;
-            border-color: #3498db;
+            border-color: #00ffff;
+            box-shadow: 0 0 15px rgba(0, 255, 255, 0.5);
+            background: rgba(10, 15, 30, 0.95);
         }
 
         textarea {
-            min-height: 80px;
+            min-height: 100px;
             resize: vertical;
-            font-family: inherit;
+            font-family: 'Rajdhani', sans-serif;
         }
 
         .inline-group {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 15px;
+            gap: 20px;
         }
 
         .checkbox-group {
             display: flex;
             align-items: center;
-            padding: 10px;
-            background: white;
-            border-radius: 6px;
-            margin-bottom: 8px;
+            padding: 12px;
+            background: rgba(10, 15, 35, 0.6);
+            border-radius: 8px;
+            margin-bottom: 10px;
+            border: 1px solid rgba(0, 255, 255, 0.2);
+            transition: all 0.3s;
+        }
+
+        .checkbox-group:hover {
+            background: rgba(0, 255, 255, 0.1);
+            border-color: #00ffff;
+            box-shadow: 0 0 10px rgba(0, 255, 255, 0.3);
         }
 
         .checkbox-group input[type="checkbox"] {
             width: 20px;
             height: 20px;
-            margin-right: 10px;
+            margin-right: 12px;
             cursor: pointer;
+            accent-color: #00ffff;
         }
 
         .checkbox-group label {
             margin: 0;
             cursor: pointer;
-            font-weight: normal;
+            font-weight: 500;
+            text-transform: none;
+            font-size: 14px;
+            color: #c0c0c0;
         }
 
         .btn {
-            padding: 12px 24px;
-            border: none;
-            border-radius: 6px;
+            padding: 14px 28px;
+            border: 2px solid;
+            border-radius: 8px;
             cursor: pointer;
-            font-size: 14px;
-            font-weight: 600;
+            font-size: 15px;
+            font-weight: 700;
             transition: all 0.3s;
-            margin-right: 10px;
-            margin-bottom: 10px;
+            margin-right: 12px;
+            margin-bottom: 12px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-family: 'Rajdhani', sans-serif;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.3);
+            transform: translate(-50%, -50%);
+            transition: width 0.6s, height 0.6s;
+        }
+
+        .btn:hover::before {
+            width: 300px;
+            height: 300px;
         }
 
         .btn-primary {
-            background: #3498db;
-            color: white;
+            background: linear-gradient(135deg, #0080ff, #00ffff);
+            color: #0a0e27;
+            border-color: #00ffff;
+            box-shadow: 0 0 20px rgba(0, 255, 255, 0.5);
         }
 
         .btn-primary:hover {
-            background: #2980b9;
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(52, 152, 219, 0.4);
+            transform: translateY(-3px);
+            box-shadow: 0 0 30px rgba(0, 255, 255, 0.8);
         }
 
         .btn-success {
-            background: #28a745;
-            color: white;
+            background: linear-gradient(135deg, #00ff80, #00ffaa);
+            color: #0a0e27;
+            border-color: #00ff80;
+            box-shadow: 0 0 20px rgba(0, 255, 128, 0.5);
         }
 
         .btn-success:hover {
-            background: #218838;
+            transform: translateY(-3px);
+            box-shadow: 0 0 30px rgba(0, 255, 128, 0.8);
         }
 
         .btn-danger {
-            background: #dc3545;
+            background: linear-gradient(135deg, #ff0080, #ff0040);
             color: white;
+            border-color: #ff0080;
+            box-shadow: 0 0 20px rgba(255, 0, 128, 0.5);
         }
 
         .btn-danger:hover {
-            background: #c82333;
+            transform: translateY(-3px);
+            box-shadow: 0 0 30px rgba(255, 0, 128, 0.8);
         }
 
         .btn-secondary {
-            background: #6c757d;
+            background: linear-gradient(135deg, #7000ff, #9000ff);
             color: white;
+            border-color: #9000ff;
+            box-shadow: 0 0 20px rgba(144, 0, 255, 0.5);
         }
 
         .btn-secondary:hover {
-            background: #5a6268;
+            transform: translateY(-3px);
+            box-shadow: 0 0 30px rgba(144, 0, 255, 0.8);
         }
 
         .alert {
-            padding: 15px 20px;
-            border-radius: 6px;
+            padding: 18px 24px;
+            border-radius: 10px;
             margin-bottom: 20px;
-            font-weight: 500;
+            font-weight: 600;
+            border: 2px solid;
+            backdrop-filter: blur(10px);
         }
 
         .alert-danger {
-            background: #f8d7da;
-            color: #721c24;
-            border: 1px solid #f5c6cb;
+            background: rgba(255, 0, 128, 0.2);
+            color: #ff0080;
+            border-color: #ff0080;
+            box-shadow: 0 0 20px rgba(255, 0, 128, 0.3);
         }
 
         .alert-warning {
-            background: #fff3cd;
-            color: #856404;
-            border: 1px solid #ffeaa7;
+            background: rgba(255, 170, 0, 0.2);
+            color: #ffaa00;
+            border-color: #ffaa00;
+            box-shadow: 0 0 20px rgba(255, 170, 0, 0.3);
         }
 
         .alert-success {
-            background: #d4edda;
-            color: #155724;
-            border: 1px solid #c3e6cb;
+            background: rgba(0, 255, 128, 0.2);
+            color: #00ff80;
+            border-color: #00ff80;
+            box-shadow: 0 0 20px rgba(0, 255, 128, 0.3);
         }
 
         .alert-info {
-            background: #d1ecf1;
-            color: #0c5460;
-            border: 1px solid #bee5eb;
+            background: rgba(0, 255, 255, 0.2);
+            color: #00ffff;
+            border-color: #00ffff;
+            box-shadow: 0 0 20px rgba(0, 255, 255, 0.3);
         }
 
         .stat-card {
-            background: white;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            background: linear-gradient(135deg, rgba(0, 128, 255, 0.1), rgba(120, 0, 255, 0.1));
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0, 255, 255, 0.2);
             text-align: center;
+            border: 2px solid rgba(0, 255, 255, 0.3);
+            transition: all 0.3s;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 30px rgba(0, 255, 255, 0.4);
+            border-color: #00ffff;
         }
 
         .stat-card h3 {
-            font-size: 32px;
-            color: #3498db;
-            margin-bottom: 5px;
+            font-size: 38px;
+            color: #00ffff;
+            margin-bottom: 8px;
+            font-family: 'Orbitron', sans-serif;
+            font-weight: 900;
+            text-shadow: 0 0 15px #00ffff;
         }
 
         .stat-card p {
-            color: #6c757d;
-            font-size: 14px;
+            color: #b0b0b0;
+            font-size: 15px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
         }
 
         .trade-card {
-            background: white;
+            background: rgba(20, 25, 50, 0.8);
             padding: 20px;
-            border-radius: 8px;
+            border-radius: 10px;
             margin-bottom: 15px;
-            border: 2px solid #ddd;
+            border: 2px solid rgba(0, 255, 255, 0.3);
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+
+        .trade-card:hover {
+            transform: translateX(10px);
+            box-shadow: 0 0 25px rgba(0, 255, 255, 0.4);
         }
 
         .trade-card.win {
-            border-left: 5px solid #28a745;
+            border-left: 5px solid #00ff80;
+            box-shadow: 0 0 15px rgba(0, 255, 128, 0.3);
         }
 
         .trade-card.loss {
-            border-left: 5px solid #dc3545;
+            border-left: 5px solid #ff0080;
+            box-shadow: 0 0 15px rgba(255, 0, 128, 0.3);
         }
 
         .trade-card.breakeven {
-            border-left: 5px solid #ffc107;
+            border-left: 5px solid #ffaa00;
+            box-shadow: 0 0 15px rgba(255, 170, 0, 0.3);
         }
 
         .protocol-status {
@@ -308,9 +549,16 @@
             align-items: center;
             justify-content: space-between;
             padding: 15px;
-            background: white;
-            border-radius: 6px;
-            margin-bottom: 10px;
+            background: rgba(20, 25, 50, 0.6);
+            border-radius: 8px;
+            margin-bottom: 12px;
+            border: 1px solid rgba(0, 255, 255, 0.2);
+            transition: all 0.3s;
+        }
+
+        .protocol-status:hover {
+            background: rgba(0, 255, 255, 0.1);
+            border-color: #00ffff;
         }
 
         .status-indicator {
@@ -318,66 +566,95 @@
             height: 12px;
             border-radius: 50%;
             display: inline-block;
-            margin-right: 8px;
+            margin-right: 10px;
+            box-shadow: 0 0 10px currentColor;
+            animation: blink 2s infinite;
+        }
+
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.3; }
         }
 
         .status-indicator.green {
-            background: #28a745;
+            background: #00ff80;
+            box-shadow: 0 0 15px #00ff80;
         }
 
         .status-indicator.red {
-            background: #dc3545;
+            background: #ff0080;
+            box-shadow: 0 0 15px #ff0080;
         }
 
         .status-indicator.yellow {
-            background: #ffc107;
+            background: #ffaa00;
+            box-shadow: 0 0 15px #ffaa00;
         }
 
         .timer-display {
-            font-size: 24px;
-            font-weight: bold;
-            color: #3498db;
+            font-size: 48px;
+            font-weight: 900;
+            color: #00ffff;
             text-align: center;
-            padding: 20px;
-            background: white;
-            border-radius: 8px;
-            margin: 15px 0;
+            padding: 30px;
+            background: linear-gradient(135deg, rgba(0, 128, 255, 0.2), rgba(120, 0, 255, 0.2));
+            border-radius: 12px;
+            margin: 20px 0;
+            font-family: 'Orbitron', sans-serif;
+            border: 2px solid #00ffff;
+            box-shadow:
+                0 0 30px rgba(0, 255, 255, 0.5),
+                inset 0 0 20px rgba(0, 255, 255, 0.1);
+            text-shadow: 0 0 20px #00ffff;
         }
 
         .progress-bar {
             width: 100%;
-            height: 30px;
-            background: #e9ecef;
-            border-radius: 15px;
+            height: 35px;
+            background: rgba(20, 25, 50, 0.8);
+            border-radius: 20px;
             overflow: hidden;
-            margin: 10px 0;
+            margin: 15px 0;
+            border: 2px solid rgba(0, 255, 255, 0.3);
+            box-shadow: inset 0 0 15px rgba(0, 0, 0, 0.5);
         }
 
         .progress-fill {
             height: 100%;
-            background: linear-gradient(90deg, #3498db, #2ecc71);
-            transition: width 0.3s;
+            background: linear-gradient(90deg, #0080ff, #00ffff, #ff00ff);
+            transition: width 0.5s;
             display: flex;
             align-items: center;
             justify-content: center;
             color: white;
-            font-weight: bold;
-            font-size: 12px;
+            font-weight: 700;
+            font-size: 14px;
+            text-shadow: 0 0 10px rgba(0, 0, 0, 0.8);
+            box-shadow: 0 0 20px rgba(0, 255, 255, 0.6);
+            animation: shimmer 2s infinite;
+        }
+
+        @keyframes shimmer {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
         }
 
         .log-entry {
-            background: white;
-            padding: 15px;
-            border-radius: 6px;
-            margin-bottom: 10px;
-            border-left: 4px solid #3498db;
+            background: rgba(20, 25, 50, 0.6);
+            padding: 18px;
+            border-radius: 8px;
+            margin-bottom: 12px;
+            border-left: 4px solid #00ffff;
             cursor: pointer;
             transition: all 0.3s;
+            border: 1px solid rgba(0, 255, 255, 0.2);
         }
 
         .log-entry:hover {
-            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-            transform: translateX(5px);
+            box-shadow: 0 0 20px rgba(0, 255, 255, 0.4);
+            transform: translateX(10px);
+            background: rgba(0, 255, 255, 0.1);
         }
 
         .modal {
@@ -387,10 +664,11 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0,0,0,0.6);
+            background: rgba(0, 0, 0, 0.85);
             z-index: 1000;
             align-items: center;
             justify-content: center;
+            backdrop-filter: blur(5px);
         }
 
         .modal.active {
@@ -398,33 +676,45 @@
         }
 
         .modal-content {
-            background: white;
-            padding: 30px;
-            border-radius: 12px;
-            max-width: 600px;
-            max-height: 80vh;
+            background: linear-gradient(135deg, rgba(15, 20, 40, 0.98), rgba(25, 30, 60, 0.98));
+            padding: 35px;
+            border-radius: 15px;
+            max-width: 650px;
+            max-height: 85vh;
             overflow-y: auto;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+            box-shadow:
+                0 0 50px rgba(0, 255, 255, 0.5),
+                0 0 100px rgba(120, 0, 255, 0.3);
+            border: 2px solid #00ffff;
         }
 
         .modal-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 20px;
-            padding-bottom: 15px;
-            border-bottom: 2px solid #e9ecef;
+            margin-bottom: 25px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid rgba(0, 255, 255, 0.3);
+        }
+
+        .modal-header h2 {
+            color: #00ffff;
+            font-family: 'Orbitron', sans-serif;
+            text-shadow: 0 0 10px #00ffff;
         }
 
         .modal-close {
-            font-size: 28px;
+            font-size: 32px;
             cursor: pointer;
-            color: #6c757d;
+            color: #ff0080;
             line-height: 1;
+            transition: all 0.3s;
         }
 
         .modal-close:hover {
-            color: #dc3545;
+            color: #ff00ff;
+            text-shadow: 0 0 15px #ff00ff;
+            transform: rotate(90deg);
         }
 
         @media (max-width: 768px) {
@@ -433,12 +723,16 @@
             }
 
             .app-header h1 {
-                font-size: 22px;
+                font-size: 24px;
             }
 
             .nav-tab {
                 padding: 12px 15px;
-                font-size: 12px;
+                font-size: 13px;
+            }
+
+            .timer-display {
+                font-size: 36px;
             }
         }
 
@@ -447,20 +741,59 @@
         }
 
         .circuit-breaker-warning {
-            background: #dc3545;
+            background: linear-gradient(135deg, #ff0080, #ff0040);
             color: white;
-            padding: 20px;
-            border-radius: 8px;
-            margin: 20px 0;
+            padding: 25px;
+            border-radius: 12px;
+            margin: 25px 0;
             text-align: center;
-            font-size: 18px;
-            font-weight: bold;
-            animation: pulse 2s infinite;
+            font-size: 20px;
+            font-weight: 900;
+            font-family: 'Orbitron', sans-serif;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            animation: pulse 1.5s infinite, colorShift 3s infinite;
+            box-shadow:
+                0 0 30px rgba(255, 0, 128, 0.8),
+                0 0 60px rgba(255, 0, 128, 0.5);
+            border: 2px solid #ff0080;
         }
 
         @keyframes pulse {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.7; }
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.8; transform: scale(1.02); }
+        }
+
+        @keyframes colorShift {
+            0%, 100% {
+                background: linear-gradient(135deg, #ff0080, #ff0040);
+                box-shadow: 0 0 30px rgba(255, 0, 128, 0.8), 0 0 60px rgba(255, 0, 128, 0.5);
+            }
+            50% {
+                background: linear-gradient(135deg, #ff0040, #ff0080);
+                box-shadow: 0 0 40px rgba(255, 0, 128, 1), 0 0 80px rgba(255, 0, 128, 0.7);
+            }
+        }
+
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 12px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: rgba(10, 15, 30, 0.8);
+            border-radius: 10px;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: linear-gradient(180deg, #0080ff, #00ffff);
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 255, 255, 0.5);
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: linear-gradient(180deg, #00ffff, #ff00ff);
+            box-shadow: 0 0 15px rgba(0, 255, 255, 0.8);
         }
     </style>
 </head>
@@ -473,6 +806,7 @@
 
         <div class="nav-tabs">
             <button class="nav-tab active" onclick="switchTab('dashboard')">Dashboard</button>
+            <button class="nav-tab" onclick="switchTab('sunday-prep')">Sunday Prep</button>
             <button class="nav-tab" onclick="switchTab('pre-market')">Pre-Market</button>
             <button class="nav-tab" onclick="switchTab('trade-entry')">Trade Entry</button>
             <button class="nav-tab" onclick="switchTab('end-of-day')">End of Day</button>
@@ -534,6 +868,149 @@
                 <button class="btn btn-success" onclick="switchTab('trade-entry')">Enter Trade</button>
                 <button class="btn btn-secondary" onclick="switchTab('end-of-day')">End of Day Review</button>
             </div>
+        </div>
+
+        <!-- Sunday Prep Tab -->
+        <div id="sunday-prep" class="tab-content">
+            <div class="alert alert-info">
+                <strong>Sunday Weekly Research:</strong> Take 20 minutes to analyze the 4-hour and Daily timeframes. This prepares you for the week ahead.
+            </div>
+
+            <div class="section">
+                <h2>Weekly Market Research ⏰ (20 minutes minimum)</h2>
+                <div class="timer-display" id="sundayResearchTimer">Timer: 00:00</div>
+                <button class="btn btn-primary" id="startSundayTimer" onclick="startTimer('sundayResearch', 1200)">Start 20-Minute Timer</button>
+
+                <div class="form-group">
+                    <label>Research Date</label>
+                    <input type="date" id="sundayDate" required>
+                </div>
+            </div>
+
+            <div class="section">
+                <h2>Daily Timeframe Analysis</h2>
+                <div class="form-group">
+                    <label>Daily Trend Direction</label>
+                    <select id="sundayDailyTrend" required>
+                        <option value="">Select...</option>
+                        <option value="bullish">Bullish</option>
+                        <option value="bearish">Bearish</option>
+                        <option value="ranging">Ranging</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>Daily Market Structure</label>
+                    <textarea id="sundayDailyStructure" placeholder="Higher highs/lows? Lower highs/lows? Key structural levels?" required></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label>Daily Support Levels</label>
+                    <textarea id="sundayDailySupport" placeholder="List major support levels from Daily chart" required></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label>Daily Resistance Levels</label>
+                    <textarea id="sundayDailyResistance" placeholder="List major resistance levels from Daily chart" required></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label>Daily Order Blocks & FVGs</label>
+                    <textarea id="sundayDailyOrderBlocks" placeholder="Significant order blocks and fair value gaps on Daily" required></textarea>
+                </div>
+            </div>
+
+            <div class="section">
+                <h2>4-Hour Timeframe Analysis</h2>
+                <div class="form-group">
+                    <label>4hr Trend Direction</label>
+                    <select id="sunday4hrTrend" required>
+                        <option value="">Select...</option>
+                        <option value="bullish">Bullish</option>
+                        <option value="bearish">Bearish</option>
+                        <option value="ranging">Ranging</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>4hr Market Structure</label>
+                    <textarea id="sunday4hrStructure" placeholder="Trend alignment with Daily? Recent breaks of structure?" required></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label>4hr Support Levels</label>
+                    <textarea id="sunday4hrSupport" placeholder="List major support levels from 4hr chart" required></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label>4hr Resistance Levels</label>
+                    <textarea id="sunday4hrResistance" placeholder="List major resistance levels from 4hr chart" required></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label>4hr Order Blocks & FVGs</label>
+                    <textarea id="sunday4hrOrderBlocks" placeholder="Significant order blocks and fair value gaps on 4hr" required></textarea>
+                </div>
+            </div>
+
+            <div class="section">
+                <h2>Weekly Trading Plan</h2>
+                <div class="form-group">
+                    <label>Primary Bias for the Week</label>
+                    <select id="sundayWeeklyBias" required>
+                        <option value="">Select...</option>
+                        <option value="bullish">Bullish - Looking for Longs</option>
+                        <option value="bearish">Bearish - Looking for Shorts</option>
+                        <option value="neutral">Neutral - Watch Both Directions</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>Key Price Targets This Week</label>
+                    <textarea id="sundayPriceTargets" placeholder="Where do you expect price to reach? What are the major levels?" required></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label>Setups to Watch For</label>
+                    <textarea id="sundaySetups" placeholder="What specific setups align with the Daily and 4hr structure?" required></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label>Key Events This Week</label>
+                    <textarea id="sundayKeyEvents" placeholder="Economic news, FOMC, earnings, etc. that might impact markets"></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label>Areas to Avoid</label>
+                    <textarea id="sundayAvoidAreas" placeholder="Price ranges or conditions where you should NOT trade" required></textarea>
+                </div>
+            </div>
+
+            <div class="section success-section">
+                <h2>Weekly Intentions & Goals</h2>
+                <div class="form-group">
+                    <label>Process Goals for This Week</label>
+                    <textarea id="sundayProcessGoals" placeholder="Focus on rules adherence, patience, documentation, etc." required></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label>Maximum Trades for the Week</label>
+                    <input type="number" id="sundayMaxTrades" value="10" min="1" required>
+                </div>
+
+                <div class="form-group">
+                    <label>Maximum Risk for the Week ($)</label>
+                    <input type="number" id="sundayMaxRisk" step="0.01" required>
+                </div>
+
+                <div class="form-group">
+                    <label>What Will Make This Week Successful?</label>
+                    <textarea id="sundaySuccessCriteria" placeholder="Define success beyond P/L - process metrics that matter" required></textarea>
+                </div>
+            </div>
+
+            <button class="btn btn-success" onclick="saveSundayPrep()">Save Sunday Research</button>
+            <button class="btn btn-secondary" onclick="viewPastSundayPrep()">View Past Sunday Preps</button>
         </div>
 
         <!-- Pre-Market Tab -->
@@ -1061,6 +1538,7 @@
             updateDashboard();
             updateStatistics();
             document.getElementById('sessionDate').valueAsDate = new Date();
+            document.getElementById('sundayDate').valueAsDate = new Date();
 
             // Add listeners for emotional state warning
             document.getElementById('emotionalState').addEventListener('input', checkEmotionalState);
@@ -1093,8 +1571,17 @@
                 clearInterval(timers[timerName].interval);
             }
 
-            const displayId = timerName === 'mentalCheck' ? 'mentalCheckTimer' : 'technicalAnalysisTimer';
-            const buttonId = timerName === 'mentalCheck' ? 'startMentalCheckTimer' : 'startTechnicalTimer';
+            let displayId, buttonId;
+            if (timerName === 'mentalCheck') {
+                displayId = 'mentalCheckTimer';
+                buttonId = 'startMentalCheckTimer';
+            } else if (timerName === 'technical') {
+                displayId = 'technicalAnalysisTimer';
+                buttonId = 'startTechnicalTimer';
+            } else if (timerName === 'sundayResearch') {
+                displayId = 'sundayResearchTimer';
+                buttonId = 'startSundayTimer';
+            }
 
             timers[timerName] = {
                 remaining: seconds,
@@ -1108,7 +1595,7 @@
                     if (timers[timerName].remaining <= 0) {
                         clearInterval(timers[timerName].interval);
                         document.getElementById(displayId).textContent = 'Timer Complete! ✓';
-                        document.getElementById(displayId).style.color = '#28a745';
+                        document.getElementById(displayId).style.color = '#00ff80';
                     }
                 }, 1000)
             };
@@ -1328,6 +1815,107 @@
 
             currentSession = null;
             saveData();
+        }
+
+        // Sunday Prep functions
+        function saveSundayPrep() {
+            const sundayPrep = {
+                date: document.getElementById('sundayDate').value,
+                dailyTrend: document.getElementById('sundayDailyTrend').value,
+                dailyStructure: document.getElementById('sundayDailyStructure').value,
+                dailySupport: document.getElementById('sundayDailySupport').value,
+                dailyResistance: document.getElementById('sundayDailyResistance').value,
+                dailyOrderBlocks: document.getElementById('sundayDailyOrderBlocks').value,
+                fourHrTrend: document.getElementById('sunday4hrTrend').value,
+                fourHrStructure: document.getElementById('sunday4hrStructure').value,
+                fourHrSupport: document.getElementById('sunday4hrSupport').value,
+                fourHrResistance: document.getElementById('sunday4hrResistance').value,
+                fourHrOrderBlocks: document.getElementById('sunday4hrOrderBlocks').value,
+                weeklyBias: document.getElementById('sundayWeeklyBias').value,
+                priceTargets: document.getElementById('sundayPriceTargets').value,
+                setups: document.getElementById('sundaySetups').value,
+                keyEvents: document.getElementById('sundayKeyEvents').value,
+                avoidAreas: document.getElementById('sundayAvoidAreas').value,
+                processGoals: document.getElementById('sundayProcessGoals').value,
+                maxTrades: document.getElementById('sundayMaxTrades').value,
+                maxRisk: document.getElementById('sundayMaxRisk').value,
+                successCriteria: document.getElementById('sundaySuccessCriteria').value
+            };
+
+            // Get existing Sunday preps
+            let sundayPreps = JSON.parse(localStorage.getItem('sundayPreps') || '[]');
+
+            // Check if there's already a prep for this date and update it
+            const existingIndex = sundayPreps.findIndex(p => p.date === sundayPrep.date);
+            if (existingIndex >= 0) {
+                sundayPreps[existingIndex] = sundayPrep;
+            } else {
+                sundayPreps.push(sundayPrep);
+            }
+
+            localStorage.setItem('sundayPreps', JSON.stringify(sundayPreps));
+            alert('✅ Sunday research saved!\n\nYour weekly plan is ready. Reference this throughout the week.');
+        }
+
+        function viewPastSundayPrep() {
+            const sundayPreps = JSON.parse(localStorage.getItem('sundayPreps') || '[]');
+
+            if (sundayPreps.length === 0) {
+                alert('No past Sunday preps found.');
+                return;
+            }
+
+            const content = document.getElementById('tradeDetailContent');
+            content.innerHTML = `
+                <div class="section">
+                    <h2>Past Sunday Preparations</h2>
+                    ${sundayPreps.slice().reverse().map(prep => `
+                        <div class="log-entry" onclick="loadSundayPrep('${prep.date}')">
+                            <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                                <strong>Week of ${prep.date}</strong>
+                                <span>${prep.weeklyBias}</span>
+                            </div>
+                            <div style="color: #b0b0b0;">
+                                Daily: ${prep.dailyTrend} | 4hr: ${prep.fourHrTrend}
+                            </div>
+                        </div>
+                    `).join('')}
+                </div>
+            `;
+
+            document.getElementById('tradeDetailModal').classList.add('active');
+        }
+
+        function loadSundayPrep(date) {
+            const sundayPreps = JSON.parse(localStorage.getItem('sundayPreps') || '[]');
+            const prep = sundayPreps.find(p => p.date === date);
+
+            if (!prep) return;
+
+            // Fill in all the fields
+            document.getElementById('sundayDate').value = prep.date;
+            document.getElementById('sundayDailyTrend').value = prep.dailyTrend;
+            document.getElementById('sundayDailyStructure').value = prep.dailyStructure;
+            document.getElementById('sundayDailySupport').value = prep.dailySupport;
+            document.getElementById('sundayDailyResistance').value = prep.dailyResistance;
+            document.getElementById('sundayDailyOrderBlocks').value = prep.dailyOrderBlocks;
+            document.getElementById('sunday4hrTrend').value = prep.fourHrTrend;
+            document.getElementById('sunday4hrStructure').value = prep.fourHrStructure;
+            document.getElementById('sunday4hrSupport').value = prep.fourHrSupport;
+            document.getElementById('sunday4hrResistance').value = prep.fourHrResistance;
+            document.getElementById('sunday4hrOrderBlocks').value = prep.fourHrOrderBlocks;
+            document.getElementById('sundayWeeklyBias').value = prep.weeklyBias;
+            document.getElementById('sundayPriceTargets').value = prep.priceTargets;
+            document.getElementById('sundaySetups').value = prep.setups;
+            document.getElementById('sundayKeyEvents').value = prep.keyEvents;
+            document.getElementById('sundayAvoidAreas').value = prep.avoidAreas;
+            document.getElementById('sundayProcessGoals').value = prep.processGoals;
+            document.getElementById('sundayMaxTrades').value = prep.maxTrades;
+            document.getElementById('sundayMaxRisk').value = prep.maxRisk;
+            document.getElementById('sundaySuccessCriteria').value = prep.successCriteria;
+
+            closeModal();
+            switchTab('sunday-prep');
         }
 
         // Load/Save data
