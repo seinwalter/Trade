@@ -1227,6 +1227,7 @@
             </div>
 
             <button class="btn btn-success" onclick="saveSundayPrep()">Save Sunday Research</button>
+            <button class="btn btn-primary" onclick="exportSundayPrepPDF()">📄 Export Sunday Prep PDF</button>
             <button class="btn btn-secondary" onclick="viewPastSundayPrep()">View Past Sunday Preps</button>
         </div>
 
@@ -1356,6 +1357,7 @@
             </div>
 
             <button class="btn btn-success" onclick="savePreMarket()">Save Pre-Market Analysis</button>
+            <button class="btn btn-primary" onclick="exportPreMarketPDF()">📄 Export Pre-Market PDF</button>
         </div>
 
         <!-- Trade Entry Tab -->
@@ -1600,7 +1602,8 @@
             </div>
 
             <button class="btn btn-success" onclick="saveEndOfDay()">Save End of Day Review</button>
-            <button class="btn btn-primary" onclick="exportTodayPDF()">Export Today's Log as PDF</button>
+            <button class="btn btn-primary" onclick="exportEndOfDayPDF()">📄 Export End of Day PDF</button>
+            <button class="btn btn-secondary" onclick="exportCompleteDayPDF()">📋 Export Complete Day Report</button>
         </div>
 
         <!-- History Tab -->
@@ -1782,6 +1785,9 @@
         </div>
     </div>
 
+    <!-- Include jsPDF library for PDF generation -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
     <script>
         // Global state
         let currentSession = null;
@@ -1870,6 +1876,725 @@
                     displayScreenshots(category);
                 });
             }
+        }
+
+        // PDF Export Functions
+        function exportSundayPrepPDF() {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+
+            // Header
+            doc.setFillColor(10, 14, 39);
+            doc.rect(0, 0, 210, 40, 'F');
+            doc.setTextColor(0, 255, 255);
+            doc.setFontSize(22);
+            doc.setFont(undefined, 'bold');
+            doc.text('SUNDAY WEEKLY RESEARCH', 105, 15, { align: 'center' });
+            doc.setFontSize(12);
+            doc.setTextColor(255, 0, 255);
+            doc.text('Dr. Ellis Hartwin - Trading Psychology Protocol', 105, 25, { align: 'center' });
+            doc.setTextColor(200, 200, 200);
+            doc.text('Patient: Sean', 105, 32, { align: 'center' });
+
+            let y = 50;
+
+            // Date
+            doc.setTextColor(0, 0, 0);
+            doc.setFontSize(11);
+            doc.setFont(undefined, 'bold');
+            doc.text(`Date: ${document.getElementById('sundayDate').value || 'Not specified'}`, 15, y);
+            y += 10;
+
+            // Daily Timeframe Section
+            doc.setFillColor(0, 255, 255);
+            doc.rect(15, y, 180, 8, 'F');
+            doc.setTextColor(255, 255, 255);
+            doc.setFontSize(13);
+            doc.text('DAILY TIMEFRAME ANALYSIS', 20, y + 6);
+            y += 15;
+
+            doc.setTextColor(0, 0, 0);
+            doc.setFontSize(10);
+            doc.setFont(undefined, 'bold');
+            doc.text('Trend Direction:', 15, y);
+            doc.setFont(undefined, 'normal');
+            doc.text(document.getElementById('sundayDailyTrend').value || 'N/A', 60, y);
+            y += 7;
+
+            doc.setFont(undefined, 'bold');
+            doc.text('Market Structure:', 15, y);
+            doc.setFont(undefined, 'normal');
+            const dailyStructure = doc.splitTextToSize(document.getElementById('sundayDailyStructure').value || 'N/A', 120);
+            doc.text(dailyStructure, 60, y);
+            y += (dailyStructure.length * 5) + 5;
+
+            doc.setFont(undefined, 'bold');
+            doc.text('Support Levels:', 15, y);
+            doc.setFont(undefined, 'normal');
+            const dailySupport = doc.splitTextToSize(document.getElementById('sundayDailySupport').value || 'N/A', 120);
+            doc.text(dailySupport, 60, y);
+            y += (dailySupport.length * 5) + 5;
+
+            doc.setFont(undefined, 'bold');
+            doc.text('Resistance Levels:', 15, y);
+            doc.setFont(undefined, 'normal');
+            const dailyResistance = doc.splitTextToSize(document.getElementById('sundayDailyResistance').value || 'N/A', 120);
+            doc.text(dailyResistance, 60, y);
+            y += (dailyResistance.length * 5) + 5;
+
+            doc.setFont(undefined, 'bold');
+            doc.text('Order Blocks & FVGs:', 15, y);
+            doc.setFont(undefined, 'normal');
+            const dailyOB = doc.splitTextToSize(document.getElementById('sundayDailyOrderBlocks').value || 'N/A', 120);
+            doc.text(dailyOB, 60, y);
+            y += (dailyOB.length * 5) + 10;
+
+            // Add screenshots if available
+            if (screenshots.sundayDaily && screenshots.sundayDaily.length > 0) {
+                if (y > 240) {
+                    doc.addPage();
+                    y = 20;
+                }
+                doc.setFont(undefined, 'bold');
+                doc.text('Daily Chart Screenshots:', 15, y);
+                y += 7;
+                screenshots.sundayDaily.forEach((screenshot, idx) => {
+                    if (y > 250) {
+                        doc.addPage();
+                        y = 20;
+                    }
+                    try {
+                        doc.addImage(screenshot.data, 'JPEG', 15, y, 80, 60);
+                        y += 65;
+                    } catch (e) {
+                        console.error('Error adding image:', e);
+                    }
+                });
+            }
+
+            // 4-Hour Timeframe Section
+            if (y > 200) {
+                doc.addPage();
+                y = 20;
+            }
+
+            doc.setFillColor(0, 255, 255);
+            doc.rect(15, y, 180, 8, 'F');
+            doc.setTextColor(255, 255, 255);
+            doc.setFontSize(13);
+            doc.text('4-HOUR TIMEFRAME ANALYSIS', 20, y + 6);
+            y += 15;
+
+            doc.setTextColor(0, 0, 0);
+            doc.setFontSize(10);
+            doc.setFont(undefined, 'bold');
+            doc.text('Trend Direction:', 15, y);
+            doc.setFont(undefined, 'normal');
+            doc.text(document.getElementById('sunday4hrTrend').value || 'N/A', 60, y);
+            y += 7;
+
+            doc.setFont(undefined, 'bold');
+            doc.text('Market Structure:', 15, y);
+            doc.setFont(undefined, 'normal');
+            const fourHrStructure = doc.splitTextToSize(document.getElementById('sunday4hrStructure').value || 'N/A', 120);
+            doc.text(fourHrStructure, 60, y);
+            y += (fourHrStructure.length * 5) + 5;
+
+            doc.setFont(undefined, 'bold');
+            doc.text('Support Levels:', 15, y);
+            doc.setFont(undefined, 'normal');
+            const fourHrSupport = doc.splitTextToSize(document.getElementById('sunday4hrSupport').value || 'N/A', 120);
+            doc.text(fourHrSupport, 60, y);
+            y += (fourHrSupport.length * 5) + 5;
+
+            doc.setFont(undefined, 'bold');
+            doc.text('Resistance Levels:', 15, y);
+            doc.setFont(undefined, 'normal');
+            const fourHrResistance = doc.splitTextToSize(document.getElementById('sunday4hrResistance').value || 'N/A', 120);
+            doc.text(fourHrResistance, 60, y);
+            y += (fourHrResistance.length * 5) + 5;
+
+            doc.setFont(undefined, 'bold');
+            doc.text('Order Blocks & FVGs:', 15, y);
+            doc.setFont(undefined, 'normal');
+            const fourHrOB = doc.splitTextToSize(document.getElementById('sunday4hrOrderBlocks').value || 'N/A', 120);
+            doc.text(fourHrOB, 60, y);
+            y += (fourHrOB.length * 5) + 10;
+
+            // Add 4hr screenshots
+            if (screenshots.sunday4hr && screenshots.sunday4hr.length > 0) {
+                if (y > 240) {
+                    doc.addPage();
+                    y = 20;
+                }
+                doc.setFont(undefined, 'bold');
+                doc.text('4-Hour Chart Screenshots:', 15, y);
+                y += 7;
+                screenshots.sunday4hr.forEach((screenshot, idx) => {
+                    if (y > 250) {
+                        doc.addPage();
+                        y = 20;
+                    }
+                    try {
+                        doc.addImage(screenshot.data, 'JPEG', 15, y, 80, 60);
+                        y += 65;
+                    } catch (e) {
+                        console.error('Error adding image:', e);
+                    }
+                });
+            }
+
+            // Weekly Plan Section
+            if (y > 200) {
+                doc.addPage();
+                y = 20;
+            }
+
+            doc.setFillColor(0, 255, 128);
+            doc.rect(15, y, 180, 8, 'F');
+            doc.setTextColor(255, 255, 255);
+            doc.setFontSize(13);
+            doc.text('WEEKLY TRADING PLAN', 20, y + 6);
+            y += 15;
+
+            doc.setTextColor(0, 0, 0);
+            doc.setFontSize(10);
+            doc.setFont(undefined, 'bold');
+            doc.text('Weekly Bias:', 15, y);
+            doc.setFont(undefined, 'normal');
+            doc.text(document.getElementById('sundayWeeklyBias').value || 'N/A', 60, y);
+            y += 7;
+
+            doc.setFont(undefined, 'bold');
+            doc.text('Price Targets:', 15, y);
+            doc.setFont(undefined, 'normal');
+            const priceTargets = doc.splitTextToSize(document.getElementById('sundayPriceTargets').value || 'N/A', 120);
+            doc.text(priceTargets, 60, y);
+            y += (priceTargets.length * 5) + 5;
+
+            doc.setFont(undefined, 'bold');
+            doc.text('Setups to Watch:', 15, y);
+            doc.setFont(undefined, 'normal');
+            const setups = doc.splitTextToSize(document.getElementById('sundaySetups').value || 'N/A', 120);
+            doc.text(setups, 60, y);
+            y += (setups.length * 5) + 5;
+
+            doc.setFont(undefined, 'bold');
+            doc.text('Key Events:', 15, y);
+            doc.setFont(undefined, 'normal');
+            const keyEvents = doc.splitTextToSize(document.getElementById('sundayKeyEvents').value || 'N/A', 120);
+            doc.text(keyEvents, 60, y);
+            y += (keyEvents.length * 5) + 5;
+
+            doc.setFont(undefined, 'bold');
+            doc.text('Areas to Avoid:', 15, y);
+            doc.setFont(undefined, 'normal');
+            const avoidAreas = doc.splitTextToSize(document.getElementById('sundayAvoidAreas').value || 'N/A', 120);
+            doc.text(avoidAreas, 60, y);
+            y += (avoidAreas.length * 5) + 10;
+
+            // Goals Section
+            if (y > 220) {
+                doc.addPage();
+                y = 20;
+            }
+
+            doc.setFillColor(255, 0, 128);
+            doc.rect(15, y, 180, 8, 'F');
+            doc.setTextColor(255, 255, 255);
+            doc.setFontSize(13);
+            doc.text('WEEKLY GOALS & INTENTIONS', 20, y + 6);
+            y += 15;
+
+            doc.setTextColor(0, 0, 0);
+            doc.setFontSize(10);
+            doc.setFont(undefined, 'bold');
+            doc.text('Process Goals:', 15, y);
+            doc.setFont(undefined, 'normal');
+            const processGoals = doc.splitTextToSize(document.getElementById('sundayProcessGoals').value || 'N/A', 120);
+            doc.text(processGoals, 60, y);
+            y += (processGoals.length * 5) + 5;
+
+            doc.setFont(undefined, 'bold');
+            doc.text('Max Trades This Week:', 15, y);
+            doc.setFont(undefined, 'normal');
+            doc.text(document.getElementById('sundayMaxTrades').value || 'N/A', 80, y);
+            y += 7;
+
+            doc.setFont(undefined, 'bold');
+            doc.text('Max Risk This Week:', 15, y);
+            doc.setFont(undefined, 'normal');
+            doc.text('$' + (document.getElementById('sundayMaxRisk').value || 'N/A'), 80, y);
+            y += 7;
+
+            doc.setFont(undefined, 'bold');
+            doc.text('Success Criteria:', 15, y);
+            doc.setFont(undefined, 'normal');
+            const successCriteria = doc.splitTextToSize(document.getElementById('sundaySuccessCriteria').value || 'N/A', 120);
+            doc.text(successCriteria, 60, y);
+
+            // Footer
+            doc.addPage();
+            doc.setFontSize(10);
+            doc.setTextColor(100, 100, 100);
+            doc.text('Generated by Trading Psychology Protocol App', 105, 280, { align: 'center' });
+            doc.text('Dr. Ellis Hartwin - Clinical Psychiatrist', 105, 285, { align: 'center' });
+
+            const dateStr = document.getElementById('sundayDate').value || 'sunday';
+            doc.save(`Sunday-Prep-${dateStr}.pdf`);
+        }
+
+        function exportPreMarketPDF() {
+            if (!currentSession) {
+                alert('No pre-market session data available. Complete pre-market analysis first.');
+                return;
+            }
+
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+
+            // Header
+            doc.setFillColor(10, 14, 39);
+            doc.rect(0, 0, 210, 40, 'F');
+            doc.setTextColor(0, 255, 255);
+            doc.setFontSize(22);
+            doc.setFont(undefined, 'bold');
+            doc.text('PRE-MARKET ANALYSIS', 105, 15, { align: 'center' });
+            doc.setFontSize(12);
+            doc.setTextColor(255, 0, 255);
+            doc.text('Dr. Ellis Hartwin - Trading Psychology Protocol', 105, 25, { align: 'center' });
+            doc.setTextColor(200, 200, 200);
+            doc.text('Patient: Sean', 105, 32, { align: 'center' });
+
+            let y = 50;
+
+            // Date & Mental State
+            doc.setTextColor(0, 0, 0);
+            doc.setFontSize(11);
+            doc.setFont(undefined, 'bold');
+            doc.text(`Date: ${currentSession.date}`, 15, y);
+            y += 10;
+
+            doc.setFillColor(255, 170, 0);
+            doc.rect(15, y, 180, 8, 'F');
+            doc.setTextColor(255, 255, 255);
+            doc.setFontSize(13);
+            doc.text('MENTAL STATE CHECK', 20, y + 6);
+            y += 15;
+
+            doc.setTextColor(0, 0, 0);
+            doc.setFontSize(10);
+            doc.setFont(undefined, 'bold');
+            doc.text(`Sleep: ${currentSession.sleepHours} hrs`, 15, y);
+            doc.text(`Emotional State: ${currentSession.emotionalState}/10`, 80, y);
+            doc.text(`Stress: ${currentSession.stressLevel}/10`, 145, y);
+            y += 7;
+
+            doc.text('Sobriety:', 15, y);
+            doc.setFont(undefined, 'normal');
+            doc.text(currentSession.sobrietyStatus, 40, y);
+            y += 10;
+
+            if (currentSession.obligations) {
+                doc.setFont(undefined, 'bold');
+                doc.text('Obligations:', 15, y);
+                doc.setFont(undefined, 'normal');
+                const obligations = doc.splitTextToSize(currentSession.obligations, 160);
+                doc.text(obligations, 15, y + 5);
+                y += (obligations.length * 5) + 10;
+            }
+
+            // Previous Day Review
+            doc.setFillColor(0, 255, 128);
+            doc.rect(15, y, 180, 8, 'F');
+            doc.setTextColor(255, 255, 255);
+            doc.setFontSize(13);
+            doc.text('PREVIOUS DAY REVIEW', 20, y + 6);
+            y += 15;
+
+            doc.setTextColor(0, 0, 0);
+            doc.setFontSize(10);
+            if (currentSession.whatWorked) {
+                doc.setFont(undefined, 'bold');
+                doc.text('What Worked:', 15, y);
+                doc.setFont(undefined, 'normal');
+                const worked = doc.splitTextToSize(currentSession.whatWorked, 160);
+                doc.text(worked, 15, y + 5);
+                y += (worked.length * 5) + 10;
+            }
+
+            if (currentSession.whatDidntWork) {
+                doc.setFont(undefined, 'bold');
+                doc.text('What Didn\'t Work:', 15, y);
+                doc.setFont(undefined, 'normal');
+                const didntWork = doc.splitTextToSize(currentSession.whatDidntWork, 160);
+                doc.text(didntWork, 15, y + 5);
+                y += (didntWork.length * 5) + 10;
+            }
+
+            // Technical Analysis
+            if (y > 220) {
+                doc.addPage();
+                y = 20;
+            }
+
+            doc.setFillColor(0, 255, 255);
+            doc.rect(15, y, 180, 8, 'F');
+            doc.setTextColor(255, 255, 255);
+            doc.setFontSize(13);
+            doc.text('TECHNICAL ANALYSIS', 20, y + 6);
+            y += 15;
+
+            doc.setTextColor(0, 0, 0);
+            doc.setFontSize(10);
+            doc.setFont(undefined, 'bold');
+            doc.text('Daily Trend:', 15, y);
+            doc.setFont(undefined, 'normal');
+            doc.text(currentSession.dailyTrend || 'N/A', 60, y);
+            y += 7;
+
+            doc.setFont(undefined, 'bold');
+            doc.text('4hr Structure:', 15, y);
+            doc.setFont(undefined, 'normal');
+            doc.text(currentSession.fourHourStructure || 'N/A', 60, y);
+            y += 10;
+
+            doc.setFont(undefined, 'bold');
+            doc.text('Key Levels:', 15, y);
+            doc.setFont(undefined, 'normal');
+            const keyLevels = doc.splitTextToSize(currentSession.keyLevels || 'N/A', 160);
+            doc.text(keyLevels, 15, y + 5);
+            y += (keyLevels.length * 5) + 10;
+
+            doc.setFont(undefined, 'bold');
+            doc.text('Trading Plan:', 15, y);
+            doc.setFont(undefined, 'normal');
+            const tradingPlan = doc.splitTextToSize(currentSession.tradingPlan || 'N/A', 160);
+            doc.text(tradingPlan, 15, y + 5);
+            y += (tradingPlan.length * 5) + 10;
+
+            // Risk Management
+            doc.setFont(undefined, 'bold');
+            doc.text('Risk Management:', 15, y);
+            y += 7;
+            doc.setFont(undefined, 'normal');
+            doc.text(`Max Risk/Trade: $${currentSession.maxRiskPerTrade}`, 15, y);
+            y += 5;
+            doc.text(`Max Total Risk: $${currentSession.maxTotalRisk}`, 15, y);
+            y += 5;
+            doc.text(`Max Trades: ${currentSession.maxTrades}`, 15, y);
+            y += 10;
+
+            // Add screenshots
+            if (screenshots.preMarket && screenshots.preMarket.length > 0) {
+                if (y > 240) {
+                    doc.addPage();
+                    y = 20;
+                }
+                doc.setFont(undefined, 'bold');
+                doc.text('Pre-Market Chart Screenshots:', 15, y);
+                y += 7;
+                screenshots.preMarket.forEach((screenshot, idx) => {
+                    if (y > 250) {
+                        doc.addPage();
+                        y = 20;
+                    }
+                    try {
+                        doc.addImage(screenshot.data, 'JPEG', 15, y, 80, 60);
+                        y += 65;
+                    } catch (e) {
+                        console.error('Error adding image:', e);
+                    }
+                });
+            }
+
+            doc.save(`Pre-Market-${currentSession.date}.pdf`);
+        }
+
+        function exportEndOfDayPDF() {
+            if (!currentSession) {
+                alert('No session data available.');
+                return;
+            }
+
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+
+            // Header
+            doc.setFillColor(10, 14, 39);
+            doc.rect(0, 0, 210, 40, 'F');
+            doc.setTextColor(0, 255, 255);
+            doc.setFontSize(22);
+            doc.setFont(undefined, 'bold');
+            doc.text('END OF DAY REVIEW', 105, 15, { align: 'center' });
+            doc.setFontSize(12);
+            doc.setTextColor(255, 0, 255);
+            doc.text('Dr. Ellis Hartwin - Trading Psychology Protocol', 105, 25, { align: 'center' });
+            doc.setTextColor(200, 200, 200);
+            doc.text('Patient: Sean', 105, 32, { align: 'center' });
+
+            let y = 50;
+
+            doc.setTextColor(0, 0, 0);
+            doc.setFontSize(11);
+            doc.setFont(undefined, 'bold');
+            doc.text(`Date: ${currentSession.date}`, 15, y);
+            y += 10;
+
+            // Trading Summary
+            doc.setFillColor(0, 255, 255);
+            doc.rect(15, y, 180, 8, 'F');
+            doc.setTextColor(255, 255, 255);
+            doc.setFontSize(13);
+            doc.text('TRADING SUMMARY', 20, y + 6);
+            y += 15;
+
+            doc.setTextColor(0, 0, 0);
+            doc.setFontSize(10);
+            const trades = currentSession.trades || [];
+            doc.setFont(undefined, 'bold');
+            doc.text(`Total Trades: ${trades.length}`, 15, y);
+            y += 7;
+
+            const wins = trades.filter(t => t.result === 'win').length;
+            const losses = trades.filter(t => t.result === 'loss').length;
+            doc.text(`Wins: ${wins}`, 15, y);
+            y += 5;
+            doc.text(`Losses: ${losses}`, 15, y);
+            y += 10;
+
+            // Circuit Breaker Check
+            const cbValue = document.getElementById('circuitBreakerTriggered').value;
+            if (cbValue && cbValue !== 'no') {
+                doc.setFillColor(255, 0, 128);
+                doc.rect(15, y, 180, 8, 'F');
+                doc.setTextColor(255, 255, 255);
+                doc.text('⚠ CIRCUIT BREAKER TRIGGERED', 20, y + 6);
+                y += 15;
+
+                doc.setTextColor(0, 0, 0);
+                doc.setFont(undefined, 'normal');
+                const cbNotes = doc.splitTextToSize(document.getElementById('circuitBreakerNotes').value || 'N/A', 160);
+                doc.text(cbNotes, 15, y);
+                y += (cbNotes.length * 5) + 10;
+            }
+
+            // Reflection
+            if (y > 220) {
+                doc.addPage();
+                y = 20;
+            }
+
+            doc.setFillColor(0, 255, 128);
+            doc.rect(15, y, 180, 8, 'F');
+            doc.setTextColor(255, 255, 255);
+            doc.setFontSize(13);
+            doc.text('REFLECTION', 20, y + 6);
+            y += 15;
+
+            doc.setTextColor(0, 0, 0);
+            doc.setFontSize(10);
+            doc.setFont(undefined, 'bold');
+            doc.text(`Rules Adherence: ${document.getElementById('rulesAdherencePercent').value || 'N/A'}%`, 15, y);
+            y += 10;
+
+            const biggestWin = document.getElementById('biggestWin').value;
+            if (biggestWin) {
+                doc.setFont(undefined, 'bold');
+                doc.text('Biggest Win:', 15, y);
+                doc.setFont(undefined, 'normal');
+                const winText = doc.splitTextToSize(biggestWin, 160);
+                doc.text(winText, 15, y + 5);
+                y += (winText.length * 5) + 10;
+            }
+
+            const biggestChallenge = document.getElementById('biggestChallenge').value;
+            if (biggestChallenge) {
+                doc.setFont(undefined, 'bold');
+                doc.text('Biggest Challenge:', 15, y);
+                doc.setFont(undefined, 'normal');
+                const challengeText = doc.splitTextToSize(biggestChallenge, 160);
+                doc.text(challengeText, 15, y + 5);
+                y += (challengeText.length * 5) + 10;
+            }
+
+            const planTomorrow = document.getElementById('planTomorrow').value;
+            if (planTomorrow) {
+                doc.setFont(undefined, 'bold');
+                doc.text('Plan for Tomorrow:', 15, y);
+                doc.setFont(undefined, 'normal');
+                const planText = doc.splitTextToSize(planTomorrow, 160);
+                doc.text(planText, 15, y + 5);
+                y += (planText.length * 5) + 10;
+            }
+
+            // Add screenshots
+            if (screenshots.eod && screenshots.eod.length > 0) {
+                if (y > 240) {
+                    doc.addPage();
+                    y = 20;
+                }
+                doc.setFont(undefined, 'bold');
+                doc.text('End of Day Screenshots:', 15, y);
+                y += 7;
+                screenshots.eod.forEach((screenshot, idx) => {
+                    if (y > 250) {
+                        doc.addPage();
+                        y = 20;
+                    }
+                    try {
+                        doc.addImage(screenshot.data, 'JPEG', 15, y, 80, 60);
+                        y += 65;
+                    } catch (e) {
+                        console.error('Error adding image:', e);
+                    }
+                });
+            }
+
+            doc.save(`End-of-Day-${currentSession.date}.pdf`);
+        }
+
+        function exportCompleteDayPDF() {
+            if (!currentSession) {
+                alert('No session data available.');
+                return;
+            }
+
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+
+            // Header
+            doc.setFillColor(10, 14, 39);
+            doc.rect(0, 0, 210, 50, 'F');
+            doc.setTextColor(0, 255, 255);
+            doc.setFontSize(24);
+            doc.setFont(undefined, 'bold');
+            doc.text('COMPLETE DAY REPORT', 105, 18, { align: 'center' });
+            doc.setFontSize(14);
+            doc.setTextColor(255, 0, 255);
+            doc.text('Dr. Ellis Hartwin - Trading Psychology Protocol', 105, 28, { align: 'center' });
+            doc.setTextColor(200, 200, 200);
+            doc.setFontSize(12);
+            doc.text('Patient: Sean', 105, 36, { align: 'center' });
+            doc.text(`Date: ${currentSession.date}`, 105, 43, { align: 'center' });
+
+            let y = 60;
+
+            // Pre-Market Section
+            doc.setFillColor(0, 255, 255);
+            doc.rect(15, y, 180, 8, 'F');
+            doc.setTextColor(255, 255, 255);
+            doc.setFontSize(14);
+            doc.text('PRE-MARKET ANALYSIS', 20, y + 6);
+            y += 15;
+
+            doc.setTextColor(0, 0, 0);
+            doc.setFontSize(10);
+            doc.setFont(undefined, 'bold');
+            doc.text(`Sleep: ${currentSession.sleepHours}hrs | Emotional: ${currentSession.emotionalState}/10 | Stress: ${currentSession.stressLevel}/10`, 15, y);
+            y += 7;
+            doc.text(`Daily: ${currentSession.dailyTrend} | 4hr: ${currentSession.fourHourStructure}`, 15, y);
+            y += 10;
+
+            // Trading Plan
+            doc.setFont(undefined, 'bold');
+            doc.text('Trading Plan:', 15, y);
+            doc.setFont(undefined, 'normal');
+            const plan = doc.splitTextToSize(currentSession.tradingPlan || 'N/A', 160);
+            doc.text(plan, 15, y + 5);
+            y += (plan.length * 5) + 15;
+
+            // Trades Section
+            const trades = currentSession.trades || [];
+            if (trades.length > 0) {
+                doc.setFillColor(255, 170, 0);
+                doc.rect(15, y, 180, 8, 'F');
+                doc.setTextColor(255, 255, 255);
+                doc.setFontSize(14);
+                doc.text('TRADES TAKEN', 20, y + 6);
+                y += 15;
+
+                doc.setTextColor(0, 0, 0);
+                doc.setFontSize(10);
+
+                trades.forEach((trade, idx) => {
+                    if (y > 250) {
+                        doc.addPage();
+                        y = 20;
+                    }
+
+                    doc.setFont(undefined, 'bold');
+                    doc.text(`Trade #${idx + 1}: ${trade.symbol} ${trade.direction?.toUpperCase()}`, 15, y);
+                    y += 6;
+                    doc.setFont(undefined, 'normal');
+                    doc.text(`Entry: ${trade.entryTime} | Size: ${trade.positionSize} | R:R: ${trade.rrRatio}`, 15, y);
+                    y += 5;
+
+                    if (trade.thesis) {
+                        const thesis = doc.splitTextToSize(trade.thesis, 160);
+                        doc.text(thesis, 15, y);
+                        y += (thesis.length * 5) + 8;
+                    }
+                });
+            }
+
+            // End of Day Reflection
+            if (y > 200) {
+                doc.addPage();
+                y = 20;
+            }
+
+            doc.setFillColor(0, 255, 128);
+            doc.rect(15, y, 180, 8, 'F');
+            doc.setTextColor(255, 255, 255);
+            doc.setFontSize(14);
+            doc.text('END OF DAY REFLECTION', 20, y + 6);
+            y += 15;
+
+            doc.setTextColor(0, 0, 0);
+            doc.setFontSize(10);
+            doc.setFont(undefined, 'bold');
+            doc.text(`Rules Adherence: ${document.getElementById('rulesAdherencePercent').value || 'N/A'}%`, 15, y);
+            y += 10;
+
+            const wins = trades.filter(t => t.result === 'win').length;
+            const losses = trades.filter(t => t.result === 'loss').length;
+            doc.text(`Trades: ${trades.length} | Wins: ${wins} | Losses: ${losses}`, 15, y);
+            y += 10;
+
+            const biggestWin = document.getElementById('biggestWin').value;
+            if (biggestWin) {
+                doc.setFont(undefined, 'bold');
+                doc.text('Biggest Win:', 15, y);
+                doc.setFont(undefined, 'normal');
+                const winText = doc.splitTextToSize(biggestWin, 160);
+                doc.text(winText, 15, y + 5);
+                y += (winText.length * 5) + 8;
+            }
+
+            const planTomorrow = document.getElementById('planTomorrow').value;
+            if (planTomorrow) {
+                doc.setFont(undefined, 'bold');
+                doc.text('Plan for Tomorrow:', 15, y);
+                doc.setFont(undefined, 'normal');
+                const planText = doc.splitTextToSize(planTomorrow, 160);
+                doc.text(planText, 15, y + 5);
+                y += (planText.length * 5) + 10;
+            }
+
+            // Footer
+            doc.addPage();
+            doc.setFontSize(10);
+            doc.setTextColor(100, 100, 100);
+            doc.text('Generated by Trading Psychology Protocol App', 105, 280, { align: 'center' });
+            doc.text('Dr. Ellis Hartwin - Clinical Psychiatrist & Trading Psychology Specialist', 105, 285, { align: 'center' });
+
+            doc.save(`Complete-Day-Report-${currentSession.date}.pdf`);
+        }
+
+        function exportTodayPDF() {
+            // Legacy function - calls the complete day PDF
+            exportCompleteDayPDF();
         }
 
         // Initialize app
