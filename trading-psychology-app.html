@@ -1092,7 +1092,7 @@
         <div class="nav-tabs">
             <button class="nav-tab active" onclick="switchTab('dashboard')">Dashboard</button>
             <button class="nav-tab" onclick="switchTab('sunday-prep')">Sunday Prep</button>
-            <button class="nav-tab" onclick="switchTab('pre-market')">Pre-Market</button>
+            <button class="nav-tab" onclick="switchTab('post-market')">Post-Market Review</button>
             <button class="nav-tab" onclick="switchTab('trade-entry')">Trade Entry</button>
             <button class="nav-tab" onclick="switchTab('end-of-day')">End of Day</button>
             <button class="nav-tab" onclick="switchTab('history')">History</button>
@@ -1186,9 +1186,9 @@
 
             <div class="section">
                 <h2>Today's Actions</h2>
-                <button class="btn btn-primary" onclick="switchTab('pre-market')">Start Pre-Market Analysis</button>
                 <button class="btn btn-success" onclick="switchTab('trade-entry')">Enter Trade</button>
                 <button class="btn btn-secondary" onclick="switchTab('end-of-day')">End of Day Review</button>
+                <button class="btn btn-primary" onclick="switchTab('post-market')">Evening Post-Market Review</button>
             </div>
         </div>
 
@@ -1359,13 +1359,13 @@
         </div>
 
         <!-- Pre-Market Tab -->
-        <div id="pre-market" class="tab-content">
+        <div id="post-market" class="tab-content">
             <div class="alert alert-info">
-                <strong>Important:</strong> Complete all sections before looking at charts. This is your foundation for the day.
+                <strong>Evening Analysis:</strong> Complete this after the trading day ends. Review today's market action and prepare for tomorrow. (Use Monday's review for Tuesday's trading, etc.)
             </div>
 
             <div class="section">
-                <h2>Morning Mental State Check ⏰ (15 minutes minimum)</h2>
+                <h2>Post-Market Reflection ⏰ (15 minutes minimum)</h2>
                 <div class="timer-display" id="mentalCheckTimer">Timer: 00:00</div>
                 <button class="btn btn-primary" id="startMentalCheckTimer" onclick="startTimer('mentalCheck', 900)">Start 15-Minute Timer</button>
 
@@ -1409,19 +1409,19 @@
             </div>
 
             <div class="section">
-                <h2>Previous Day Review</h2>
+                <h2>Today's Trading Review</h2>
                 <div class="form-group">
-                    <label>What Worked Yesterday</label>
-                    <textarea id="whatWorked" placeholder="Successes from yesterday"></textarea>
+                    <label>What Worked Today</label>
+                    <textarea id="whatWorked" placeholder="Successes from today's session"></textarea>
                 </div>
                 <div class="form-group">
-                    <label>What Didn't Work Yesterday</label>
-                    <textarea id="whatDidntWork" placeholder="Mistakes or areas to improve"></textarea>
+                    <label>What Didn't Work Today</label>
+                    <textarea id="whatDidntWork" placeholder="Mistakes or areas to improve from today"></textarea>
                 </div>
             </div>
 
             <div class="section">
-                <h2>Pre-Market Technical Analysis ⏰ (15 minutes minimum)</h2>
+                <h2>Market Analysis for Tomorrow ⏰ (15 minutes minimum)</h2>
                 <div class="timer-display" id="technicalAnalysisTimer">Timer: 00:00</div>
                 <button class="btn btn-primary" id="startTechnicalTimer" onclick="startTimer('technical', 900)">Start 15-Minute Timer</button>
 
@@ -1452,8 +1452,8 @@
                 </div>
 
                 <div class="form-group">
-                    <label>Today's Trading Plan</label>
-                    <textarea id="tradingPlan" placeholder="What setups am I watching? What's my bias?" required></textarea>
+                    <label>Tomorrow's Trading Plan</label>
+                    <textarea id="tradingPlan" placeholder="What setups to watch tomorrow? What's my bias for tomorrow?" required></textarea>
                 </div>
 
                 <div class="inline-group">
@@ -1462,17 +1462,17 @@
                         <input type="number" id="maxRiskPerTrade" step="0.01" required>
                     </div>
                     <div class="form-group">
-                        <label>Max Total Risk Today ($)</label>
+                        <label>Max Total Risk Tomorrow ($)</label>
                         <input type="number" id="maxTotalRisk" step="0.01" required>
                     </div>
                     <div class="form-group">
-                        <label>Max Trades Allowed Today</label>
+                        <label>Max Trades Allowed Tomorrow</label>
                         <input type="number" id="maxTrades" value="2" min="1" max="2" readonly>
                     </div>
                 </div>
 
                 <div class="screenshot-upload-section">
-                    <h3>📊 Pre-Market Chart Screenshots</h3>
+                    <h3>📊 Post-Market Chart Analysis Screenshots</h3>
                     <div class="file-input-wrapper">
                         <input type="file" id="preMarketScreenshots" accept="image/*" multiple onchange="handleScreenshotUpload(event, 'preMarket')">
                         <label for="preMarketScreenshots" class="file-input-label">
@@ -1483,14 +1483,14 @@
                 </div>
             </div>
 
-            <button class="btn btn-success" onclick="savePreMarket()">Save Pre-Market Analysis</button>
-            <button class="btn btn-primary" onclick="exportPreMarketPDF()">📄 Export Pre-Market PDF</button>
+            <button class="btn btn-success" onclick="savePostMarket()">💾 Save Post-Market Review</button>
+            <button class="btn btn-primary" onclick="exportPostMarketPDF()">📄 Export Post-Market PDF</button>
         </div>
 
         <!-- Trade Entry Tab -->
         <div id="trade-entry" class="tab-content">
-            <div id="preMarketCheck" class="alert alert-warning">
-                <strong>⚠️ Pre-Market Check Required!</strong> Complete your pre-market analysis before entering trades. (Or disable pre-market in Settings to use Sunday levels)
+            <div id="postMarketCheck" class="alert alert-info hidden">
+                <strong>💡 Tip:</strong> For better results, complete yesterday's Post-Market Review for today's trading plan. (Or use Sunday levels if no review available)
             </div>
 
             <div id="circuitBreakerBlock" class="hidden">
@@ -1905,16 +1905,16 @@
                     <div style="background: rgba(21, 27, 40, 0.6); padding: 20px; border-radius: 3px; margin-bottom: 15px;">
                         <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px;">
                             <div>
-                                <label style="font-size: 14px; color: #c9d1d9; font-weight: 600; margin-bottom: 5px; display: block;">Enable Pre-Market Analysis</label>
-                                <p style="font-size: 12px; color: #8b949e; margin: 0;">Toggle if you can trade before 9:00 AM</p>
+                                <label style="font-size: 14px; color: #c9d1d9; font-weight: 600; margin-bottom: 5px; display: block;">Enable Post-Market Review</label>
+                                <p style="font-size: 12px; color: #8b949e; margin: 0;">Evening analysis for tomorrow's trading</p>
                             </div>
                             <label class="toggle-switch">
-                                <input type="checkbox" id="preMarketToggle" onchange="togglePreMarket()" checked>
+                                <input type="checkbox" id="postMarketToggle" onchange="togglePostMarket()" checked>
                                 <span class="toggle-slider"></span>
                             </label>
                         </div>
                         <div class="alert alert-info" style="margin-top: 15px; margin-bottom: 0;">
-                            <strong>Note:</strong> When disabled, the Pre-Market tab will be hidden from the navigation. This is useful if you drop your daughter off at 9 AM and can't analyze markets before then.
+                            <strong>Post-Market Review:</strong> Complete this in the evening after trading. Review today's action and analyze charts for tomorrow. Monday's review prepares you for Tuesday, Tuesday's for Wednesday, etc. When disabled, this tab is hidden - just use Sunday levels all week.
                         </div>
                     </div>
                 </div>
@@ -1972,7 +1972,7 @@
             eod: []
         };
         let appSettings = {
-            preMarketEnabled: true
+            postMarketEnabled: true
         };
 
         // Image compression function for PDFs
@@ -2019,36 +2019,30 @@
         }
 
         function applySettings() {
-            // Show/hide pre-market tab
-            const preMarketTab = document.querySelector('[onclick="switchTab(\'pre-market\')"]');
-            if (preMarketTab) {
-                preMarketTab.style.display = appSettings.preMarketEnabled ? '' : 'none';
+            // Show/hide post-market tab
+            const postMarketTab = document.querySelector('[onclick="switchTab(\'post-market\')"]');
+            if (postMarketTab) {
+                postMarketTab.style.display = appSettings.postMarketEnabled ? '' : 'none';
             }
 
-            // Show/hide quick start session on dashboard
-            const quickStartSection = document.getElementById('quickStartSession');
+            // Quick start is always shown now since post-market is optional
+            const quickStartSection = document.getElementById('quickStartSection');
             if (quickStartSection) {
-                quickStartSection.style.display = appSettings.preMarketEnabled ? 'none' : 'block';
-            }
-
-            // Update dashboard button visibility
-            const preMarketButton = document.querySelector('[onclick="switchTab(\'pre-market\')"]');
-            if (preMarketButton && preMarketButton.textContent.includes('Start Pre-Market')) {
-                preMarketButton.style.display = appSettings.preMarketEnabled ? '' : 'none';
+                quickStartSection.style.display = 'none'; // Never show - we start trading immediately with Sunday levels
             }
         }
 
-        function togglePreMarket() {
-            appSettings.preMarketEnabled = !appSettings.preMarketEnabled;
+        function togglePostMarket() {
+            appSettings.postMarketEnabled = !appSettings.postMarketEnabled;
             saveSettings();
 
-            // If we're on pre-market tab and it's being disabled, switch to dashboard
+            // If we're on post-market tab and it's being disabled, switch to dashboard
             const activeTab = document.querySelector('.tab-content.active');
-            if (activeTab && activeTab.id === 'pre-market' && !appSettings.preMarketEnabled) {
+            if (activeTab && activeTab.id === 'post-market' && !appSettings.postMarketEnabled) {
                 switchTab('dashboard');
             }
 
-            document.getElementById('preMarketToggle').checked = appSettings.preMarketEnabled;
+            document.getElementById('postMarketToggle').checked = appSettings.postMarketEnabled;
         }
 
         // Screenshot handling functions
@@ -2395,9 +2389,10 @@
             doc.save(`Sunday-Prep-${dateStr}.pdf`);
         }
 
-        async function exportPreMarketPDF() {
-            if (!currentSession) {
-                alert('No pre-market session data available. Complete pre-market analysis first.');
+        async function exportPostMarketPDF() {
+            const date = document.getElementById('sessionDate').value;
+            if (!date) {
+                alert('Please enter a date for the post-market review.');
                 return;
             }
 
@@ -2410,7 +2405,7 @@
             doc.setTextColor(0, 255, 255);
             doc.setFontSize(22);
             doc.setFont(undefined, 'bold');
-            doc.text('PRE-MARKET ANALYSIS', 105, 15, { align: 'center' });
+            doc.text('POST-MARKET REVIEW', 105, 15, { align: 'center' });
             doc.setFontSize(12);
             doc.setTextColor(255, 0, 255);
             doc.text('Dr. Ellis Hartwin - Trading Psychology Protocol', 105, 25, { align: 'center' });
@@ -2560,7 +2555,7 @@
                 }
             }
 
-            doc.save(`Pre-Market-${currentSession.date}.pdf`);
+            doc.save(`Post-Market-Review-${date}.pdf`);
         }
 
         async function exportEndOfDayPDF() {
@@ -2884,7 +2879,7 @@
             if (tabName === 'dashboard') updateDashboard();
             if (tabName === 'statistics') updateStatistics();
             if (tabName === 'history') loadHistory();
-            if (tabName === 'trade-entry') checkPreMarketComplete();
+            if (tabName === 'trade-entry') checkPostMarketInfo();
         }
 
         // Timer functionality
@@ -3002,21 +2997,12 @@
             updateDashboard();
         }
 
-        function savePreMarket() {
+        function savePostMarket() {
             const emotionalState = parseInt(document.getElementById('emotionalState').value);
-
-            if (emotionalState >= 7) {
-                alert('❌ Cannot proceed with trading. Your emotional state is too high. Take the day off.');
-                return;
-            }
-
             const sobriety = document.getElementById('sobrietyStatus').value;
-            if (sobriety === 'concern') {
-                alert('❌ Cannot proceed with trading. Sobriety concerns noted. Take the day off.');
-                return;
-            }
 
-            currentSession = {
+            // Store post-market analysis for tomorrow
+            const postMarketData = {
                 date: document.getElementById('sessionDate').value,
                 sleepHours: document.getElementById('sleepHours').value,
                 emotionalState: emotionalState,
@@ -3032,33 +3018,26 @@
                 maxRiskPerTrade: document.getElementById('maxRiskPerTrade').value,
                 maxTotalRisk: document.getElementById('maxTotalRisk').value,
                 maxTrades: document.getElementById('maxTrades').value,
-                trades: [],
-                preMarketComplete: true
+                postMarketComplete: true
             };
 
-            saveData();
-            alert('✅ Pre-market analysis saved! You may now proceed to trade entry.');
+            // Save as a post-market review
+            let postMarketReviews = JSON.parse(localStorage.getItem('postMarketReviews') || '[]');
+            const existingIndex = postMarketReviews.findIndex(r => r.date === postMarketData.date);
+            if (existingIndex >= 0) {
+                postMarketReviews[existingIndex] = postMarketData;
+            } else {
+                postMarketReviews.push(postMarketData);
+            }
+            localStorage.setItem('postMarketReviews', JSON.stringify(postMarketReviews));
+
+            alert('✅ Post-market review saved! This analysis will be used for tomorrow\'s trading.');
             switchTab('dashboard');
         }
 
-        // Check if pre-market is complete
-        function checkPreMarketComplete() {
-            const alert = document.getElementById('preMarketCheck');
-
-            // If pre-market is disabled, bypass the check
-            if (!appSettings.preMarketEnabled) {
-                alert.classList.add('hidden');
-                checkCircuitBreakers();
-                return;
-            }
-
-            // Otherwise check if pre-market was completed
-            if (currentSession && currentSession.preMarketComplete) {
-                alert.classList.add('hidden');
-            } else {
-                alert.classList.remove('hidden');
-            }
-
+        // Post-market is optional - just show helpful tip if available
+        function checkPostMarketInfo() {
+            // Post-market review is optional, so we just check circuit breakers
             checkCircuitBreakers();
         }
 
@@ -3095,16 +3074,9 @@
 
         // Submit trade
         function submitTrade() {
-            // If pre-market is enabled, require it to be complete
-            if (appSettings.preMarketEnabled && (!currentSession || !currentSession.preMarketComplete)) {
-                alert('❌ You must complete pre-market analysis first!');
-                switchTab('pre-market');
-                return;
-            }
-
-            // If pre-market is disabled, just need a session (from dashboard mental check)
-            if (!appSettings.preMarketEnabled && !currentSession) {
-                alert('❌ Please complete the Morning Mental State Check on the Dashboard first!');
+            // Just need to have started trading day (quick start or post-market)
+            if (!currentSession) {
+                alert('❌ Please start your trading day first! Complete the "Start Trading Day" section on the Dashboard.');
                 switchTab('dashboard');
                 return;
             }
@@ -3347,29 +3319,18 @@
             if (todaySession) {
                 const trades = todaySession.trades || [];
 
-                // Determine if ready to trade
-                const readyToTrade = appSettings.preMarketEnabled
-                    ? todaySession.preMarketComplete
-                    : true; // If pre-market disabled, always ready after mental check
+                // Check if there was a post-market review from yesterday
+                const yesterday = new Date();
+                yesterday.setDate(yesterday.getDate() - 1);
+                const yesterdayStr = yesterday.toISOString().split('T')[0];
+                const postMarketReviews = JSON.parse(localStorage.getItem('postMarketReviews') || '[]');
+                const yesterdayReview = postMarketReviews.find(r => r.date === yesterdayStr);
 
-                let statusHTML = '';
-
-                // Only show pre-market status if it's enabled
-                if (appSettings.preMarketEnabled) {
-                    statusHTML += `
-                        <div class="protocol-status">
-                            <span><span class="status-indicator ${todaySession.preMarketComplete ? 'green' : 'red'}"></span>Pre-Market Analysis</span>
-                            <span>${todaySession.preMarketComplete ? 'Complete' : 'Not Complete'}</span>
-                        </div>`;
-                } else {
-                    statusHTML += `
-                        <div class="protocol-status">
-                            <span><span class="status-indicator green"></span>Using Sunday Levels</span>
-                            <span>Pre-Market Disabled</span>
-                        </div>`;
-                }
-
-                statusHTML += `
+                let statusHTML = `
+                    <div class="protocol-status">
+                        <span><span class="status-indicator ${yesterdayReview ? 'green' : 'yellow'}"></span>Yesterday's Post-Market Review</span>
+                        <span>${yesterdayReview ? 'Available' : 'Using Sunday Levels'}</span>
+                    </div>
                     <div class="protocol-status">
                         <span><span class="status-indicator ${trades.length > 0 ? 'green' : 'yellow'}"></span>Trades Today</span>
                         <span>${trades.length} / ${todaySession.maxTrades || 2}</span>
