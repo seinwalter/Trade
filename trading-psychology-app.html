@@ -1485,6 +1485,7 @@
 
             <button class="btn btn-success" onclick="savePostMarket()">💾 Save Post-Market Review</button>
             <button class="btn btn-primary" onclick="exportPostMarketPDF()">📄 Export Post-Market PDF</button>
+            <button class="btn btn-secondary" onclick="viewPastPostMarket()">📜 View Past Post-Market Reviews</button>
         </div>
 
         <!-- Trade Entry Tab -->
@@ -2396,6 +2397,22 @@
                 return;
             }
 
+            // Get data from form fields
+            const sleepHours = document.getElementById('sleepHours').value;
+            const emotionalState = document.getElementById('emotionalState').value;
+            const stressLevel = document.getElementById('stressLevel').value;
+            const sobrietyStatus = document.getElementById('sobrietyStatus').value;
+            const obligations = document.getElementById('obligations').value;
+            const whatWorked = document.getElementById('whatWorked').value;
+            const whatDidntWork = document.getElementById('whatDidntWork').value;
+            const dailyTrend = document.getElementById('dailyTrend').value;
+            const fourHourStructure = document.getElementById('fourHourStructure').value;
+            const keyLevels = document.getElementById('keyLevels').value;
+            const tradingPlan = document.getElementById('tradingPlan').value;
+            const maxRiskPerTrade = document.getElementById('maxRiskPerTrade').value;
+            const maxTotalRisk = document.getElementById('maxTotalRisk').value;
+            const maxTrades = document.getElementById('maxTrades').value;
+
             const { jsPDF } = window.jspdf;
             const doc = new jsPDF();
 
@@ -2418,7 +2435,7 @@
             doc.setTextColor(0, 0, 0);
             doc.setFontSize(11);
             doc.setFont(undefined, 'bold');
-            doc.text(`Date: ${currentSession.date}`, 15, y);
+            doc.text(`Date: ${date}`, 15, y);
             y += 10;
 
             doc.setFillColor(255, 170, 0);
@@ -2431,23 +2448,23 @@
             doc.setTextColor(0, 0, 0);
             doc.setFontSize(10);
             doc.setFont(undefined, 'bold');
-            doc.text(`Sleep: ${currentSession.sleepHours} hrs`, 15, y);
-            doc.text(`Emotional State: ${currentSession.emotionalState}/10`, 80, y);
-            doc.text(`Stress: ${currentSession.stressLevel}/10`, 145, y);
+            doc.text(`Sleep: ${sleepHours} hrs`, 15, y);
+            doc.text(`Emotional State: ${emotionalState}/10`, 80, y);
+            doc.text(`Stress: ${stressLevel}/10`, 145, y);
             y += 7;
 
             doc.text('Sobriety:', 15, y);
             doc.setFont(undefined, 'normal');
-            doc.text(currentSession.sobrietyStatus, 40, y);
+            doc.text(sobrietyStatus, 40, y);
             y += 10;
 
-            if (currentSession.obligations) {
+            if (obligations) {
                 doc.setFont(undefined, 'bold');
                 doc.text('Obligations:', 15, y);
                 doc.setFont(undefined, 'normal');
-                const obligations = doc.splitTextToSize(currentSession.obligations, 160);
-                doc.text(obligations, 15, y + 5);
-                y += (obligations.length * 5) + 10;
+                const obligationsText = doc.splitTextToSize(obligations, 160);
+                doc.text(obligationsText, 15, y + 5);
+                y += (obligationsText.length * 5) + 10;
             }
 
             // Previous Day Review
@@ -2460,20 +2477,20 @@
 
             doc.setTextColor(0, 0, 0);
             doc.setFontSize(10);
-            if (currentSession.whatWorked) {
+            if (whatWorked) {
                 doc.setFont(undefined, 'bold');
                 doc.text('What Worked:', 15, y);
                 doc.setFont(undefined, 'normal');
-                const worked = doc.splitTextToSize(currentSession.whatWorked, 160);
+                const worked = doc.splitTextToSize(whatWorked, 160);
                 doc.text(worked, 15, y + 5);
                 y += (worked.length * 5) + 10;
             }
 
-            if (currentSession.whatDidntWork) {
+            if (whatDidntWork) {
                 doc.setFont(undefined, 'bold');
                 doc.text('What Didn\'t Work:', 15, y);
                 doc.setFont(undefined, 'normal');
-                const didntWork = doc.splitTextToSize(currentSession.whatDidntWork, 160);
+                const didntWork = doc.splitTextToSize(whatDidntWork, 160);
                 doc.text(didntWork, 15, y + 5);
                 y += (didntWork.length * 5) + 10;
             }
@@ -2496,39 +2513,39 @@
             doc.setFont(undefined, 'bold');
             doc.text('Daily Trend:', 15, y);
             doc.setFont(undefined, 'normal');
-            doc.text(currentSession.dailyTrend || 'N/A', 60, y);
+            doc.text(dailyTrend || 'N/A', 60, y);
             y += 7;
 
             doc.setFont(undefined, 'bold');
             doc.text('4hr Structure:', 15, y);
             doc.setFont(undefined, 'normal');
-            doc.text(currentSession.fourHourStructure || 'N/A', 60, y);
+            doc.text(fourHourStructure || 'N/A', 60, y);
             y += 10;
 
             doc.setFont(undefined, 'bold');
             doc.text('Key Levels:', 15, y);
             doc.setFont(undefined, 'normal');
-            const keyLevels = doc.splitTextToSize(currentSession.keyLevels || 'N/A', 160);
-            doc.text(keyLevels, 15, y + 5);
-            y += (keyLevels.length * 5) + 10;
+            const keyLevelsText = doc.splitTextToSize(keyLevels || 'N/A', 160);
+            doc.text(keyLevelsText, 15, y + 5);
+            y += (keyLevelsText.length * 5) + 10;
 
             doc.setFont(undefined, 'bold');
             doc.text('Trading Plan:', 15, y);
             doc.setFont(undefined, 'normal');
-            const tradingPlan = doc.splitTextToSize(currentSession.tradingPlan || 'N/A', 160);
-            doc.text(tradingPlan, 15, y + 5);
-            y += (tradingPlan.length * 5) + 10;
+            const tradingPlanText = doc.splitTextToSize(tradingPlan || 'N/A', 160);
+            doc.text(tradingPlanText, 15, y + 5);
+            y += (tradingPlanText.length * 5) + 10;
 
             // Risk Management
             doc.setFont(undefined, 'bold');
             doc.text('Risk Management:', 15, y);
             y += 7;
             doc.setFont(undefined, 'normal');
-            doc.text(`Max Risk/Trade: $${currentSession.maxRiskPerTrade}`, 15, y);
+            doc.text(`Max Risk/Trade: $${maxRiskPerTrade}`, 15, y);
             y += 5;
-            doc.text(`Max Total Risk: $${currentSession.maxTotalRisk}`, 15, y);
+            doc.text(`Max Total Risk: $${maxTotalRisk}`, 15, y);
             y += 5;
-            doc.text(`Max Trades: ${currentSession.maxTrades}`, 15, y);
+            doc.text(`Max Trades: ${maxTrades}`, 15, y);
             y += 10;
 
             // Add screenshots
@@ -3296,6 +3313,65 @@
 
             closeModal();
             switchTab('sunday-prep');
+        }
+
+        function viewPastPostMarket() {
+            const postMarketReviews = JSON.parse(localStorage.getItem('postMarketReviews') || '[]');
+
+            if (postMarketReviews.length === 0) {
+                alert('No past post-market reviews found.');
+                return;
+            }
+
+            const content = document.getElementById('tradeDetailContent');
+            content.innerHTML = `
+                <div class="section">
+                    <h2>Past Post-Market Reviews</h2>
+                    ${postMarketReviews.slice().reverse().map(review => `
+                        <div class="log-entry" onclick="loadPostMarketReview('${review.date}')">
+                            <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                                <strong>Date: ${review.date}</strong>
+                                <span>Emotional State: ${review.emotionalState}/10</span>
+                            </div>
+                            <div style="color: #b0b0b0;">
+                                Daily: ${review.dailyTrend || 'N/A'} | 4hr: ${review.fourHourStructure || 'N/A'}
+                            </div>
+                            <div style="color: #8b949e; font-size: 12px; margin-top: 4px;">
+                                ${review.tradingPlan ? review.tradingPlan.substring(0, 80) + '...' : 'No trading plan'}
+                            </div>
+                        </div>
+                    `).join('')}
+                </div>
+            `;
+
+            document.getElementById('tradeDetailModal').classList.add('active');
+        }
+
+        function loadPostMarketReview(date) {
+            const postMarketReviews = JSON.parse(localStorage.getItem('postMarketReviews') || '[]');
+            const review = postMarketReviews.find(r => r.date === date);
+
+            if (!review) return;
+
+            // Fill in all the fields
+            document.getElementById('sessionDate').value = review.date;
+            document.getElementById('sleepHours').value = review.sleepHours || '';
+            document.getElementById('emotionalState').value = review.emotionalState || '';
+            document.getElementById('stressLevel').value = review.stressLevel || '';
+            document.getElementById('sobrietyStatus').value = review.sobrietyStatus || '';
+            document.getElementById('obligations').value = review.obligations || '';
+            document.getElementById('whatWorked').value = review.whatWorked || '';
+            document.getElementById('whatDidntWork').value = review.whatDidntWork || '';
+            document.getElementById('dailyTrend').value = review.dailyTrend || '';
+            document.getElementById('fourHourStructure').value = review.fourHourStructure || '';
+            document.getElementById('keyLevels').value = review.keyLevels || '';
+            document.getElementById('tradingPlan').value = review.tradingPlan || '';
+            document.getElementById('maxRiskPerTrade').value = review.maxRiskPerTrade || '';
+            document.getElementById('maxTotalRisk').value = review.maxTotalRisk || '';
+            document.getElementById('maxTrades').value = review.maxTrades || '';
+
+            closeModal();
+            switchTab('post-market');
         }
 
         // Load/Save data
