@@ -1801,8 +1801,9 @@
                 <div id="phaseProgressDetails"></div>
             </div>
 
-            <button class="btn btn-primary" onclick="exportAllData()">Export All Data</button>
-            <button class="btn btn-danger" onclick="clearAllData()">Clear All Data</button>
+            <button class="btn btn-primary" onclick="exportAllData()">💾 Export Complete Backup</button>
+            <button class="btn btn-success" onclick="importAllData()">📥 Import Backup</button>
+            <button class="btn btn-danger" onclick="clearAllData()">🗑️ Clear All Data</button>
         </div>
     </div>
 
@@ -3306,19 +3307,69 @@
         }
 
         function exportAllData() {
+            const sundayPreps = JSON.parse(localStorage.getItem('sundayPreps') || '[]');
+
             const data = {
                 sessions: allSessions,
                 trades: allTrades,
-                exportDate: new Date().toISOString()
+                screenshots: screenshots,
+                sundayPreps: sundayPreps,
+                currentSession: currentSession,
+                exportDate: new Date().toISOString(),
+                version: '1.0'
             };
 
             const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = url;
-            a.download = `trading-psychology-data-${new Date().toISOString().split('T')[0]}.json`;
+            a.download = `trading-psychology-FULL-BACKUP-${new Date().toISOString().split('T')[0]}.json`;
             a.click();
             URL.revokeObjectURL(url);
+
+            alert('✅ Complete backup exported!\n\nThis file contains:\n- All sessions\n- All trades\n- All screenshots\n- All Sunday preps\n- Current session\n\nSave this file to restore your data later.');
+        }
+
+        function importAllData() {
+            const input = document.createElement('input');
+            input.type = 'file';
+            input.accept = '.json';
+
+            input.onchange = function(e) {
+                const file = e.target.files[0];
+                if (!file) return;
+
+                const reader = new FileReader();
+                reader.onload = function(event) {
+                    try {
+                        const data = JSON.parse(event.target.result);
+
+                        if (confirm('⚠️ This will replace ALL current data with the backup.\n\nAre you sure?')) {
+                            // Restore all data
+                            if (data.sessions) allSessions = data.sessions;
+                            if (data.trades) allTrades = data.trades;
+                            if (data.screenshots) screenshots = data.screenshots;
+                            if (data.currentSession) currentSession = data.currentSession;
+
+                            // Save to localStorage
+                            saveData();
+                            saveScreenshots();
+
+                            if (data.sundayPreps) {
+                                localStorage.setItem('sundayPreps', JSON.stringify(data.sundayPreps));
+                            }
+
+                            alert('✅ Data restored successfully!\n\nReloading page...');
+                            location.reload();
+                        }
+                    } catch (error) {
+                        alert('❌ Error importing data: ' + error.message);
+                    }
+                };
+                reader.readAsText(file);
+            };
+
+            input.click();
         }
 
         function clearAllData() {
