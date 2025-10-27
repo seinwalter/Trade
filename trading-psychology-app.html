@@ -3031,7 +3031,14 @@
             }
             localStorage.setItem('postMarketReviews', JSON.stringify(postMarketReviews));
 
-            alert('✅ Post-market review saved! This analysis will be used for tomorrow\'s trading.');
+            // Clear old post-market screenshots (daily reset for new analysis)
+            screenshots.preMarket = []; // Note: preMarket category is used for post-market screenshots
+            saveScreenshots();
+
+            // Clear screenshot display grid
+            displayScreenshots('preMarket');
+
+            alert('✅ Post-market review saved! This analysis will be used for tomorrow\'s trading.\n\nPrevious post-market screenshots have been cleared.');
             switchTab('dashboard');
         }
 
@@ -3217,7 +3224,17 @@
             }
 
             localStorage.setItem('sundayPreps', JSON.stringify(sundayPreps));
-            alert('✅ Sunday research saved!\n\nYour weekly plan is ready. Reference this throughout the week.');
+
+            // Clear old Sunday screenshots (weekly reset)
+            screenshots.sundayDaily = [];
+            screenshots.sunday4hr = [];
+            saveScreenshots();
+
+            // Also clear screenshot display grids
+            displayScreenshots('sundayDaily');
+            displayScreenshots('sunday4hr');
+
+            alert('✅ Sunday research saved!\n\nYour weekly plan is ready. Previous week\'s Sunday screenshots have been cleared. Reference this throughout the week.');
         }
 
         function viewPastSundayPrep() {
