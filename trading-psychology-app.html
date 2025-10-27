@@ -1105,6 +1105,42 @@
         <div id="dashboard" class="tab-content active">
             <div id="circuitBreakerAlert"></div>
 
+            <!-- Start Trading Day (only shown when pre-market is disabled) -->
+            <div id="quickStartSession" class="section" style="display: none;">
+                <h2>Start Trading Day</h2>
+                <p style="margin-bottom: 15px; color: #8b949e;">Complete your mental state check to begin trading. (Using Sunday levels)</p>
+
+                <div class="inline-group">
+                    <div class="form-group">
+                        <label>Sleep Hours</label>
+                        <input type="number" id="dashboardSleepHours" step="0.5" min="0" max="12" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Emotional State (1-10)</label>
+                        <input type="number" id="dashboardEmotionalState" min="1" max="10" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Stress Level (1-10)</label>
+                        <input type="number" id="dashboardStressLevel" min="1" max="10" required>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Sobriety Status</label>
+                    <select id="dashboardSobrietyStatus" required>
+                        <option value="">Select...</option>
+                        <option value="clear">Confirmed - Clear minded</option>
+                        <option value="concern">Have concerns - Should not trade</option>
+                    </select>
+                </div>
+
+                <div id="dashboardEmotionalWarning" class="alert alert-danger hidden">
+                    <strong>⚠️ TRADING PROHIBITED!</strong> Your emotional state is 7/10 or higher. Do NOT trade today.
+                </div>
+
+                <button class="btn btn-success" onclick="saveQuickStartSession()">✅ Start Trading Day</button>
+            </div>
+
             <div class="section">
                 <h2>Today's Session Status</h2>
                 <div id="todayStatus"></div>
@@ -1454,7 +1490,7 @@
         <!-- Trade Entry Tab -->
         <div id="trade-entry" class="tab-content">
             <div id="preMarketCheck" class="alert alert-warning">
-                <strong>⚠️ Pre-Market Check Required!</strong> Complete your pre-market analysis before entering trades.
+                <strong>⚠️ Pre-Market Check Required!</strong> Complete your pre-market analysis before entering trades. (Or disable pre-market in Settings to use Sunday levels)
             </div>
 
             <div id="circuitBreakerBlock" class="hidden">
@@ -1983,9 +2019,22 @@
         }
 
         function applySettings() {
+            // Show/hide pre-market tab
             const preMarketTab = document.querySelector('[onclick="switchTab(\'pre-market\')"]');
             if (preMarketTab) {
                 preMarketTab.style.display = appSettings.preMarketEnabled ? '' : 'none';
+            }
+
+            // Show/hide quick start session on dashboard
+            const quickStartSection = document.getElementById('quickStartSession');
+            if (quickStartSection) {
+                quickStartSection.style.display = appSettings.preMarketEnabled ? 'none' : 'block';
+            }
+
+            // Update dashboard button visibility
+            const preMarketButton = document.querySelector('[onclick="switchTab(\'pre-market\')"]');
+            if (preMarketButton && preMarketButton.textContent.includes('Start Pre-Market')) {
+                preMarketButton.style.display = appSettings.preMarketEnabled ? '' : 'none';
             }
         }
 
@@ -2814,6 +2863,7 @@
 
             // Add listeners for emotional state warning
             document.getElementById('emotionalState').addEventListener('input', checkEmotionalState);
+            document.getElementById('dashboardEmotionalState').addEventListener('input', checkDashboardEmotionalState);
 
             // Add listeners for R:R calculation
             document.getElementById('tradeRiskAmount').addEventListener('input', calculateRR);
@@ -2888,6 +2938,17 @@
             }
         }
 
+        function checkDashboardEmotionalState() {
+            const state = parseInt(document.getElementById('dashboardEmotionalState').value);
+            const warning = document.getElementById('dashboardEmotionalWarning');
+
+            if (state >= 7) {
+                warning.classList.remove('hidden');
+            } else {
+                warning.classList.add('hidden');
+            }
+        }
+
         // Calculate R:R ratio
         function calculateRR() {
             const risk = parseFloat(document.getElementById('tradeRiskAmount').value);
@@ -2900,6 +2961,47 @@
         }
 
         // Save pre-market analysis
+        // Quick start session (when pre-market is disabled)
+        function saveQuickStartSession() {
+            const emotionalState = parseInt(document.getElementById('dashboardEmotionalState').value);
+
+            if (emotionalState >= 7) {
+                document.getElementById('dashboardEmotionalWarning').classList.remove('hidden');
+                alert('❌ Cannot proceed with trading. Your emotional state is too high. Take the day off.');
+                return;
+            } else {
+                document.getElementById('dashboardEmotionalWarning').classList.add('hidden');
+            }
+
+            const sobriety = document.getElementById('dashboardSobrietyStatus').value;
+            if (sobriety === 'concern') {
+                alert('❌ Cannot proceed with trading. Sobriety concerns noted. Take the day off.');
+                return;
+            }
+
+            // Create session with just mental state (using Sunday levels for trading)
+            currentSession = {
+                date: new Date().toISOString().split('T')[0],
+                sleepHours: document.getElementById('dashboardSleepHours').value,
+                emotionalState: emotionalState,
+                stressLevel: document.getElementById('dashboardStressLevel').value,
+                sobrietyStatus: sobriety,
+                dailyTrend: 'See Sunday Prep',
+                fourHourStructure: 'See Sunday Prep',
+                tradingPlan: 'Using Sunday weekly analysis for trading levels',
+                maxRiskPerTrade: 0.5,
+                maxTotalRisk: 1,
+                maxTrades: 2,
+                trades: [],
+                preMarketComplete: false, // Not required when pre-market disabled
+                usingSundayLevels: true
+            };
+
+            saveData();
+            alert('✅ Trading day started! You can now enter trades using your Sunday levels.');
+            updateDashboard();
+        }
+
         function savePreMarket() {
             const emotionalState = parseInt(document.getElementById('emotionalState').value);
 
@@ -2942,6 +3044,15 @@
         // Check if pre-market is complete
         function checkPreMarketComplete() {
             const alert = document.getElementById('preMarketCheck');
+
+            // If pre-market is disabled, bypass the check
+            if (!appSettings.preMarketEnabled) {
+                alert.classList.add('hidden');
+                checkCircuitBreakers();
+                return;
+            }
+
+            // Otherwise check if pre-market was completed
             if (currentSession && currentSession.preMarketComplete) {
                 alert.classList.add('hidden');
             } else {
@@ -2984,9 +3095,17 @@
 
         // Submit trade
         function submitTrade() {
-            if (!currentSession || !currentSession.preMarketComplete) {
+            // If pre-market is enabled, require it to be complete
+            if (appSettings.preMarketEnabled && (!currentSession || !currentSession.preMarketComplete)) {
                 alert('❌ You must complete pre-market analysis first!');
                 switchTab('pre-market');
+                return;
+            }
+
+            // If pre-market is disabled, just need a session (from dashboard mental check)
+            if (!appSettings.preMarketEnabled && !currentSession) {
+                alert('❌ Please complete the Morning Mental State Check on the Dashboard first!');
+                switchTab('dashboard');
                 return;
             }
 
@@ -3227,11 +3346,30 @@
             const statusDiv = document.getElementById('todayStatus');
             if (todaySession) {
                 const trades = todaySession.trades || [];
-                statusDiv.innerHTML = `
-                    <div class="protocol-status">
-                        <span><span class="status-indicator ${todaySession.preMarketComplete ? 'green' : 'red'}"></span>Pre-Market Analysis</span>
-                        <span>${todaySession.preMarketComplete ? 'Complete' : 'Not Complete'}</span>
-                    </div>
+
+                // Determine if ready to trade
+                const readyToTrade = appSettings.preMarketEnabled
+                    ? todaySession.preMarketComplete
+                    : true; // If pre-market disabled, always ready after mental check
+
+                let statusHTML = '';
+
+                // Only show pre-market status if it's enabled
+                if (appSettings.preMarketEnabled) {
+                    statusHTML += `
+                        <div class="protocol-status">
+                            <span><span class="status-indicator ${todaySession.preMarketComplete ? 'green' : 'red'}"></span>Pre-Market Analysis</span>
+                            <span>${todaySession.preMarketComplete ? 'Complete' : 'Not Complete'}</span>
+                        </div>`;
+                } else {
+                    statusHTML += `
+                        <div class="protocol-status">
+                            <span><span class="status-indicator green"></span>Using Sunday Levels</span>
+                            <span>Pre-Market Disabled</span>
+                        </div>`;
+                }
+
+                statusHTML += `
                     <div class="protocol-status">
                         <span><span class="status-indicator ${trades.length > 0 ? 'green' : 'yellow'}"></span>Trades Today</span>
                         <span>${trades.length} / ${todaySession.maxTrades || 2}</span>
@@ -3241,6 +3379,8 @@
                         <span>${todaySession.emotionalState}/10</span>
                     </div>
                 `;
+
+                statusDiv.innerHTML = statusHTML;
 
                 document.getElementById('tradesRemaining').textContent =
                     `${(todaySession.maxTrades || 2) - trades.length} Remaining`;
