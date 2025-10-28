@@ -1657,6 +1657,7 @@
             </div>
 
             <button class="btn btn-success" onclick="submitTrade()">Submit Trade Entry</button>
+            <button class="btn btn-secondary" onclick="viewTodayTrades()">📜 View Today's Trades</button>
             <button class="btn btn-danger" onclick="emergencyExit()">Emergency Exit (Felt Uncomfortable)</button>
         </div>
 
@@ -3121,28 +3122,59 @@
                 return;
             }
 
-            const trade = {
-                id: Date.now(),
-                date: currentSession.date,
-                symbol: document.getElementById('tradeSymbol').value,
-                entryTime: document.getElementById('tradeEntryTime').value,
-                direction: document.getElementById('tradeDirection').value,
-                thesis: document.getElementById('tradeThesis').value,
-                positionSize: document.getElementById('tradePositionSize').value,
-                entryPrice: document.getElementById('tradeEntryPrice').value,
-                stopLoss: document.getElementById('tradeStopLoss').value,
-                target: document.getElementById('tradeTarget').value,
-                riskAmount: document.getElementById('tradeRiskAmount').value,
-                rewardAmount: document.getElementById('tradeRewardAmount').value,
-                rrRatio: rr,
-                status: 'open'
-            };
+            // Check if we're editing an existing trade
+            const isEditing = window.editingTradeId;
+            let trade;
 
-            currentSession.trades.push(trade);
-            allTrades.push(trade);
+            if (isEditing) {
+                // Update existing trade
+                trade = currentSession.trades.find(t => t.id === window.editingTradeId);
+                if (trade) {
+                    trade.symbol = document.getElementById('tradeSymbol').value;
+                    trade.entryTime = document.getElementById('tradeEntryTime').value;
+                    trade.direction = document.getElementById('tradeDirection').value;
+                    trade.thesis = document.getElementById('tradeThesis').value;
+                    trade.positionSize = document.getElementById('tradePositionSize').value;
+                    trade.entryPrice = document.getElementById('tradeEntryPrice').value;
+                    trade.stopLoss = document.getElementById('tradeStopLoss').value;
+                    trade.target = document.getElementById('tradeTarget').value;
+                    trade.riskAmount = document.getElementById('tradeRiskAmount').value;
+                    trade.rewardAmount = document.getElementById('tradeRewardAmount').value;
+                    trade.rrRatio = rr;
+
+                    // Update in allTrades array too
+                    const allTradeIndex = allTrades.findIndex(t => t.id === window.editingTradeId);
+                    if (allTradeIndex >= 0) {
+                        allTrades[allTradeIndex] = trade;
+                    }
+                }
+                window.editingTradeId = null;
+            } else {
+                // Create new trade
+                trade = {
+                    id: Date.now(),
+                    date: currentSession.date,
+                    symbol: document.getElementById('tradeSymbol').value,
+                    entryTime: document.getElementById('tradeEntryTime').value,
+                    direction: document.getElementById('tradeDirection').value,
+                    thesis: document.getElementById('tradeThesis').value,
+                    positionSize: document.getElementById('tradePositionSize').value,
+                    entryPrice: document.getElementById('tradeEntryPrice').value,
+                    stopLoss: document.getElementById('tradeStopLoss').value,
+                    target: document.getElementById('tradeTarget').value,
+                    riskAmount: document.getElementById('tradeRiskAmount').value,
+                    rewardAmount: document.getElementById('tradeRewardAmount').value,
+                    rrRatio: rr,
+                    status: 'open'
+                };
+
+                currentSession.trades.push(trade);
+                allTrades.push(trade);
+            }
+
             saveData();
 
-            alert('✅ Trade entered successfully!\n\n⏰ 5-Minute Check Reminder:\nIn 5 minutes, check your emotional state.\nIf you feel ANY discomfort, exit immediately.');
+            alert(isEditing ? '✅ Trade updated successfully!' : '✅ Trade entered successfully!\n\n⏰ 5-Minute Check Reminder:\nIn 5 minutes, check your emotional state.\nIf you feel ANY discomfort, exit immediately.');
 
             // Clear form
             document.querySelectorAll('#trade-entry input[type="text"], #trade-entry input[type="number"], #trade-entry textarea, #trade-entry select').forEach(el => {
@@ -3151,6 +3183,173 @@
             checkboxes.forEach(id => document.getElementById(id).checked = false);
 
             switchTab('dashboard');
+        }
+
+        function viewTodayTrades() {
+            if (!currentSession || !currentSession.trades || currentSession.trades.length === 0) {
+                alert('No trades entered today.');
+                return;
+            }
+
+            const content = document.getElementById('tradeDetailContent');
+            content.innerHTML = `
+                <div class="section">
+                    <h2>Today's Trades (${currentSession.date})</h2>
+                    ${currentSession.trades.map((trade, index) => `
+                        <div class="log-entry" style="cursor: pointer;">
+                            <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                                <strong>Trade ${index + 1}: ${trade.symbol} ${trade.direction.toUpperCase()}</strong>
+                                <span>${trade.entryTime}</span>
+                            </div>
+                            <div style="color: #b0b0b0; margin-bottom: 8px;">
+                                Entry: ${trade.entryPrice} | Stop: ${trade.stopLoss} | Target: ${trade.target}
+                            </div>
+                            <div style="color: #8b949e; font-size: 12px; margin-bottom: 8px;">
+                                ${trade.thesis ? trade.thesis.substring(0, 100) + '...' : 'No thesis'}
+                            </div>
+                            <div style="display: flex; gap: 10px;">
+                                <button class="btn btn-secondary" onclick="loadTradeForEdit(${trade.id}); event.stopPropagation();" style="padding: 5px 10px; font-size: 12px;">Edit</button>
+                                <button class="btn btn-primary" onclick="exportTradePDF(${trade.id}); event.stopPropagation();" style="padding: 5px 10px; font-size: 12px;">Export PDF</button>
+                            </div>
+                        </div>
+                    `).join('')}
+                </div>
+            `;
+
+            document.getElementById('tradeDetailModal').classList.add('active');
+        }
+
+        function loadTradeForEdit(tradeId) {
+            const trade = currentSession.trades.find(t => t.id === tradeId);
+            if (!trade) return;
+
+            // Store the trade ID being edited
+            window.editingTradeId = tradeId;
+
+            // Fill in all the fields
+            document.getElementById('tradeSymbol').value = trade.symbol || '';
+            document.getElementById('tradeEntryTime').value = trade.entryTime || '';
+            document.getElementById('tradeDirection').value = trade.direction || '';
+            document.getElementById('tradeThesis').value = trade.thesis || '';
+            document.getElementById('tradePositionSize').value = trade.positionSize || '';
+            document.getElementById('tradeEntryPrice').value = trade.entryPrice || '';
+            document.getElementById('tradeStopLoss').value = trade.stopLoss || '';
+            document.getElementById('tradeTarget').value = trade.target || '';
+            document.getElementById('tradeRiskAmount').value = trade.riskAmount || '';
+            document.getElementById('tradeRewardAmount').value = trade.rewardAmount || '';
+            document.getElementById('tradeRRRatio').value = trade.rrRatio || '';
+
+            closeModal();
+            switchTab('trade-entry');
+
+            alert('Trade loaded for editing. Make your changes and click "Submit Trade Entry" to save.');
+        }
+
+        async function exportTradePDF(tradeId) {
+            const trade = currentSession.trades.find(t => t.id === tradeId);
+            if (!trade) {
+                alert('Trade not found.');
+                return;
+            }
+
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+
+            // Header
+            doc.setFillColor(10, 14, 39);
+            doc.rect(0, 0, 210, 40, 'F');
+            doc.setTextColor(0, 255, 255);
+            doc.setFontSize(22);
+            doc.setFont(undefined, 'bold');
+            doc.text('TRADE ENTRY REPORT', 105, 15, { align: 'center' });
+            doc.setFontSize(12);
+            doc.setTextColor(255, 0, 255);
+            doc.text('Dr. Ellis Hartwin - Trading Psychology Protocol', 105, 25, { align: 'center' });
+            doc.setTextColor(200, 200, 200);
+            doc.text('Patient: Sean', 105, 32, { align: 'center' });
+
+            let y = 50;
+
+            // Trade Details
+            doc.setTextColor(0, 0, 0);
+            doc.setFontSize(11);
+            doc.setFont(undefined, 'bold');
+            doc.text(`Date: ${currentSession.date}`, 15, y);
+            doc.text(`Time: ${trade.entryTime}`, 120, y);
+            y += 10;
+
+            doc.setFillColor(0, 255, 128);
+            doc.rect(15, y, 180, 8, 'F');
+            doc.setTextColor(255, 255, 255);
+            doc.setFontSize(13);
+            doc.text('TRADE SETUP', 20, y + 6);
+            y += 15;
+
+            doc.setTextColor(0, 0, 0);
+            doc.setFontSize(10);
+            doc.setFont(undefined, 'bold');
+            doc.text(`Symbol: ${trade.symbol}`, 15, y);
+            doc.text(`Direction: ${trade.direction.toUpperCase()}`, 120, y);
+            y += 7;
+
+            doc.text(`Position Size: ${trade.positionSize}`, 15, y);
+            y += 7;
+
+            doc.text(`Entry Price: ${trade.entryPrice}`, 15, y);
+            doc.text(`Stop Loss: ${trade.stopLoss}`, 80, y);
+            doc.text(`Target: ${trade.target}`, 145, y);
+            y += 7;
+
+            doc.text(`Risk: $${trade.riskAmount}`, 15, y);
+            doc.text(`Reward: $${trade.rewardAmount}`, 80, y);
+            doc.text(`R:R Ratio: ${trade.rrRatio}`, 145, y);
+            y += 15;
+
+            // Trade Thesis
+            doc.setFillColor(0, 255, 255);
+            doc.rect(15, y, 180, 8, 'F');
+            doc.setTextColor(255, 255, 255);
+            doc.setFontSize(13);
+            doc.text('TRADE THESIS', 20, y + 6);
+            y += 15;
+
+            doc.setTextColor(0, 0, 0);
+            doc.setFontSize(10);
+            doc.setFont(undefined, 'normal');
+            if (trade.thesis) {
+                const thesisText = doc.splitTextToSize(trade.thesis, 180);
+                doc.text(thesisText, 15, y);
+                y += (thesisText.length * 5) + 10;
+            } else {
+                doc.text('No thesis provided', 15, y);
+                y += 10;
+            }
+
+            // Add screenshots if available
+            if (screenshots.trade && screenshots.trade.length > 0) {
+                if (y > 240) {
+                    doc.addPage();
+                    y = 20;
+                }
+                doc.setFont(undefined, 'bold');
+                doc.text('Trade Setup Screenshots:', 15, y);
+                y += 7;
+                for (const screenshot of screenshots.trade) {
+                    if (y > 250) {
+                        doc.addPage();
+                        y = 20;
+                    }
+                    try {
+                        const compressed = await compressImageForPDF(screenshot.data);
+                        doc.addImage(compressed, 'JPEG', 15, y, 80, 60);
+                        y += 65;
+                    } catch (e) {
+                        console.error('Error adding image:', e);
+                    }
+                }
+            }
+
+            doc.save(`Trade-${trade.symbol}-${currentSession.date}-${trade.entryTime.replace(':', '')}.pdf`);
         }
 
         // Emergency exit
