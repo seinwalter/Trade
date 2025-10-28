@@ -3159,6 +3159,13 @@
             document.getElementById('tradeRewardAmount').value = trade.rewardAmount || '';
             document.getElementById('tradeRRRatio').value = trade.rrRatio || '';
 
+            // Restore archived screenshots
+            if (trade.tradeScreenshots && trade.tradeScreenshots.length > 0) {
+                screenshots.trade = [...trade.tradeScreenshots];
+                saveScreenshots();
+                displayScreenshots('trade');
+            }
+
             closeModal();
             switchTab('trade-entry');
 
@@ -3435,8 +3442,22 @@
             document.getElementById('sundayMaxRisk').value = prep.maxRisk;
             document.getElementById('sundaySuccessCriteria').value = prep.successCriteria;
 
+            // Restore archived screenshots
+            if (prep.sundayDailyScreenshots && prep.sundayDailyScreenshots.length > 0) {
+                screenshots.sundayDaily = [...prep.sundayDailyScreenshots];
+                saveScreenshots();
+                displayScreenshots('sundayDaily');
+            }
+            if (prep.sunday4hrScreenshots && prep.sunday4hrScreenshots.length > 0) {
+                screenshots.sunday4hr = [...prep.sunday4hrScreenshots];
+                saveScreenshots();
+                displayScreenshots('sunday4hr');
+            }
+
             closeModal();
             switchTab('sunday-prep');
+
+            alert('Sunday Prep loaded with original screenshots.');
         }
 
         function viewPastPostMarket() {
@@ -3486,10 +3507,17 @@
             document.getElementById('keyLevels').value = review.keyLevels || '';
             document.getElementById('tradingPlan').value = review.tradingPlan || '';
 
+            // Restore archived screenshots
+            if (review.postMarketScreenshots && review.postMarketScreenshots.length > 0) {
+                screenshots.preMarket = [...review.postMarketScreenshots]; // Note: preMarket category is used for post-market screenshots
+                saveScreenshots();
+                displayScreenshots('preMarket');
+            }
+
             closeModal();
             switchTab('post-market');
 
-            alert('Post-Market review loaded for reference.');
+            alert('Post-Market review loaded with original screenshots.');
         }
 
         function viewPastEndOfDay() {
@@ -3549,10 +3577,17 @@
             // Display trades summary
             updateTodayTradesSummary(session);
 
+            // Restore archived screenshots
+            if (session.eodScreenshots && session.eodScreenshots.length > 0) {
+                screenshots.eod = [...session.eodScreenshots];
+                saveScreenshots();
+                displayScreenshots('eod');
+            }
+
             closeModal();
             switchTab('end-of-day');
 
-            alert('End of Day review loaded. This is read-only for reference.');
+            alert('End of Day review loaded with original screenshots.');
         }
 
         function updateTodayTradesSummary(session) {
