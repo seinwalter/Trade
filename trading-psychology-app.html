@@ -2025,12 +2025,6 @@
             if (postMarketTab) {
                 postMarketTab.style.display = appSettings.postMarketEnabled ? '' : 'none';
             }
-
-            // Quick start is always shown now since post-market is optional
-            const quickStartSection = document.getElementById('quickStartSection');
-            if (quickStartSection) {
-                quickStartSection.style.display = 'none'; // Never show - we start trading immediately with Sunday levels
-            }
         }
 
         function togglePostMarket() {
@@ -3406,6 +3400,12 @@
         function updateDashboard() {
             const today = new Date().toISOString().split('T')[0];
             const todaySession = currentSession || allSessions.find(s => s.date === today);
+
+            // Show/hide Start Trading Day section
+            const quickStartSection = document.getElementById('quickStartSession');
+            if (quickStartSection) {
+                quickStartSection.style.display = todaySession ? 'none' : 'block';
+            }
 
             // Today's status
             const statusDiv = document.getElementById('todayStatus');
