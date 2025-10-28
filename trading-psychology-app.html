@@ -3130,6 +3130,7 @@
                             <div style="display: flex; gap: 10px;">
                                 <button class="btn btn-secondary" onclick="loadTradeForEdit(${trade.id}); event.stopPropagation();" style="padding: 5px 10px; font-size: 12px;">Edit</button>
                                 <button class="btn btn-primary" onclick="exportTradePDF(${trade.id}); event.stopPropagation();" style="padding: 5px 10px; font-size: 12px;">Export PDF</button>
+                                <button class="btn btn-danger" onclick="deleteTrade(${trade.id}); event.stopPropagation();" style="padding: 5px 10px; font-size: 12px;">Delete</button>
                             </div>
                         </div>
                     `).join('')}
@@ -3137,6 +3138,26 @@
             `;
 
             document.getElementById('tradeDetailModal').classList.add('active');
+        }
+
+        function deleteTrade(tradeId) {
+            if (!confirm('Are you sure you want to delete this trade? This cannot be undone.')) {
+                return;
+            }
+
+            // Remove from currentSession
+            if (currentSession && currentSession.trades) {
+                currentSession.trades = currentSession.trades.filter(t => t.id !== tradeId);
+            }
+
+            // Remove from allTrades
+            allTrades = allTrades.filter(t => t.id !== tradeId);
+
+            saveData();
+            alert('Trade deleted successfully.');
+
+            // Refresh the view
+            viewTodayTrades();
         }
 
         function loadTradeForEdit(tradeId) {
@@ -3398,13 +3419,18 @@
                 <div class="section">
                     <h2>Past Sunday Preparations</h2>
                     ${sundayPreps.slice().reverse().map(prep => `
-                        <div class="log-entry" onclick="loadSundayPrep('${prep.date}')">
-                            <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
-                                <strong>Week of ${prep.date}</strong>
-                                <span>${prep.weeklyBias}</span>
+                        <div class="log-entry">
+                            <div onclick="loadSundayPrep('${prep.date}')" style="cursor: pointer;">
+                                <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                                    <strong>Week of ${prep.date}</strong>
+                                    <span>${prep.weeklyBias}</span>
+                                </div>
+                                <div style="color: #b0b0b0;">
+                                    Daily: ${prep.dailyTrend} | 4hr: ${prep.fourHrTrend}
+                                </div>
                             </div>
-                            <div style="color: #b0b0b0;">
-                                Daily: ${prep.dailyTrend} | 4hr: ${prep.fourHrTrend}
+                            <div style="margin-top: 8px;">
+                                <button class="btn btn-danger" onclick="deleteSundayPrep('${prep.date}'); event.stopPropagation();" style="padding: 5px 10px; font-size: 12px;">Delete</button>
                             </div>
                         </div>
                     `).join('')}
@@ -3412,6 +3438,21 @@
             `;
 
             document.getElementById('tradeDetailModal').classList.add('active');
+        }
+
+        function deleteSundayPrep(date) {
+            if (!confirm('Are you sure you want to delete this Sunday prep? This cannot be undone.')) {
+                return;
+            }
+
+            let sundayPreps = JSON.parse(localStorage.getItem('sundayPreps') || '[]');
+            sundayPreps = sundayPreps.filter(p => p.date !== date);
+            localStorage.setItem('sundayPreps', JSON.stringify(sundayPreps));
+
+            alert('Sunday prep deleted successfully.');
+
+            // Refresh the view
+            viewPastSundayPrep();
         }
 
         function loadSundayPrep(date) {
@@ -3473,16 +3514,21 @@
                 <div class="section">
                     <h2>Past Post-Market Reviews</h2>
                     ${postMarketReviews.slice().reverse().map(review => `
-                        <div class="log-entry" onclick="loadPostMarketReview('${review.date}')">
-                            <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
-                                <strong>Date: ${review.date}</strong>
-                                <span>Emotional State: ${review.emotionalState}/10</span>
+                        <div class="log-entry">
+                            <div onclick="loadPostMarketReview('${review.date}')" style="cursor: pointer;">
+                                <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                                    <strong>Date: ${review.date}</strong>
+                                    <span>Trend: ${review.dailyTrend || 'N/A'}</span>
+                                </div>
+                                <div style="color: #b0b0b0;">
+                                    Daily: ${review.dailyTrend || 'N/A'} | 4hr: ${review.fourHourStructure || 'N/A'}
+                                </div>
+                                <div style="color: #8b949e; font-size: 12px; margin-top: 4px;">
+                                    ${review.tradingPlan ? review.tradingPlan.substring(0, 80) + '...' : 'No trading plan'}
+                                </div>
                             </div>
-                            <div style="color: #b0b0b0;">
-                                Daily: ${review.dailyTrend || 'N/A'} | 4hr: ${review.fourHourStructure || 'N/A'}
-                            </div>
-                            <div style="color: #8b949e; font-size: 12px; margin-top: 4px;">
-                                ${review.tradingPlan ? review.tradingPlan.substring(0, 80) + '...' : 'No trading plan'}
+                            <div style="margin-top: 8px;">
+                                <button class="btn btn-danger" onclick="deletePostMarketReview('${review.date}'); event.stopPropagation();" style="padding: 5px 10px; font-size: 12px;">Delete</button>
                             </div>
                         </div>
                     `).join('')}
@@ -3490,6 +3536,21 @@
             `;
 
             document.getElementById('tradeDetailModal').classList.add('active');
+        }
+
+        function deletePostMarketReview(date) {
+            if (!confirm('Are you sure you want to delete this post-market review? This cannot be undone.')) {
+                return;
+            }
+
+            let postMarketReviews = JSON.parse(localStorage.getItem('postMarketReviews') || '[]');
+            postMarketReviews = postMarketReviews.filter(r => r.date !== date);
+            localStorage.setItem('postMarketReviews', JSON.stringify(postMarketReviews));
+
+            alert('Post-market review deleted successfully.');
+
+            // Refresh the view
+            viewPastPostMarket();
         }
 
         function loadPostMarketReview(date) {
@@ -3541,16 +3602,21 @@
                         const wins = trades.filter(t => t.result === 'win').length;
                         const losses = trades.filter(t => t.result === 'loss').length;
                         return `
-                        <div class="log-entry" onclick="loadEndOfDayReview('${session.date}')">
-                            <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
-                                <strong>Date: ${session.date}</strong>
-                                <span>Trades: ${trades.length} (${wins}W/${losses}L)</span>
+                        <div class="log-entry">
+                            <div onclick="loadEndOfDayReview('${session.date}')" style="cursor: pointer;">
+                                <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                                    <strong>Date: ${session.date}</strong>
+                                    <span>Trades: ${trades.length} (${wins}W/${losses}L)</span>
+                                </div>
+                                <div style="color: #b0b0b0;">
+                                    Emotional State: ${session.emotionalState}/10 | Rules Adherence: ${session.rulesAdherence || 'N/A'}%
+                                </div>
+                                <div style="color: #8b949e; font-size: 12px; margin-top: 4px;">
+                                    ${session.biggestWin ? session.biggestWin.substring(0, 80) + '...' : 'No notes'}
+                                </div>
                             </div>
-                            <div style="color: #b0b0b0;">
-                                Emotional State: ${session.emotionalState}/10 | Rules Adherence: ${session.rulesAdherence || 'N/A'}%
-                            </div>
-                            <div style="color: #8b949e; font-size: 12px; margin-top: 4px;">
-                                ${session.biggestWin ? session.biggestWin.substring(0, 80) + '...' : 'No notes'}
+                            <div style="margin-top: 8px;">
+                                <button class="btn btn-danger" onclick="deleteEndOfDayReview('${session.date}'); event.stopPropagation();" style="padding: 5px 10px; font-size: 12px;">Delete</button>
                             </div>
                         </div>
                         `;
@@ -3559,6 +3625,21 @@
             `;
 
             document.getElementById('tradeDetailModal').classList.add('active');
+        }
+
+        function deleteEndOfDayReview(date) {
+            if (!confirm('Are you sure you want to delete this end of day review? This cannot be undone.')) {
+                return;
+            }
+
+            // Remove from allSessions
+            allSessions = allSessions.filter(s => s.date !== date);
+            localStorage.setItem('tradingSessions', JSON.stringify(allSessions));
+
+            alert('End of day review deleted successfully.');
+
+            // Refresh the view
+            viewPastEndOfDay();
         }
 
         function loadEndOfDayReview(date) {
