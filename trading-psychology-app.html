@@ -1733,6 +1733,7 @@
             <button class="btn btn-success" onclick="saveEndOfDay()">Save End of Day Review</button>
             <button class="btn btn-primary" onclick="exportEndOfDayPDF()">📄 Export End of Day PDF</button>
             <button class="btn btn-secondary" onclick="exportCompleteDayPDF()">📋 Export Complete Day Report</button>
+            <button class="btn btn-secondary" onclick="viewPastEndOfDay()">📜 View Past End of Day Reviews</button>
         </div>
 
         <!-- History Tab -->
@@ -3030,7 +3031,9 @@
                 maxRiskPerTrade: document.getElementById('maxRiskPerTrade').value,
                 maxTotalRisk: document.getElementById('maxTotalRisk').value,
                 maxTrades: document.getElementById('maxTrades').value,
-                postMarketComplete: true
+                postMarketComplete: true,
+                // Archive screenshots with the post-market review
+                postMarketScreenshots: screenshots.preMarket ? [...screenshots.preMarket] : [] // Note: preMarket category is used for post-market screenshots
             };
 
             // Save as a post-market review
@@ -3141,6 +3144,10 @@
                     trade.riskAmount = document.getElementById('tradeRiskAmount').value;
                     trade.rewardAmount = document.getElementById('tradeRewardAmount').value;
                     trade.rrRatio = rr;
+                    // Update screenshots if new ones were added
+                    if (screenshots.trade && screenshots.trade.length > 0) {
+                        trade.tradeScreenshots = [...screenshots.trade];
+                    }
 
                     // Update in allTrades array too
                     const allTradeIndex = allTrades.findIndex(t => t.id === window.editingTradeId);
@@ -3165,7 +3172,9 @@
                     riskAmount: document.getElementById('tradeRiskAmount').value,
                     rewardAmount: document.getElementById('tradeRewardAmount').value,
                     rrRatio: rr,
-                    status: 'open'
+                    status: 'open',
+                    // Archive screenshots with the trade
+                    tradeScreenshots: screenshots.trade ? [...screenshots.trade] : []
                 };
 
                 currentSession.trades.push(trade);
@@ -3173,6 +3182,11 @@
             }
 
             saveData();
+
+            // Clear trade screenshots for next trade
+            screenshots.trade = [];
+            saveScreenshots();
+            displayScreenshots('trade');
 
             alert(isEditing ? '✅ Trade updated successfully!' : '✅ Trade entered successfully!\n\n⏰ 5-Minute Check Reminder:\nIn 5 minutes, check your emotional state.\nIf you feel ANY discomfort, exit immediately.');
 
@@ -3325,8 +3339,8 @@
                 y += 10;
             }
 
-            // Add screenshots if available
-            if (screenshots.trade && screenshots.trade.length > 0) {
+            // Add screenshots if available (use archived screenshots from trade)
+            if (trade.tradeScreenshots && trade.tradeScreenshots.length > 0) {
                 if (y > 240) {
                     doc.addPage();
                     y = 20;
@@ -3334,7 +3348,7 @@
                 doc.setFont(undefined, 'bold');
                 doc.text('Trade Setup Screenshots:', 15, y);
                 y += 7;
-                for (const screenshot of screenshots.trade) {
+                for (const screenshot of trade.tradeScreenshots) {
                     if (y > 250) {
                         doc.addPage();
                         y = 20;
@@ -3388,8 +3402,16 @@
             currentSession.additionalNotes = document.getElementById('additionalNotes').value;
             currentSession.completed = true;
 
+            // Archive EOD screenshots with the session
+            currentSession.eodScreenshots = screenshots.eod ? [...screenshots.eod] : [];
+
             allSessions.push(currentSession);
             saveData();
+
+            // Clear EOD screenshots for next day
+            screenshots.eod = [];
+            saveScreenshots();
+            displayScreenshots('eod');
 
             alert('✅ End of day review saved!\n\nGreat work completing your documentation.\nReview tomorrow\'s plan before starting.');
 
@@ -3419,7 +3441,10 @@
                 processGoals: document.getElementById('sundayProcessGoals').value,
                 maxTrades: document.getElementById('sundayMaxTrades').value,
                 maxRisk: document.getElementById('sundayMaxRisk').value,
-                successCriteria: document.getElementById('sundaySuccessCriteria').value
+                successCriteria: document.getElementById('sundaySuccessCriteria').value,
+                // Archive screenshots with the prep
+                sundayDailyScreenshots: screenshots.sundayDaily ? [...screenshots.sundayDaily] : [],
+                sunday4hrScreenshots: screenshots.sunday4hr ? [...screenshots.sunday4hr] : []
             };
 
             // Get existing Sunday preps
@@ -3565,6 +3590,91 @@
 
             closeModal();
             switchTab('post-market');
+        }
+
+        function viewPastEndOfDay() {
+            if (allSessions.length === 0) {
+                alert('No past end of day reviews found.');
+                return;
+            }
+
+            const completedSessions = allSessions.filter(s => s.completed);
+            if (completedSessions.length === 0) {
+                alert('No completed sessions found.');
+                return;
+            }
+
+            const content = document.getElementById('tradeDetailContent');
+            content.innerHTML = `
+                <div class="section">
+                    <h2>Past End of Day Reviews</h2>
+                    ${completedSessions.slice().reverse().map(session => {
+                        const trades = session.trades || [];
+                        const wins = trades.filter(t => t.result === 'win').length;
+                        const losses = trades.filter(t => t.result === 'loss').length;
+                        return `
+                        <div class="log-entry" onclick="loadEndOfDayReview('${session.date}')">
+                            <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                                <strong>Date: ${session.date}</strong>
+                                <span>Trades: ${trades.length} (${wins}W/${losses}L)</span>
+                            </div>
+                            <div style="color: #b0b0b0;">
+                                Emotional State: ${session.emotionalState}/10 | Rules Adherence: ${session.rulesAdherence || 'N/A'}%
+                            </div>
+                            <div style="color: #8b949e; font-size: 12px; margin-top: 4px;">
+                                ${session.biggestWin ? session.biggestWin.substring(0, 80) + '...' : 'No notes'}
+                            </div>
+                        </div>
+                        `;
+                    }).join('')}
+                </div>
+            `;
+
+            document.getElementById('tradeDetailModal').classList.add('active');
+        }
+
+        function loadEndOfDayReview(date) {
+            const session = allSessions.find(s => s.date === date);
+            if (!session) return;
+
+            // Fill in all the fields
+            document.getElementById('circuitBreakerTriggered').value = session.circuitBreakerTriggered || '';
+            document.getElementById('circuitBreakerNotes').value = session.circuitBreakerNotes || '';
+            document.getElementById('rulesAdherencePercent').value = session.rulesAdherence || '';
+            document.getElementById('biggestWin').value = session.biggestWin || '';
+            document.getElementById('biggestChallenge').value = session.biggestChallenge || '';
+            document.getElementById('planTomorrow').value = session.planTomorrow || '';
+            document.getElementById('additionalNotes').value = session.additionalNotes || '';
+
+            // Display trades summary
+            updateTodayTradesSummary(session);
+
+            closeModal();
+            switchTab('end-of-day');
+
+            alert('End of Day review loaded. This is read-only for reference.');
+        }
+
+        function updateTodayTradesSummary(session) {
+            const summaryDiv = document.getElementById('todayTradesSummary');
+            if (!session || !session.trades || session.trades.length === 0) {
+                summaryDiv.innerHTML = '<p>No trades today.</p>';
+                return;
+            }
+
+            const trades = session.trades;
+            summaryDiv.innerHTML = `
+                <div class="trade-summary">
+                    <p><strong>Total Trades:</strong> ${trades.length}</p>
+                    ${trades.map((trade, index) => `
+                        <div class="trade-item" style="padding: 10px; margin: 10px 0; background: rgba(21, 27, 40, 0.6); border-radius: 3px;">
+                            <strong>Trade ${index + 1}: ${trade.symbol} ${trade.direction.toUpperCase()}</strong>
+                            <div>Time: ${trade.entryTime} | Entry: ${trade.entryPrice} | R:R: ${trade.rrRatio}</div>
+                            <div>Status: ${trade.status || 'open'} ${trade.result ? `| Result: ${trade.result}` : ''}</div>
+                        </div>
+                    `).join('')}
+                </div>
+            `;
         }
 
         // Load/Save data
