@@ -1370,41 +1370,8 @@
                 <button class="btn btn-primary" id="startMentalCheckTimer" onclick="startTimer('mentalCheck', 900)">Start 15-Minute Timer</button>
 
                 <div class="form-group">
-                    <label>Date</label>
+                    <label>Date (For Tomorrow's Session)</label>
                     <input type="date" id="sessionDate" required>
-                </div>
-
-                <div class="inline-group">
-                    <div class="form-group">
-                        <label>Sleep Hours</label>
-                        <input type="number" id="sleepHours" step="0.5" min="0" max="12" required>
-                    </div>
-                    <div class="form-group">
-                        <label>Emotional State (1-10)</label>
-                        <input type="number" id="emotionalState" min="1" max="10" required>
-                    </div>
-                    <div class="form-group">
-                        <label>Stress Level (1-10)</label>
-                        <input type="number" id="stressLevel" min="1" max="10" required>
-                    </div>
-                </div>
-
-                <div id="emotionalWarning" class="alert alert-danger hidden">
-                    <strong>⚠️ TRADING PROHIBITED!</strong> Your emotional state is 7/10 or higher. Do NOT trade today.
-                </div>
-
-                <div class="form-group">
-                    <label>Sobriety Status</label>
-                    <select id="sobrietyStatus" required>
-                        <option value="">Select...</option>
-                        <option value="clear">Confirmed - Clear minded</option>
-                        <option value="concern">Have concerns - Should not trade</option>
-                    </select>
-                </div>
-
-                <div class="form-group">
-                    <label>Personal Obligations Today</label>
-                    <textarea id="obligations" placeholder="Any appointments, meetings, or obligations in next 4 hours?"></textarea>
                 </div>
             </div>
 
@@ -1421,9 +1388,7 @@
             </div>
 
             <div class="section">
-                <h2>Market Analysis for Tomorrow ⏰ (15 minutes minimum)</h2>
-                <div class="timer-display" id="technicalAnalysisTimer">Timer: 00:00</div>
-                <button class="btn btn-primary" id="startTechnicalTimer" onclick="startTimer('technical', 900)">Start 15-Minute Timer</button>
+                <h2>Market Analysis for Tomorrow</h2>
 
                 <div class="inline-group">
                     <div class="form-group">
@@ -1454,21 +1419,6 @@
                 <div class="form-group">
                     <label>Tomorrow's Trading Plan</label>
                     <textarea id="tradingPlan" placeholder="What setups to watch tomorrow? What's my bias for tomorrow?" required></textarea>
-                </div>
-
-                <div class="inline-group">
-                    <div class="form-group">
-                        <label>Max Risk Per Trade ($)</label>
-                        <input type="number" id="maxRiskPerTrade" step="0.01" required>
-                    </div>
-                    <div class="form-group">
-                        <label>Max Total Risk Tomorrow ($)</label>
-                        <input type="number" id="maxTotalRisk" step="0.01" required>
-                    </div>
-                    <div class="form-group">
-                        <label>Max Trades Allowed Tomorrow</label>
-                        <input type="number" id="maxTrades" value="2" min="1" max="2" readonly>
-                    </div>
                 </div>
 
                 <div class="screenshot-upload-section">
@@ -2394,20 +2344,12 @@
             }
 
             // Get data from form fields
-            const sleepHours = document.getElementById('sleepHours').value;
-            const emotionalState = document.getElementById('emotionalState').value;
-            const stressLevel = document.getElementById('stressLevel').value;
-            const sobrietyStatus = document.getElementById('sobrietyStatus').value;
-            const obligations = document.getElementById('obligations').value;
             const whatWorked = document.getElementById('whatWorked').value;
             const whatDidntWork = document.getElementById('whatDidntWork').value;
             const dailyTrend = document.getElementById('dailyTrend').value;
             const fourHourStructure = document.getElementById('fourHourStructure').value;
             const keyLevels = document.getElementById('keyLevels').value;
             const tradingPlan = document.getElementById('tradingPlan').value;
-            const maxRiskPerTrade = document.getElementById('maxRiskPerTrade').value;
-            const maxTotalRisk = document.getElementById('maxTotalRisk').value;
-            const maxTrades = document.getElementById('maxTrades').value;
 
             const { jsPDF } = window.jspdf;
             const doc = new jsPDF();
@@ -2418,7 +2360,7 @@
             doc.setTextColor(0, 255, 255);
             doc.setFontSize(22);
             doc.setFont(undefined, 'bold');
-            doc.text('POST-MARKET REVIEW', 105, 15, { align: 'center' });
+            doc.text('POST-MARKET ANALYSIS', 105, 15, { align: 'center' });
             doc.setFontSize(12);
             doc.setTextColor(255, 0, 255);
             doc.text('Dr. Ellis Hartwin - Trading Psychology Protocol', 105, 25, { align: 'center' });
@@ -2427,48 +2369,19 @@
 
             let y = 50;
 
-            // Date & Mental State
+            // Date
             doc.setTextColor(0, 0, 0);
             doc.setFontSize(11);
             doc.setFont(undefined, 'bold');
-            doc.text(`Date: ${date}`, 15, y);
-            y += 10;
-
-            doc.setFillColor(255, 170, 0);
-            doc.rect(15, y, 180, 8, 'F');
-            doc.setTextColor(255, 255, 255);
-            doc.setFontSize(13);
-            doc.text('MENTAL STATE CHECK', 20, y + 6);
+            doc.text(`Analysis for Session Date: ${date}`, 15, y);
             y += 15;
 
-            doc.setTextColor(0, 0, 0);
-            doc.setFontSize(10);
-            doc.setFont(undefined, 'bold');
-            doc.text(`Sleep: ${sleepHours} hrs`, 15, y);
-            doc.text(`Emotional State: ${emotionalState}/10`, 80, y);
-            doc.text(`Stress: ${stressLevel}/10`, 145, y);
-            y += 7;
-
-            doc.text('Sobriety:', 15, y);
-            doc.setFont(undefined, 'normal');
-            doc.text(sobrietyStatus, 40, y);
-            y += 10;
-
-            if (obligations) {
-                doc.setFont(undefined, 'bold');
-                doc.text('Obligations:', 15, y);
-                doc.setFont(undefined, 'normal');
-                const obligationsText = doc.splitTextToSize(obligations, 160);
-                doc.text(obligationsText, 15, y + 5);
-                y += (obligationsText.length * 5) + 10;
-            }
-
-            // Previous Day Review
+            // Today's Review
             doc.setFillColor(0, 255, 128);
             doc.rect(15, y, 180, 8, 'F');
             doc.setTextColor(255, 255, 255);
             doc.setFontSize(13);
-            doc.text('PREVIOUS DAY REVIEW', 20, y + 6);
+            doc.text('TODAY\'S TRADING REVIEW', 20, y + 6);
             y += 15;
 
             doc.setTextColor(0, 0, 0);
@@ -2491,7 +2404,7 @@
                 y += (didntWork.length * 5) + 10;
             }
 
-            // Technical Analysis
+            // Technical Analysis for Tomorrow
             if (y > 220) {
                 doc.addPage();
                 y = 20;
@@ -2501,7 +2414,7 @@
             doc.rect(15, y, 180, 8, 'F');
             doc.setTextColor(255, 255, 255);
             doc.setFontSize(13);
-            doc.text('TECHNICAL ANALYSIS', 20, y + 6);
+            doc.text('MARKET ANALYSIS FOR TOMORROW', 20, y + 6);
             y += 15;
 
             doc.setTextColor(0, 0, 0);
@@ -2526,23 +2439,11 @@
             y += (keyLevelsText.length * 5) + 10;
 
             doc.setFont(undefined, 'bold');
-            doc.text('Trading Plan:', 15, y);
+            doc.text('Tomorrow\'s Trading Plan:', 15, y);
             doc.setFont(undefined, 'normal');
             const tradingPlanText = doc.splitTextToSize(tradingPlan || 'N/A', 160);
             doc.text(tradingPlanText, 15, y + 5);
             y += (tradingPlanText.length * 5) + 10;
-
-            // Risk Management
-            doc.setFont(undefined, 'bold');
-            doc.text('Risk Management:', 15, y);
-            y += 7;
-            doc.setFont(undefined, 'normal');
-            doc.text(`Max Risk/Trade: $${maxRiskPerTrade}`, 15, y);
-            y += 5;
-            doc.text(`Max Total Risk: $${maxTotalRisk}`, 15, y);
-            y += 5;
-            doc.text(`Max Trades: ${maxTrades}`, 15, y);
-            y += 10;
 
             // Add screenshots
             if (screenshots.preMarket && screenshots.preMarket.length > 0) {
@@ -2551,7 +2452,7 @@
                     y = 20;
                 }
                 doc.setFont(undefined, 'bold');
-                doc.text('Pre-Market Chart Screenshots:', 15, y);
+                doc.text('Chart Analysis Screenshots:', 15, y);
                 y += 7;
                 for (const screenshot of screenshots.preMarket) {
                     if (y > 250) {
@@ -2568,7 +2469,7 @@
                 }
             }
 
-            doc.save(`Post-Market-Review-${date}.pdf`);
+            doc.save(`Post-Market-Analysis-${date}.pdf`);
         }
 
         async function exportEndOfDayPDF() {
@@ -3006,31 +2907,28 @@
             };
 
             saveData();
+
+            // Clear daily screenshots for new trading day (not Sunday/Post-Market which persist)
+            screenshots.trade = [];
+            screenshots.eod = [];
+            saveScreenshots();
+            displayScreenshots('trade');
+            displayScreenshots('eod');
+
             alert('✅ Trading day started! You can now enter trades using your Sunday levels.');
             updateDashboard();
         }
 
         function savePostMarket() {
-            const emotionalState = parseInt(document.getElementById('emotionalState').value);
-            const sobriety = document.getElementById('sobrietyStatus').value;
-
             // Store post-market analysis for tomorrow
             const postMarketData = {
                 date: document.getElementById('sessionDate').value,
-                sleepHours: document.getElementById('sleepHours').value,
-                emotionalState: emotionalState,
-                stressLevel: document.getElementById('stressLevel').value,
-                sobrietyStatus: sobriety,
-                obligations: document.getElementById('obligations').value,
                 whatWorked: document.getElementById('whatWorked').value,
                 whatDidntWork: document.getElementById('whatDidntWork').value,
                 dailyTrend: document.getElementById('dailyTrend').value,
                 fourHourStructure: document.getElementById('fourHourStructure').value,
                 keyLevels: document.getElementById('keyLevels').value,
                 tradingPlan: document.getElementById('tradingPlan').value,
-                maxRiskPerTrade: document.getElementById('maxRiskPerTrade').value,
-                maxTotalRisk: document.getElementById('maxTotalRisk').value,
-                maxTrades: document.getElementById('maxTrades').value,
                 postMarketComplete: true,
                 // Archive screenshots with the post-market review
                 postMarketScreenshots: screenshots.preMarket ? [...screenshots.preMarket] : [] // Note: preMarket category is used for post-market screenshots
@@ -3053,7 +2951,15 @@
             // Clear screenshot display grid
             displayScreenshots('preMarket');
 
-            alert('✅ Post-market review saved! This analysis will be used for tomorrow\'s trading.\n\nPrevious post-market screenshots have been cleared.');
+            // Clear form fields
+            document.getElementById('whatWorked').value = '';
+            document.getElementById('whatDidntWork').value = '';
+            document.getElementById('dailyTrend').value = '';
+            document.getElementById('fourHourStructure').value = '';
+            document.getElementById('keyLevels').value = '';
+            document.getElementById('tradingPlan').value = '';
+
+            alert('✅ Post-market review saved! This analysis will be used for tomorrow\'s trading.\n\nForm has been cleared for next use.');
             switchTab('dashboard');
         }
 
@@ -3571,25 +3477,19 @@
 
             if (!review) return;
 
-            // Fill in all the fields
+            // Fill in the fields (only the ones that exist in simplified form)
             document.getElementById('sessionDate').value = review.date;
-            document.getElementById('sleepHours').value = review.sleepHours || '';
-            document.getElementById('emotionalState').value = review.emotionalState || '';
-            document.getElementById('stressLevel').value = review.stressLevel || '';
-            document.getElementById('sobrietyStatus').value = review.sobrietyStatus || '';
-            document.getElementById('obligations').value = review.obligations || '';
             document.getElementById('whatWorked').value = review.whatWorked || '';
             document.getElementById('whatDidntWork').value = review.whatDidntWork || '';
             document.getElementById('dailyTrend').value = review.dailyTrend || '';
             document.getElementById('fourHourStructure').value = review.fourHourStructure || '';
             document.getElementById('keyLevels').value = review.keyLevels || '';
             document.getElementById('tradingPlan').value = review.tradingPlan || '';
-            document.getElementById('maxRiskPerTrade').value = review.maxRiskPerTrade || '';
-            document.getElementById('maxTotalRisk').value = review.maxTotalRisk || '';
-            document.getElementById('maxTrades').value = review.maxTrades || '';
 
             closeModal();
             switchTab('post-market');
+
+            alert('Post-Market review loaded for reference.');
         }
 
         function viewPastEndOfDay() {
@@ -3702,6 +3602,16 @@
             const todaySession = allSessions.find(s => s.date === today);
             if (todaySession && !currentSession) {
                 currentSession = todaySession;
+            }
+
+            // Clear daily screenshots if starting fresh or if it's a new day
+            if (!currentSession) {
+                // No session yet - clear daily screenshots to start fresh
+                screenshots.trade = [];
+                screenshots.eod = [];
+                saveScreenshots();
+                displayScreenshots('trade');
+                displayScreenshots('eod');
             }
         }
 
