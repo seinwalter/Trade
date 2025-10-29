@@ -2251,10 +2251,13 @@
                     <div style="margin-top: 25px; padding: 15px; background: rgba(139, 148, 158, 0.1); border-radius: 8px; border-left: 3px solid #2980b9;">
                         <h3 style="margin-bottom: 10px; color: #2980b9;">📝 Expected CSV Format</h3>
                         <p style="color: #8b949e; font-size: 14px; margin-bottom: 10px;">
-                            Your CSV should contain columns for: Symbol, Entry Time, Direction, Entry Price, Stop Loss, Target, Position Size, Trade Thesis
+                            For historical trades (already completed), your CSV should include: <strong>Symbol, Date, Direction, Entry Price, Exit Price</strong> (required), plus optional: P/L, Position Size, Notes
                         </p>
                         <p style="color: #8b949e; font-size: 14px;">
-                            <strong>Example:</strong> Symbol,EntryTime,Direction,EntryPrice,StopLoss,Target,PositionSize,Thesis
+                            <strong>Example:</strong> Symbol,Date,Direction,EntryPrice,ExitPrice,PnL,PositionSize,Notes
+                        </p>
+                        <p style="color: #8b949e; font-size: 14px; margin-top: 5px;">
+                            <strong>Sample data:</strong> MNQH5,2025-01-15,Long,15420.50,15460.00,79.00,1,Bullish breakout
                         </p>
                     </div>
                 </div>
@@ -5069,7 +5072,7 @@
             // Add note about required fields
             const note = document.createElement('div');
             note.style.cssText = 'margin-top: 15px; padding: 10px; background: rgba(255, 0, 85, 0.1); border-left: 3px solid #ff0055; border-radius: 6px; color: #c9d1d9; font-size: 14px;';
-            note.innerHTML = '<strong>* Required fields</strong> - Symbol, Direction, and Entry Price must be mapped';
+            note.innerHTML = '<strong>* Required fields</strong> - Symbol, Date, Direction, Entry Price, and Exit Price must be mapped';
             container.appendChild(note);
 
             // Show mapping container
@@ -5080,18 +5083,16 @@
         function autoDetectColumns(columns, requiredFields) {
             const mapping = {};
 
-            // Common column name patterns
+            // Common column name patterns for HISTORICAL TRADES
             const patterns = {
-                'symbol': ['symbol', 'ticker', 'instrument', 'contract'],
-                'entryTime': ['time', 'entry time', 'entrytime', 'timestamp', 'entry_time'],
-                'direction': ['direction', 'side', 'type', 'long/short', 'buy/sell'],
-                'entryPrice': ['entry', 'entry price', 'entryprice', 'price', 'entry_price'],
-                'stopLoss': ['stop', 'stoploss', 'stop loss', 'sl', 'stop_loss'],
-                'target': ['target', 'tp', 'take profit', 'takeprofit', 'target price', 'target_price'],
-                'positionSize': ['size', 'position', 'position size', 'positionsize', 'qty', 'quantity', 'position_size'],
-                'thesis': ['thesis', 'reason', 'notes', 'comment', 'description', 'setup'],
-                'riskAmount': ['risk', 'risk amount', 'riskamount', 'risk_amount', 'risk $'],
-                'rewardAmount': ['reward', 'reward amount', 'rewardamount', 'reward_amount', 'reward $', 'profit']
+                'symbol': ['symbol', 'ticker', 'instrument', 'contract', 'stock', 'asset'],
+                'date': ['date', 'trade date', 'tradedate', 'day', 'timestamp', 'time', 'datetime'],
+                'direction': ['direction', 'side', 'type', 'long/short', 'buy/sell', 'action'],
+                'entryPrice': ['entry', 'entry price', 'entryprice', 'buy price', 'open', 'open price', 'entry_price'],
+                'exitPrice': ['exit', 'exit price', 'exitprice', 'sell price', 'close', 'close price', 'exit_price'],
+                'pnl': ['pnl', 'p/l', 'p&l', 'profit', 'loss', 'profit/loss', 'net', 'return'],
+                'positionSize': ['size', 'position', 'position size', 'positionsize', 'qty', 'quantity', 'shares', 'contracts', 'position_size'],
+                'notes': ['notes', 'comment', 'comments', 'description', 'memo', 'remarks']
             };
 
             Object.keys(requiredFields).forEach(field => {
@@ -5129,8 +5130,8 @@
 
             console.log('Column Mapping:', csvColumnMapping);
 
-            // Validate that required fields are mapped
-            const requiredMappings = ['symbol', 'direction', 'entryPrice'];
+            // Validate that required fields are mapped (for historical trades)
+            const requiredMappings = ['symbol', 'date', 'direction', 'entryPrice', 'exitPrice'];
             const missingMappings = requiredMappings.filter(field => !csvColumnMapping[field]);
 
             if (missingMappings.length > 0) {
@@ -5292,9 +5293,18 @@
         }
 
         function confirmCSVImport() {
-            if (!currentSession) {
-                showToast('error', 'No Active Session', 'Please start a trading day before importing trades', 5000);
+            // Check for session - either currentSession or today's session in allSessions
+            const today = new Date().toISOString().split('T')[0];
+            const todaySession = currentSession || allSessions.find(s => s.date === today);
+
+            if (!todaySession) {
+                showToast('error', 'No Active Session', 'Please start a trading day before importing historical trades. Go to Dashboard to start.', 5000);
                 return;
+            }
+
+            // If currentSession is null but we found today's session, set it
+            if (!currentSession && todaySession) {
+                currentSession = todaySession;
             }
 
             if (csvData.validated.length === 0) {
@@ -5302,21 +5312,20 @@
                 return;
             }
 
-            // Import all valid trades
+            // Import all valid historical trades
             let imported = 0;
             csvData.validated.forEach(row => {
                 const trade = {
                     id: Date.now() + Math.random(),
                     symbol: row.symbol,
-                    entryTime: row.entryTime || new Date().toLocaleTimeString(),
+                    date: row.date || today,
                     direction: row.direction,
                     entryPrice: parseFloat(row.entryPrice) || 0,
-                    stopLoss: parseFloat(row.stopLoss) || 0,
-                    target: parseFloat(row.target) || 0,
+                    exitPrice: parseFloat(row.exitPrice) || 0,
+                    pnl: parseFloat(row.pnl) || (parseFloat(row.exitPrice) - parseFloat(row.entryPrice)) * parseFloat(row.positionSize || 1),
                     positionSize: parseFloat(row.positionSize) || 0,
-                    thesis: row.thesis || '',
-                    riskAmount: parseFloat(row.riskAmount) || 0,
-                    rewardAmount: parseFloat(row.rewardAmount) || 0,
+                    notes: row.notes || '',
+                    status: 'closed',
                     tradeScreenshots: []
                 };
 
