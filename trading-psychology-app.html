@@ -2888,22 +2888,31 @@
                 return;
             }
 
-            // Create session with just mental state (using Sunday levels for trading)
+            const today = new Date().toISOString().split('T')[0];
+
+            // Check for post-market analysis from yesterday for today
+            const postMarketReviews = JSON.parse(localStorage.getItem('postMarketReviews') || '[]');
+            const todaysPostMarket = postMarketReviews.find(r => r.date === today);
+
+            // Create session with mental state + post-market data if available
             currentSession = {
-                date: new Date().toISOString().split('T')[0],
+                date: today,
                 sleepHours: document.getElementById('dashboardSleepHours').value,
                 emotionalState: emotionalState,
                 stressLevel: document.getElementById('dashboardStressLevel').value,
                 sobrietyStatus: sobriety,
-                dailyTrend: 'See Sunday Prep',
-                fourHourStructure: 'See Sunday Prep',
-                tradingPlan: 'Using Sunday weekly analysis for trading levels',
+                dailyTrend: todaysPostMarket?.dailyTrend || 'See Sunday Prep',
+                fourHourStructure: todaysPostMarket?.fourHourStructure || 'See Sunday Prep',
+                keyLevels: todaysPostMarket?.keyLevels || '',
+                tradingPlan: todaysPostMarket?.tradingPlan || 'Using Sunday weekly analysis for trading levels',
+                whatWorked: todaysPostMarket?.whatWorked || '',
+                whatDidntWork: todaysPostMarket?.whatDidntWork || '',
                 maxRiskPerTrade: 0.5,
                 maxTotalRisk: 1,
                 maxTrades: 2,
                 trades: [],
-                preMarketComplete: false, // Not required when pre-market disabled
-                usingSundayLevels: true
+                postMarketComplete: !!todaysPostMarket, // Mark if post-market was done
+                usingSundayLevels: !todaysPostMarket
             };
 
             saveData();
@@ -2915,7 +2924,11 @@
             displayScreenshots('trade');
             displayScreenshots('eod');
 
-            alert('✅ Trading day started! You can now enter trades using your Sunday levels.');
+            const postMarketMsg = todaysPostMarket ?
+                '\n\n✅ Post-market analysis from yesterday has been loaded!' :
+                '\n\nℹ️ No post-market analysis found. Using Sunday levels.';
+
+            alert('✅ Trading day started!' + postMarketMsg);
             updateDashboard();
         }
 
@@ -2960,6 +2973,7 @@
             document.getElementById('tradingPlan').value = '';
 
             alert('✅ Post-market review saved! This analysis will be used for tomorrow\'s trading.\n\nForm has been cleared for next use.');
+            updateDashboard(); // Refresh dashboard to show completion
             switchTab('dashboard');
         }
 
@@ -3351,6 +3365,8 @@
 
             currentSession = null;
             saveData();
+            updateDashboard(); // Refresh dashboard to show completion
+            switchTab('dashboard'); // Go to dashboard
         }
 
         // Sunday Prep functions
@@ -3754,10 +3770,16 @@
                 const postMarketReviews = JSON.parse(localStorage.getItem('postMarketReviews') || '[]');
                 const yesterdayReview = postMarketReviews.find(r => r.date === yesterdayStr);
 
+                // Check for tomorrow's post-market review
+                const tomorrow = new Date();
+                tomorrow.setDate(tomorrow.getDate() + 1);
+                const tomorrowStr = tomorrow.toISOString().split('T')[0];
+                const tomorrowReview = postMarketReviews.find(r => r.date === tomorrowStr);
+
                 let statusHTML = `
                     <div class="protocol-status">
-                        <span><span class="status-indicator ${yesterdayReview ? 'green' : 'yellow'}"></span>Yesterday's Post-Market Review</span>
-                        <span>${yesterdayReview ? 'Available' : 'Using Sunday Levels'}</span>
+                        <span><span class="status-indicator ${todaySession.postMarketComplete ? 'green' : 'yellow'}"></span>Today's Prep (from yesterday)</span>
+                        <span>${todaySession.postMarketComplete ? '✓ Loaded' : 'Using Sunday Levels'}</span>
                     </div>
                     <div class="protocol-status">
                         <span><span class="status-indicator ${trades.length > 0 ? 'green' : 'yellow'}"></span>Trades Today</span>
@@ -3766,6 +3788,14 @@
                     <div class="protocol-status">
                         <span><span class="status-indicator ${todaySession.emotionalState <= 6 ? 'green' : 'red'}"></span>Emotional State</span>
                         <span>${todaySession.emotionalState}/10</span>
+                    </div>
+                    <div class="protocol-status">
+                        <span><span class="status-indicator ${tomorrowReview ? 'green' : 'red'}"></span>Post-Market (for tomorrow)</span>
+                        <span>${tomorrowReview ? '✓ Complete' : 'Not Done'}</span>
+                    </div>
+                    <div class="protocol-status">
+                        <span><span class="status-indicator ${todaySession.completed ? 'green' : 'red'}"></span>End of Day Review</span>
+                        <span>${todaySession.completed ? '✓ Complete' : 'Not Done'}</span>
                     </div>
                 `;
 
