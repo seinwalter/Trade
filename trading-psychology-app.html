@@ -4,8 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Trading Psychology Protocol - Dr. Ellis Hartwin</title>
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect fill='%230a0e27' width='100' height='100'/><path d='M20,80 L35,40 L50,60 L65,30 L80,50' stroke='%23ff9500' stroke-width='4' fill='none'/><circle cx='35' cy='40' r='3' fill='%2300ff80'/><circle cx='50' cy='60' r='3' fill='%23ff0055'/><circle cx='65' cy='30' r='3' fill='%2300ff80'/></svg>">
+
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Barlow:wght@300;400;500;600;700&family=Barlow+Semi+Condensed:wght@400;500;600;700&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Barlow:wght@300;400;500;600;700&family=Barlow+Semi+Condensed:wght@400;500;600;700&family=Orbitron:wght@400;500;600;700;800;900&display=swap');
 
         * {
             margin: 0;
@@ -23,6 +27,31 @@
             min-height: 100vh;
             padding: 15px;
             color: #c9d1d9;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        /* Animated background gradient */
+        body::before {
+            content: '';
+            position: fixed;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background:
+                radial-gradient(circle at 20% 50%, rgba(255, 149, 0, 0.03) 0%, transparent 50%),
+                radial-gradient(circle at 80% 80%, rgba(0, 255, 128, 0.02) 0%, transparent 50%),
+                radial-gradient(circle at 40% 20%, rgba(255, 0, 85, 0.02) 0%, transparent 50%);
+            animation: bgFloat 20s ease-in-out infinite;
+            z-index: -1;
+            pointer-events: none;
+        }
+
+        @keyframes bgFloat {
+            0%, 100% { transform: translate(0, 0) rotate(0deg); }
+            33% { transform: translate(30px, -30px) rotate(120deg); }
+            66% { transform: translate(-20px, 20px) rotate(240deg); }
         }
 
         .app-container {
@@ -91,14 +120,20 @@
         }
 
         .app-header h1 {
-            font-family: 'Barlow Semi Condensed', sans-serif;
+            font-family: 'Orbitron', sans-serif;
             font-size: 26px;
             margin-bottom: 5px;
-            font-weight: 600;
+            font-weight: 700;
             text-transform: uppercase;
             letter-spacing: 4px;
             text-shadow: 0 0 20px rgba(255, 149, 0, 0.4);
             animation: glow 3s ease-in-out infinite alternate;
+        }
+
+        /* All section headings use Orbitron */
+        h2, h3 {
+            font-family: 'Orbitron', sans-serif;
+            font-weight: 600;
         }
 
         @keyframes glow {
@@ -202,6 +237,16 @@
                 inset 0 1px 0 rgba(255, 255, 255, 0.02);
             position: relative;
             backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+        }
+
+        .section:hover {
+            border-left-width: 4px;
+            box-shadow:
+                0 4px 16px rgba(0, 0, 0, 0.5),
+                0 0 20px rgba(255, 149, 0, 0.1),
+                inset 0 1px 0 rgba(255, 255, 255, 0.04);
+            transform: translateX(2px);
         }
 
         .section::before {
@@ -391,6 +436,14 @@
             height: 300px;
         }
 
+        .btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
         .btn-primary {
             background: rgba(255, 149, 0, 0.2);
             color: #ff9500;
@@ -454,6 +507,105 @@
             color: #e53e3e;
             border-color: #e53e3e;
             box-shadow: 0 0 12px rgba(229, 62, 62, 0.2);
+        }
+
+        /* Toast Notification System */
+        .toast-container {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 10000;
+            pointer-events: none;
+        }
+
+        .toast {
+            background: rgba(13, 17, 23, 0.95);
+            border-left: 4px solid;
+            border-radius: 4px;
+            padding: 16px 20px;
+            margin-bottom: 10px;
+            min-width: 300px;
+            max-width: 400px;
+            box-shadow: 0 4px 24px rgba(0, 0, 0, 0.4), 0 0 20px rgba(255, 149, 0, 0.2);
+            backdrop-filter: blur(20px);
+            opacity: 0;
+            transform: translateX(400px);
+            transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            pointer-events: all;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .toast::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, currentColor, transparent);
+            animation: toastShimmer 2s infinite;
+        }
+
+        @keyframes toastShimmer {
+            0%, 100% { transform: translateX(-100%); }
+            50% { transform: translateX(100%); }
+        }
+
+        .toast.show {
+            opacity: 1;
+            transform: translateX(0);
+        }
+
+        .toast-success {
+            border-left-color: #48bb78;
+            color: #48bb78;
+        }
+
+        .toast-error {
+            border-left-color: #e53e3e;
+            color: #e53e3e;
+        }
+
+        .toast-info {
+            border-left-color: #ff9500;
+            color: #ff9500;
+        }
+
+        .toast-warning {
+            border-left-color: #f59e0b;
+            color: #f59e0b;
+        }
+
+        .toast-title {
+            font-weight: 700;
+            font-size: 14px;
+            margin-bottom: 4px;
+            font-family: 'Orbitron', sans-serif;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .toast-message {
+            font-size: 12px;
+            color: #c9d1d9;
+            line-height: 1.5;
+        }
+
+        /* Required Field Indicators */
+        label.required::after {
+            content: ' *';
+            color: #e53e3e;
+            font-weight: bold;
+            margin-left: 4px;
+        }
+
+        input:required, select:required, textarea:required {
+            border-left: 3px solid rgba(229, 62, 62, 0.3);
+        }
+
+        input:required:valid, select:required:valid, textarea:required:valid {
+            border-left-color: rgba(72, 187, 120, 0.3);
         }
 
         .alert-warning {
@@ -1083,6 +1235,9 @@
     </style>
 </head>
 <body>
+    <!-- Toast Notification Container -->
+    <div class="toast-container" id="toastContainer"></div>
+
     <div class="app-container">
         <div class="app-header">
             <h1>Trading Psychology Protocol</h1>
@@ -1112,21 +1267,21 @@
 
                 <div class="inline-group">
                     <div class="form-group">
-                        <label>Sleep Hours</label>
+                        <label class="required">Sleep Hours</label>
                         <input type="number" id="dashboardSleepHours" step="0.5" min="0" max="12" required>
                     </div>
                     <div class="form-group">
-                        <label>Emotional State (1-10)</label>
+                        <label class="required">Emotional State (1-10)</label>
                         <input type="number" id="dashboardEmotionalState" min="1" max="10" required>
                     </div>
                     <div class="form-group">
-                        <label>Stress Level (1-10)</label>
+                        <label class="required">Stress Level (1-10)</label>
                         <input type="number" id="dashboardStressLevel" min="1" max="10" required>
                     </div>
                 </div>
 
                 <div class="form-group">
-                    <label>Sobriety Status</label>
+                    <label class="required">Sobriety Status</label>
                     <select id="dashboardSobrietyStatus" required>
                         <option value="">Select...</option>
                         <option value="clear">Confirmed - Clear minded</option>
@@ -1204,7 +1359,7 @@
                 <button class="btn btn-primary" id="startSundayTimer" onclick="startTimer('sundayResearch', 1200)">Start 20-Minute Timer</button>
 
                 <div class="form-group">
-                    <label>Research Date</label>
+                    <label class="required">Research Date</label>
                     <input type="date" id="sundayDate" required>
                 </div>
             </div>
@@ -1212,7 +1367,7 @@
             <div class="section">
                 <h2>Daily Timeframe Analysis</h2>
                 <div class="form-group">
-                    <label>Daily Trend Direction</label>
+                    <label class="required">Daily Trend Direction</label>
                     <select id="sundayDailyTrend" required>
                         <option value="">Select...</option>
                         <option value="bullish">Bullish</option>
@@ -1222,22 +1377,22 @@
                 </div>
 
                 <div class="form-group">
-                    <label>Daily Market Structure</label>
+                    <label class="required">Daily Market Structure</label>
                     <textarea id="sundayDailyStructure" placeholder="Higher highs/lows? Lower highs/lows? Key structural levels?" required></textarea>
                 </div>
 
                 <div class="form-group">
-                    <label>Daily Support Levels</label>
+                    <label class="required">Daily Support Levels</label>
                     <textarea id="sundayDailySupport" placeholder="List major support levels from Daily chart" required></textarea>
                 </div>
 
                 <div class="form-group">
-                    <label>Daily Resistance Levels</label>
+                    <label class="required">Daily Resistance Levels</label>
                     <textarea id="sundayDailyResistance" placeholder="List major resistance levels from Daily chart" required></textarea>
                 </div>
 
                 <div class="form-group">
-                    <label>Daily Order Blocks & FVGs</label>
+                    <label class="required">Daily Order Blocks & FVGs</label>
                     <textarea id="sundayDailyOrderBlocks" placeholder="Significant order blocks and fair value gaps on Daily" required></textarea>
                 </div>
 
@@ -1256,7 +1411,7 @@
             <div class="section">
                 <h2>4-Hour Timeframe Analysis</h2>
                 <div class="form-group">
-                    <label>4hr Trend Direction</label>
+                    <label class="required">4hr Trend Direction</label>
                     <select id="sunday4hrTrend" required>
                         <option value="">Select...</option>
                         <option value="bullish">Bullish</option>
@@ -1266,22 +1421,22 @@
                 </div>
 
                 <div class="form-group">
-                    <label>4hr Market Structure</label>
+                    <label class="required">4hr Market Structure</label>
                     <textarea id="sunday4hrStructure" placeholder="Trend alignment with Daily? Recent breaks of structure?" required></textarea>
                 </div>
 
                 <div class="form-group">
-                    <label>4hr Support Levels</label>
+                    <label class="required">4hr Support Levels</label>
                     <textarea id="sunday4hrSupport" placeholder="List major support levels from 4hr chart" required></textarea>
                 </div>
 
                 <div class="form-group">
-                    <label>4hr Resistance Levels</label>
+                    <label class="required">4hr Resistance Levels</label>
                     <textarea id="sunday4hrResistance" placeholder="List major resistance levels from 4hr chart" required></textarea>
                 </div>
 
                 <div class="form-group">
-                    <label>4hr Order Blocks & FVGs</label>
+                    <label class="required">4hr Order Blocks & FVGs</label>
                     <textarea id="sunday4hrOrderBlocks" placeholder="Significant order blocks and fair value gaps on 4hr" required></textarea>
                 </div>
 
@@ -1300,7 +1455,7 @@
             <div class="section">
                 <h2>Weekly Trading Plan</h2>
                 <div class="form-group">
-                    <label>Primary Bias for the Week</label>
+                    <label class="required">Primary Bias for the Week</label>
                     <select id="sundayWeeklyBias" required>
                         <option value="">Select...</option>
                         <option value="bullish">Bullish - Looking for Longs</option>
@@ -1310,12 +1465,12 @@
                 </div>
 
                 <div class="form-group">
-                    <label>Key Price Targets This Week</label>
+                    <label class="required">Key Price Targets This Week</label>
                     <textarea id="sundayPriceTargets" placeholder="Where do you expect price to reach? What are the major levels?" required></textarea>
                 </div>
 
                 <div class="form-group">
-                    <label>Setups to Watch For</label>
+                    <label class="required">Setups to Watch For</label>
                     <textarea id="sundaySetups" placeholder="What specific setups align with the Daily and 4hr structure?" required></textarea>
                 </div>
 
@@ -1325,7 +1480,7 @@
                 </div>
 
                 <div class="form-group">
-                    <label>Areas to Avoid</label>
+                    <label class="required">Areas to Avoid</label>
                     <textarea id="sundayAvoidAreas" placeholder="Price ranges or conditions where you should NOT trade" required></textarea>
                 </div>
             </div>
@@ -1333,22 +1488,22 @@
             <div class="section success-section">
                 <h2>Weekly Intentions & Goals</h2>
                 <div class="form-group">
-                    <label>Process Goals for This Week</label>
+                    <label class="required">Process Goals for This Week</label>
                     <textarea id="sundayProcessGoals" placeholder="Focus on rules adherence, patience, documentation, etc." required></textarea>
                 </div>
 
                 <div class="form-group">
-                    <label>Maximum Trades for the Week</label>
+                    <label class="required">Maximum Trades for the Week</label>
                     <input type="number" id="sundayMaxTrades" value="10" min="1" required>
                 </div>
 
                 <div class="form-group">
-                    <label>Maximum Risk for the Week ($)</label>
+                    <label class="required">Maximum Risk for the Week ($)</label>
                     <input type="number" id="sundayMaxRisk" step="0.01" required>
                 </div>
 
                 <div class="form-group">
-                    <label>What Will Make This Week Successful?</label>
+                    <label class="required">What Will Make This Week Successful?</label>
                     <textarea id="sundaySuccessCriteria" placeholder="Define success beyond P/L - process metrics that matter" required></textarea>
                 </div>
             </div>
@@ -1370,7 +1525,7 @@
                 <button class="btn btn-primary" id="startMentalCheckTimer" onclick="startTimer('mentalCheck', 900)">Start 15-Minute Timer</button>
 
                 <div class="form-group">
-                    <label>Date (For Tomorrow's Session)</label>
+                    <label class="required">Date (For Tomorrow's Session)</label>
                     <input type="date" id="sessionDate" required>
                 </div>
             </div>
@@ -1392,7 +1547,7 @@
 
                 <div class="inline-group">
                     <div class="form-group">
-                        <label>Daily Trend</label>
+                        <label class="required">Daily Trend</label>
                         <select id="dailyTrend" required>
                             <option value="">Select...</option>
                             <option value="bullish">Bullish</option>
@@ -1401,7 +1556,7 @@
                         </select>
                     </div>
                     <div class="form-group">
-                        <label>4hr Structure</label>
+                        <label class="required">4hr Structure</label>
                         <select id="fourHourStructure" required>
                             <option value="">Select...</option>
                             <option value="bullish">Bullish</option>
@@ -1412,12 +1567,12 @@
                 </div>
 
                 <div class="form-group">
-                    <label>Key Levels Identified</label>
+                    <label class="required">Key Levels Identified</label>
                     <textarea id="keyLevels" placeholder="Support and resistance levels, order blocks, FVGs" required></textarea>
                 </div>
 
                 <div class="form-group">
-                    <label>Tomorrow's Trading Plan</label>
+                    <label class="required">Tomorrow's Trading Plan</label>
                     <textarea id="tradingPlan" placeholder="What setups to watch tomorrow? What's my bias for tomorrow?" required></textarea>
                 </div>
 
@@ -1538,15 +1693,15 @@
                 <h2>Trade Details</h2>
                 <div class="inline-group">
                     <div class="form-group">
-                        <label>Symbol</label>
+                        <label class="required">Symbol</label>
                         <input type="text" id="tradeSymbol" placeholder="MNQH5, MESH5, etc" required>
                     </div>
                     <div class="form-group">
-                        <label>Entry Time</label>
+                        <label class="required">Entry Time</label>
                         <input type="time" id="tradeEntryTime" required>
                     </div>
                     <div class="form-group">
-                        <label>Direction</label>
+                        <label class="required">Direction</label>
                         <select id="tradeDirection" required>
                             <option value="">Select...</option>
                             <option value="long">Long</option>
@@ -1556,36 +1711,36 @@
                 </div>
 
                 <div class="form-group">
-                    <label>Trade Thesis (Why am I entering?)</label>
+                    <label class="required">Trade Thesis (Why am I entering?)</label>
                     <textarea id="tradeThesis" placeholder="Setup, structure, confluence, why this trade aligns with my plan" required></textarea>
                 </div>
 
                 <div class="inline-group">
                     <div class="form-group">
-                        <label>Position Size</label>
+                        <label class="required">Position Size</label>
                         <input type="number" id="tradePositionSize" step="0.01" required>
                     </div>
                     <div class="form-group">
-                        <label>Entry Price</label>
+                        <label class="required">Entry Price</label>
                         <input type="number" id="tradeEntryPrice" step="0.01" required>
                     </div>
                     <div class="form-group">
-                        <label>Stop Loss</label>
+                        <label class="required">Stop Loss</label>
                         <input type="number" id="tradeStopLoss" step="0.01" required>
                     </div>
                     <div class="form-group">
-                        <label>Target</label>
+                        <label class="required">Target</label>
                         <input type="number" id="tradeTarget" step="0.01" required>
                     </div>
                 </div>
 
                 <div class="inline-group">
                     <div class="form-group">
-                        <label>Risk Amount ($)</label>
+                        <label class="required">Risk Amount ($)</label>
                         <input type="number" id="tradeRiskAmount" step="0.01" required>
                     </div>
                     <div class="form-group">
-                        <label>Reward Amount ($)</label>
+                        <label class="required">Reward Amount ($)</label>
                         <input type="number" id="tradeRewardAmount" step="0.01" required>
                     </div>
                     <div class="form-group">
@@ -1928,6 +2083,30 @@
             postMarketEnabled: true
         };
 
+        // Toast notification system
+        function showToast(type, title, message, duration = 4000) {
+            const container = document.getElementById('toastContainer');
+            if (!container) return;
+
+            const toast = document.createElement('div');
+            toast.className = `toast toast-${type}`;
+            toast.innerHTML = `
+                <div class="toast-title">${title}</div>
+                <div class="toast-message">${message}</div>
+            `;
+
+            container.appendChild(toast);
+
+            // Trigger animation
+            setTimeout(() => toast.classList.add('show'), 10);
+
+            // Remove toast after duration
+            setTimeout(() => {
+                toast.classList.remove('show');
+                setTimeout(() => toast.remove(), 400);
+            }, duration);
+        }
+
         // Image compression function for PDFs
         function compressImageForPDF(base64Image, maxWidth = 600, quality = 0.6) {
             return new Promise((resolve) => {
@@ -1999,7 +2178,7 @@
 
             Array.from(files).forEach(file => {
                 if (!file.type.startsWith('image/')) {
-                    alert('Please upload only image files');
+                    showToast('error', 'Invalid File', 'Please upload only image files', 3000);
                     return;
                 }
 
@@ -2339,7 +2518,7 @@
         async function exportPostMarketPDF() {
             const date = document.getElementById('sessionDate').value;
             if (!date) {
-                alert('Please enter a date for the post-market review.');
+                showToast('error', 'Date Required', 'Please enter a date for the post-market review.', 3000);
                 return;
             }
 
@@ -2474,7 +2653,7 @@
 
         async function exportEndOfDayPDF() {
             if (!currentSession) {
-                alert('No session data available.');
+                showToast('error', 'No Session', 'No session data available.', 3000);
                 return;
             }
 
@@ -2618,7 +2797,7 @@
 
         function exportCompleteDayPDF() {
             if (!currentSession) {
-                alert('No session data available.');
+                showToast('error', 'No Session', 'No session data available.', 3000);
                 return;
             }
 
@@ -2876,7 +3055,7 @@
 
             if (emotionalState >= 7) {
                 document.getElementById('dashboardEmotionalWarning').classList.remove('hidden');
-                alert('❌ Cannot proceed with trading. Your emotional state is too high. Take the day off.');
+                showToast('error', 'Trading Blocked', 'Your emotional state is too high. Take the day off.', 6000);
                 return;
             } else {
                 document.getElementById('dashboardEmotionalWarning').classList.add('hidden');
@@ -2884,7 +3063,7 @@
 
             const sobriety = document.getElementById('dashboardSobrietyStatus').value;
             if (sobriety === 'concern') {
-                alert('❌ Cannot proceed with trading. Sobriety concerns noted. Take the day off.');
+                showToast('error', 'Trading Blocked', 'Sobriety concerns noted. Take the day off.', 6000);
                 return;
             }
 
@@ -2925,10 +3104,10 @@
             displayScreenshots('eod');
 
             const postMarketMsg = todaysPostMarket ?
-                '\n\n✅ Post-market analysis from yesterday has been loaded!' :
-                '\n\nℹ️ No post-market analysis found. Using Sunday levels.';
+                'Post-market analysis from yesterday has been loaded!' :
+                'No post-market analysis found. Using Sunday levels.';
 
-            alert('✅ Trading day started!' + postMarketMsg);
+            showToast('success', 'Trading Day Started', postMarketMsg, 5000);
             updateDashboard();
         }
 
@@ -2972,7 +3151,7 @@
             document.getElementById('keyLevels').value = '';
             document.getElementById('tradingPlan').value = '';
 
-            alert('✅ Post-market review saved! This analysis will be used for tomorrow\'s trading.\n\nForm has been cleared for next use.');
+            showToast('success', 'Post-Market Saved', 'This analysis will be used for tomorrow\'s trading. Form has been cleared.', 5000);
             updateDashboard(); // Refresh dashboard to show completion
             switchTab('dashboard');
         }
@@ -3018,7 +3197,7 @@
         function submitTrade() {
             // Just need to have started trading day (quick start or post-market)
             if (!currentSession) {
-                alert('❌ Please start your trading day first! Complete the "Start Trading Day" section on the Dashboard.');
+                showToast('error', 'No Session Started', 'Please start your trading day first! Complete the "Start Trading Day" section on the Dashboard.', 5000);
                 switchTab('dashboard');
                 return;
             }
@@ -3034,14 +3213,14 @@
             const unchecked = checkboxes.filter(id => !document.getElementById(id).checked);
 
             if (unchecked.length > 0) {
-                alert(`❌ You cannot enter this trade!\n\nUnchecked items:\n${unchecked.length} requirements not met.\n\nALL boxes must be checked before entering a trade.`);
+                showToast('error', 'Cannot Enter Trade', `${unchecked.length} requirements not met. ALL boxes must be checked before entering a trade.`, 5000);
                 return;
             }
 
             // Validate R:R ratio
             const rr = document.getElementById('tradeRRRatio').value;
             if (!rr.includes('1:2') && parseFloat(rr.split(':')[1]) < 2) {
-                alert('❌ Reward:Risk ratio must be at least 2:1!');
+                showToast('error', 'Invalid R:R Ratio', 'Reward:Risk ratio must be at least 2:1!', 4000);
                 return;
             }
 
@@ -3108,7 +3287,10 @@
             saveScreenshots();
             displayScreenshots('trade');
 
-            alert(isEditing ? '✅ Trade updated successfully!' : '✅ Trade entered successfully!\n\n⏰ 5-Minute Check Reminder:\nIn 5 minutes, check your emotional state.\nIf you feel ANY discomfort, exit immediately.');
+            const successMsg = isEditing ?
+                'Trade updated successfully!' :
+                'Trade entered! Remember: In 5 minutes, check your emotional state. If you feel ANY discomfort, exit immediately.';
+            showToast('success', isEditing ? 'Trade Updated' : 'Trade Entered', successMsg, 6000);
 
             // Clear form
             document.querySelectorAll('#trade-entry input[type="text"], #trade-entry input[type="number"], #trade-entry textarea, #trade-entry select').forEach(el => {
@@ -3121,7 +3303,7 @@
 
         function viewTodayTrades() {
             if (!currentSession || !currentSession.trades || currentSession.trades.length === 0) {
-                alert('No trades entered today.');
+                showToast('info', 'No Trades', 'No trades entered today.', 3000);
                 return;
             }
 
@@ -3168,7 +3350,7 @@
             allTrades = allTrades.filter(t => t.id !== tradeId);
 
             saveData();
-            alert('Trade deleted successfully.');
+            showToast('success', 'Trade Deleted', 'Trade deleted successfully.', 3000);
 
             // Refresh the view
             viewTodayTrades();
@@ -3204,13 +3386,13 @@
             closeModal();
             switchTab('trade-entry');
 
-            alert('Trade loaded for editing. Make your changes and click "Submit Trade Entry" to save.');
+            showToast('info', 'Trade Loaded', 'Trade loaded for editing. Make your changes and click "Submit Trade Entry" to save.', 4000);
         }
 
         async function exportTradePDF(tradeId) {
             const trade = currentSession.trades.find(t => t.id === tradeId);
             if (!trade) {
-                alert('Trade not found.');
+                showToast('error', 'Trade Not Found', 'Trade not found.', 3000);
                 return;
             }
 
@@ -3330,14 +3512,14 @@
                     }
                 }
 
-                alert('✅ Emergency exit recorded.\n\nYou did the right thing.\nWait 30 minutes before considering any new trades.');
+                showToast('success', 'Emergency Exit Recorded', 'You did the right thing. Wait 30 minutes before considering any new trades.', 6000);
             }
         }
 
         // Save end of day
         function saveEndOfDay() {
             if (!currentSession) {
-                alert('No active session to save.');
+                showToast('error', 'No Session', 'No active session to save.', 3000);
                 return;
             }
 
@@ -3361,7 +3543,7 @@
             saveScreenshots();
             displayScreenshots('eod');
 
-            alert('✅ End of day review saved!\n\nGreat work completing your documentation.\nReview tomorrow\'s plan before starting.');
+            showToast('success', 'End of Day Saved', 'Great work completing your documentation. Review tomorrow\'s plan before starting.', 5000);
 
             currentSession = null;
             saveData();
@@ -3419,14 +3601,14 @@
             displayScreenshots('sundayDaily');
             displayScreenshots('sunday4hr');
 
-            alert('✅ Sunday research saved!\n\nYour weekly plan is ready. Previous week\'s Sunday screenshots have been cleared. Reference this throughout the week.');
+            showToast('success', 'Sunday Research Saved', 'Your weekly plan is ready. Previous week\'s Sunday screenshots have been cleared. Reference this throughout the week.', 5000);
         }
 
         function viewPastSundayPrep() {
             const sundayPreps = JSON.parse(localStorage.getItem('sundayPreps') || '[]');
 
             if (sundayPreps.length === 0) {
-                alert('No past Sunday preps found.');
+                showToast('info', 'No Sunday Preps', 'No past Sunday preps found.', 3000);
                 return;
             }
 
@@ -3465,7 +3647,7 @@
             sundayPreps = sundayPreps.filter(p => p.date !== date);
             localStorage.setItem('sundayPreps', JSON.stringify(sundayPreps));
 
-            alert('Sunday prep deleted successfully.');
+            showToast('success', 'Sunday Prep Deleted', 'Sunday prep deleted successfully.', 3000);
 
             // Refresh the view
             viewPastSundayPrep();
@@ -3514,14 +3696,14 @@
             closeModal();
             switchTab('sunday-prep');
 
-            alert('Sunday Prep loaded with original screenshots.');
+            showToast('info', 'Sunday Prep Loaded', 'Sunday Prep loaded with original screenshots.', 3000);
         }
 
         function viewPastPostMarket() {
             const postMarketReviews = JSON.parse(localStorage.getItem('postMarketReviews') || '[]');
 
             if (postMarketReviews.length === 0) {
-                alert('No past post-market reviews found.');
+                showToast('info', 'No Reviews', 'No past post-market reviews found.', 3000);
                 return;
             }
 
@@ -3563,7 +3745,7 @@
             postMarketReviews = postMarketReviews.filter(r => r.date !== date);
             localStorage.setItem('postMarketReviews', JSON.stringify(postMarketReviews));
 
-            alert('Post-market review deleted successfully.');
+            showToast('success', 'Review Deleted', 'Post-market review deleted successfully.', 3000);
 
             // Refresh the view
             viewPastPostMarket();
@@ -3594,18 +3776,18 @@
             closeModal();
             switchTab('post-market');
 
-            alert('Post-Market review loaded with original screenshots.');
+            showToast('info', 'Review Loaded', 'Post-Market review loaded with original screenshots.', 3000);
         }
 
         function viewPastEndOfDay() {
             if (allSessions.length === 0) {
-                alert('No past end of day reviews found.');
+                showToast('info', 'No Reviews', 'No past end of day reviews found.', 3000);
                 return;
             }
 
             const completedSessions = allSessions.filter(s => s.completed);
             if (completedSessions.length === 0) {
-                alert('No completed sessions found.');
+                showToast('info', 'No Sessions', 'No completed sessions found.', 3000);
                 return;
             }
 
@@ -3652,7 +3834,7 @@
             allSessions = allSessions.filter(s => s.date !== date);
             localStorage.setItem('tradingSessions', JSON.stringify(allSessions));
 
-            alert('End of day review deleted successfully.');
+            showToast('success', 'Review Deleted', 'End of day review deleted successfully.', 3000);
 
             // Refresh the view
             viewPastEndOfDay();
@@ -3684,7 +3866,7 @@
             closeModal();
             switchTab('end-of-day');
 
-            alert('End of Day review loaded with original screenshots.');
+            showToast('info', 'Review Loaded', 'End of Day review loaded with original screenshots.', 3000);
         }
 
         function updateTodayTradesSummary(session) {
@@ -4050,7 +4232,7 @@
             a.click();
             URL.revokeObjectURL(url);
 
-            alert('✅ Complete backup exported!\n\nThis file contains:\n- All sessions\n- All trades\n- All screenshots\n- All Sunday preps\n- Current session\n\nSave this file to restore your data later.');
+            showToast('success', 'Backup Exported', 'Complete backup exported with all sessions, trades, screenshots, and Sunday preps. Save this file to restore your data later.', 6000);
         }
 
         function importAllData() {
@@ -4082,11 +4264,11 @@
                                 localStorage.setItem('sundayPreps', JSON.stringify(data.sundayPreps));
                             }
 
-                            alert('✅ Data restored successfully!\n\nReloading page...');
-                            location.reload();
+                            showToast('success', 'Data Restored', 'Data restored successfully! Reloading page...', 3000);
+                            setTimeout(() => location.reload(), 3000);
                         }
                     } catch (error) {
-                        alert('❌ Error importing data: ' + error.message);
+                        showToast('error', 'Import Failed', 'Error importing data: ' + error.message, 5000);
                     }
                 };
                 reader.readAsText(file);
@@ -4102,8 +4284,8 @@
                     allSessions = [];
                     allTrades = [];
                     currentSession = null;
-                    alert('All data cleared.');
-                    location.reload();
+                    showToast('success', 'Data Cleared', 'All data cleared. Reloading...', 3000);
+                    setTimeout(() => location.reload(), 3000);
                 }
             }
         }
@@ -4179,7 +4361,7 @@
                     console.error('Speech recognition error:', event.error);
                     stopVoiceRecording();
                     if (event.error !== 'no-speech' && event.error !== 'aborted') {
-                        alert('Voice recognition error: ' + event.error);
+                        showToast('error', 'Voice Recognition Error', 'Error: ' + event.error, 4000);
                     }
                 };
 
@@ -4195,7 +4377,7 @@
 
         function toggleVoiceRecording(textareaId, button) {
             if (!recognition) {
-                alert('Voice recognition is not supported in your browser. Please use Chrome or Edge.');
+                showToast('error', 'Not Supported', 'Voice recognition is not supported in your browser. Please use Chrome or Edge.', 5000);
                 return;
             }
 
