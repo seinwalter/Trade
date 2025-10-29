@@ -1933,95 +1933,6 @@
                 </div>
             </div>
 
-            <!-- CSV Import Section -->
-            <div class="section csv-upload-container">
-                <h2 class="collapse-section" onclick="toggleCollapse('csvSection')">
-                    <span class="collapse-icon" id="csvCollapseIcon">▼</span>
-                    📊 Bulk Import Trades from CSV
-                </h2>
-
-                <div id="csvSection" class="collapsible-content">
-                    <p style="margin-bottom: 20px; color: #8b949e;">
-                        Import multiple trades at once from your broker statement or trading journal. Supported formats: CSV files with trade data.
-                    </p>
-
-                    <!-- Dropzone -->
-                    <div class="csv-dropzone" id="csvDropzone">
-                        <div class="csv-dropzone-icon">📁</div>
-                        <div class="csv-dropzone-text">Drag & Drop CSV File Here</div>
-                        <div class="csv-dropzone-subtext">or</div>
-                        <button class="csv-upload-btn" onclick="document.getElementById('csvFileInput').click()">
-                            Browse Files
-                        </button>
-                        <input type="file" id="csvFileInput" class="csv-file-input" accept=".csv" onchange="handleCSVUpload(event)">
-                    </div>
-
-                    <!-- Debug Test Button -->
-                    <div style="margin-top: 15px; text-align: center;">
-                        <button class="csv-btn csv-btn-secondary" onclick="testCSVSystem()">
-                            🔧 Test CSV System
-                        </button>
-                    </div>
-
-                    <!-- Progress Bar -->
-                    <div class="csv-progress-container" id="csvProgressContainer">
-                        <div class="csv-progress-bar">
-                            <div class="csv-progress-fill" id="csvProgressFill"></div>
-                        </div>
-                        <div class="csv-progress-text" id="csvProgressText">Processing...</div>
-                    </div>
-
-                    <!-- Column Mapping -->
-                    <div class="csv-mapping-container" id="csvMappingContainer">
-                        <div class="csv-mapping-header">📋 Map CSV Columns to Trade Fields</div>
-                        <div id="csvMappingRows"></div>
-                        <div class="csv-mapping-actions">
-                            <button class="csv-btn csv-btn-primary" onclick="applyColumnMapping()">
-                                ✓ Apply Mapping & Preview
-                            </button>
-                            <button class="csv-btn csv-btn-secondary" onclick="resetCSVUpload()">
-                                ✕ Cancel
-                            </button>
-                        </div>
-                    </div>
-
-                    <!-- Preview Table -->
-                    <div class="csv-preview-container" id="csvPreviewContainer">
-                        <div class="csv-preview-header">👁️ Preview Imported Trades</div>
-                        <div style="overflow-x: auto;">
-                            <table class="csv-preview-table" id="csvPreviewTable"></table>
-                        </div>
-                        <div class="csv-preview-stats" id="csvPreviewStats"></div>
-
-                        <!-- Error Container -->
-                        <div class="csv-error-container" id="csvErrorContainer"></div>
-
-                        <div class="csv-btn-group" style="margin-top: 20px;">
-                            <button class="csv-btn csv-btn-primary" onclick="confirmCSVImport()">
-                                ✓ Confirm & Import All Trades
-                            </button>
-                            <button class="csv-btn csv-btn-secondary" onclick="resetCSVUpload()">
-                                ← Upload Different File
-                            </button>
-                            <button class="csv-btn csv-btn-danger" onclick="cancelCSVImport()">
-                                ✕ Cancel Import
-                            </button>
-                        </div>
-                    </div>
-
-                    <!-- Sample CSV Format Info -->
-                    <div style="margin-top: 25px; padding: 15px; background: rgba(139, 148, 158, 0.1); border-radius: 8px; border-left: 3px solid #2980b9;">
-                        <h3 style="margin-bottom: 10px; color: #2980b9;">📝 Expected CSV Format</h3>
-                        <p style="color: #8b949e; font-size: 14px; margin-bottom: 10px;">
-                            Your CSV should contain columns for: Symbol, Entry Time, Direction, Entry Price, Stop Loss, Target, Position Size, Trade Thesis
-                        </p>
-                        <p style="color: #8b949e; font-size: 14px;">
-                            <strong>Example:</strong> Symbol,EntryTime,Direction,EntryPrice,StopLoss,Target,PositionSize,Thesis
-                        </p>
-                    </div>
-                </div>
-            </div>
-
             <div class="section">
                 <h2>Pre-Trade Checklist - ALL MUST BE CHECKED</h2>
 
@@ -2260,6 +2171,95 @@
 
         <!-- History Tab -->
         <div id="history" class="tab-content">
+            <!-- CSV Import Section -->
+            <div class="section csv-upload-container">
+                <h2 class="collapse-section" onclick="toggleCollapse('csvSection')">
+                    <span class="collapse-icon" id="csvCollapseIcon">▼</span>
+                    📊 Import Trade History from CSV
+                </h2>
+
+                <div id="csvSection" class="collapsible-content">
+                    <p style="margin-bottom: 20px; color: #8b949e;">
+                        Import historical trades from your broker statement or trading journal. This is for trades that have already happened. CSV files with trade data supported.
+                    </p>
+
+                    <!-- Dropzone -->
+                    <div class="csv-dropzone" id="csvDropzone">
+                        <div class="csv-dropzone-icon">📁</div>
+                        <div class="csv-dropzone-text">Drag & Drop CSV File Here</div>
+                        <div class="csv-dropzone-subtext">or</div>
+                        <button class="csv-upload-btn" onclick="document.getElementById('csvFileInput').click()">
+                            Browse Files
+                        </button>
+                        <input type="file" id="csvFileInput" class="csv-file-input" accept=".csv" onchange="handleCSVUpload(event)">
+                    </div>
+
+                    <!-- Debug Test Button -->
+                    <div style="margin-top: 15px; text-align: center;">
+                        <button class="csv-btn csv-btn-secondary" onclick="testCSVSystem()">
+                            🔧 Test CSV System
+                        </button>
+                    </div>
+
+                    <!-- Progress Bar -->
+                    <div class="csv-progress-container" id="csvProgressContainer">
+                        <div class="csv-progress-bar">
+                            <div class="csv-progress-fill" id="csvProgressFill"></div>
+                        </div>
+                        <div class="csv-progress-text" id="csvProgressText">Processing...</div>
+                    </div>
+
+                    <!-- Column Mapping -->
+                    <div class="csv-mapping-container" id="csvMappingContainer">
+                        <div class="csv-mapping-header">📋 Map CSV Columns to Trade Fields</div>
+                        <div id="csvMappingRows"></div>
+                        <div class="csv-mapping-actions">
+                            <button class="csv-btn csv-btn-primary" onclick="applyColumnMapping()">
+                                ✓ Apply Mapping & Preview
+                            </button>
+                            <button class="csv-btn csv-btn-secondary" onclick="resetCSVUpload()">
+                                ✕ Cancel
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Preview Table -->
+                    <div class="csv-preview-container" id="csvPreviewContainer">
+                        <div class="csv-preview-header">👁️ Preview Imported Trades</div>
+                        <div style="overflow-x: auto;">
+                            <table class="csv-preview-table" id="csvPreviewTable"></table>
+                        </div>
+                        <div class="csv-preview-stats" id="csvPreviewStats"></div>
+
+                        <!-- Error Container -->
+                        <div class="csv-error-container" id="csvErrorContainer"></div>
+
+                        <div class="csv-btn-group" style="margin-top: 20px;">
+                            <button class="csv-btn csv-btn-primary" onclick="confirmCSVImport()">
+                                ✓ Confirm & Import All Trades
+                            </button>
+                            <button class="csv-btn csv-btn-secondary" onclick="resetCSVUpload()">
+                                ← Upload Different File
+                            </button>
+                            <button class="csv-btn csv-btn-danger" onclick="cancelCSVImport()">
+                                ✕ Cancel Import
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Sample CSV Format Info -->
+                    <div style="margin-top: 25px; padding: 15px; background: rgba(139, 148, 158, 0.1); border-radius: 8px; border-left: 3px solid #2980b9;">
+                        <h3 style="margin-bottom: 10px; color: #2980b9;">📝 Expected CSV Format</h3>
+                        <p style="color: #8b949e; font-size: 14px; margin-bottom: 10px;">
+                            Your CSV should contain columns for: Symbol, Entry Time, Direction, Entry Price, Stop Loss, Target, Position Size, Trade Thesis
+                        </p>
+                        <p style="color: #8b949e; font-size: 14px;">
+                            <strong>Example:</strong> Symbol,EntryTime,Direction,EntryPrice,StopLoss,Target,PositionSize,Thesis
+                        </p>
+                    </div>
+                </div>
+            </div>
+
             <div class="section">
                 <h2>Trading History</h2>
                 <div class="inline-group">
