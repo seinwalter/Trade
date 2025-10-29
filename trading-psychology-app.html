@@ -5061,15 +5061,16 @@
             const requiredFields = {
                 'symbol': 'Symbol/Ticker *',
                 'date': 'Date *',
-                'direction': 'Direction (Buy/Sell/Long/Short) *',
                 'entryPrice': 'Entry Price *',
                 'exitPrice': 'Exit Price *',
+                'buyTime': 'Buy Time (optional - for direction auto-detect)',
+                'sellTime': 'Sell Time (optional - for direction auto-detect)',
                 'pnl': 'Profit/Loss ($)',
                 'positionSize': 'Position Size/Quantity',
                 'notes': 'Notes/Comments'
             };
 
-            const isRequired = ['symbol', 'date', 'direction', 'entryPrice', 'exitPrice'];
+            const isRequired = ['symbol', 'date', 'entryPrice', 'exitPrice'];
 
             // Try to auto-detect column mappings
             csvColumnMapping = autoDetectColumns(columns, requiredFields);
@@ -5102,7 +5103,7 @@
             // Add note about required fields
             const note = document.createElement('div');
             note.style.cssText = 'margin-top: 15px; padding: 10px; background: rgba(255, 0, 85, 0.1); border-left: 3px solid #ff0055; border-radius: 6px; color: #c9d1d9; font-size: 14px;';
-            note.innerHTML = '<strong>* Required fields</strong> - Symbol, Date, Direction, Entry Price, and Exit Price must be mapped';
+            note.innerHTML = '<strong>* Required fields</strong> - Symbol, Date, Entry Price, and Exit Price must be mapped<br><strong>Direction auto-detected:</strong> If you have Buy Time and Sell Time columns, direction will be automatically determined (buy first = long, sell first = short)';
             container.appendChild(note);
 
             // Show mapping container and hide history sections
@@ -5128,6 +5129,8 @@
                 'direction': ['direction', 'side', 'type', 'long/short', 'buy/sell', 'action'],
                 'entryPrice': ['entry', 'entry price', 'entryprice', 'buy price', 'open', 'open price', 'entry_price'],
                 'exitPrice': ['exit', 'exit price', 'exitprice', 'sell price', 'close', 'close price', 'exit_price'],
+                'buyTime': ['buy', 'buy time', 'buytime', 'time bought', 'bought', 'open time', 'entry time', 'buy date'],
+                'sellTime': ['sell', 'sell time', 'selltime', 'time sold', 'sold', 'close time', 'exit time', 'sell date'],
                 'pnl': ['pnl', 'p/l', 'p&l', 'profit', 'loss', 'profit/loss', 'net', 'return'],
                 'positionSize': ['size', 'position', 'position size', 'positionsize', 'qty', 'quantity', 'shares', 'contracts', 'position_size'],
                 'notes': ['notes', 'comment', 'comments', 'description', 'memo', 'remarks']
@@ -5169,7 +5172,7 @@
             console.log('Column Mapping:', csvColumnMapping);
 
             // Validate that required fields are mapped (for historical trades)
-            const requiredMappings = ['symbol', 'date', 'direction', 'entryPrice', 'exitPrice'];
+            const requiredMappings = ['symbol', 'date', 'entryPrice', 'exitPrice'];
             const missingMappings = requiredMappings.filter(field => !csvColumnMapping[field]);
 
             if (missingMappings.length > 0) {
@@ -5225,6 +5228,26 @@
                     errors.push('Symbol is required');
                 }
 
+                // Auto-detect direction from buy/sell times if available
+                if (!row.direction && row.buyTime && row.sellTime) {
+                    try {
+                        const buyTimestamp = new Date(row.buyTime).getTime();
+                        const sellTimestamp = new Date(row.sellTime).getTime();
+
+                        if (!isNaN(buyTimestamp) && !isNaN(sellTimestamp)) {
+                            if (buyTimestamp < sellTimestamp) {
+                                row.direction = 'long';
+                                console.log(`Row ${index + 1}: Auto-detected LONG (buy before sell)`);
+                            } else if (sellTimestamp < buyTimestamp) {
+                                row.direction = 'short';
+                                console.log(`Row ${index + 1}: Auto-detected SHORT (sell before buy)`);
+                            }
+                        }
+                    } catch (e) {
+                        console.log(`Row ${index + 1}: Could not parse timestamps for auto-detection`, e);
+                    }
+                }
+
                 // Validate and normalize direction (very flexible)
                 if (row.direction) {
                     const dir = row.direction.toLowerCase().trim();
@@ -5242,8 +5265,9 @@
                         errors.push(`Invalid direction: "${row.direction}" - must be Long/Short/Buy/Sell`);
                     }
                 } else {
-                    // Direction is required
-                    errors.push('Direction is required');
+                    // Direction is now optional - warn if missing but don't fail validation
+                    console.log(`Row ${index + 1}: No direction specified (will default to 'long')`);
+                    row.direction = 'long'; // Default to long if not specified
                 }
 
                 // Validate prices (only if provided) - for historical trades
