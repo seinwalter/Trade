@@ -3622,11 +3622,19 @@
 
         // Submit trade
         function submitTrade() {
-            // Just need to have started trading day (quick start or post-market)
-            if (!currentSession) {
+            // Check for session - either currentSession or today's session in allSessions
+            const today = new Date().toISOString().split('T')[0];
+            const todaySession = currentSession || allSessions.find(s => s.date === today);
+
+            if (!todaySession) {
                 showToast('error', 'No Session Started', 'Please start your trading day first! Complete the "Start Trading Day" section on the Dashboard.', 5000);
                 switchTab('dashboard');
                 return;
+            }
+
+            // If currentSession is null but we found today's session, set it
+            if (!currentSession && todaySession) {
+                currentSession = todaySession;
             }
 
             // Check all checkboxes
