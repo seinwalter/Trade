@@ -5016,21 +5016,19 @@
             const container = document.getElementById('csvMappingRows');
             container.innerHTML = '';
 
-            // Define required fields for trade entry
+            // Simplified fields for HISTORICAL trades (already completed)
             const requiredFields = {
-                'symbol': 'Symbol (e.g., MNQH5) *',
-                'direction': 'Direction (Long/Short) *',
+                'symbol': 'Symbol/Ticker *',
+                'date': 'Date *',
+                'direction': 'Direction (Buy/Sell/Long/Short) *',
                 'entryPrice': 'Entry Price *',
-                'entryTime': 'Entry Time',
-                'stopLoss': 'Stop Loss',
-                'target': 'Target Price',
-                'positionSize': 'Position Size',
-                'thesis': 'Trade Thesis',
-                'riskAmount': 'Risk Amount ($)',
-                'rewardAmount': 'Reward Amount ($)'
+                'exitPrice': 'Exit Price *',
+                'pnl': 'Profit/Loss ($)',
+                'positionSize': 'Position Size/Quantity',
+                'notes': 'Notes/Comments'
             };
 
-            const isRequired = ['symbol', 'direction', 'entryPrice'];
+            const isRequired = ['symbol', 'date', 'direction', 'entryPrice', 'exitPrice'];
 
             // Try to auto-detect column mappings
             csvColumnMapping = autoDetectColumns(columns, requiredFields);
