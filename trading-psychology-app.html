@@ -1332,15 +1332,23 @@
 
         .csv-mapping-container {
             margin-top: 30px;
+            margin-bottom: 50px;
             display: none;
+            background: rgba(21, 27, 40, 0.8);
+            padding: 30px;
+            border-radius: 12px;
+            border: 2px solid rgba(255, 149, 0, 0.3);
+            max-height: 80vh;
+            overflow-y: auto;
         }
 
         .csv-mapping-header {
-            font-size: 20px;
+            font-size: 24px;
             font-family: 'Orbitron', sans-serif;
             color: #ff9500;
-            margin-bottom: 20px;
+            margin-bottom: 25px;
             text-align: center;
+            text-transform: uppercase;
         }
 
         .csv-mapping-row {
@@ -1383,10 +1391,19 @@
         }
 
         .csv-mapping-actions {
-            margin-top: 25px;
+            margin-top: 40px;
+            padding-top: 30px;
+            border-top: 2px solid rgba(255, 149, 0, 0.2);
             display: flex;
             justify-content: center;
-            gap: 15px;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        .csv-mapping-actions .csv-btn {
+            font-size: 18px;
+            padding: 15px 40px;
+            min-width: 250px;
         }
 
         .csv-preview-container {
@@ -2263,7 +2280,7 @@
                 </div>
             </div>
 
-            <div class="section">
+            <div class="section" id="historyFilterSection">
                 <h2>Trading History</h2>
                 <div class="inline-group">
                     <div class="form-group">
@@ -2281,12 +2298,12 @@
                 </div>
             </div>
 
-            <div class="section">
+            <div class="section" id="tradeLogSection">
                 <h2>Trade Log</h2>
                 <div id="tradeHistory"></div>
             </div>
 
-            <div class="section">
+            <div class="section" id="sessionHistorySection">
                 <h2>Daily Sessions</h2>
                 <div id="sessionHistory"></div>
             </div>
@@ -5075,8 +5092,16 @@
             note.innerHTML = '<strong>* Required fields</strong> - Symbol, Date, Direction, Entry Price, and Exit Price must be mapped';
             container.appendChild(note);
 
-            // Show mapping container
+            // Show mapping container and hide history sections
             document.getElementById('csvMappingContainer').style.display = 'block';
+
+            // Hide history sections to avoid overlap
+            const historySections = ['historyFilterSection', 'tradeLogSection', 'sessionHistorySection'];
+            historySections.forEach(id => {
+                const section = document.getElementById(id);
+                if (section) section.style.display = 'none';
+            });
+
             console.log('Column mapping UI displayed with', columns.length, 'columns');
         }
 
@@ -5238,16 +5263,16 @@
             const statsDiv = document.getElementById('csvPreviewStats');
             const errorContainer = document.getElementById('csvErrorContainer');
 
-            // Hide mapping, show preview
+            // Hide mapping, show preview, keep history sections hidden
             document.getElementById('csvMappingContainer').style.display = 'none';
             container.style.display = 'block';
 
             console.log('Preview container visible:', container.style.display);
 
-            // Build preview table
+            // Build preview table - using historical trade fields
             let html = '<thead><tr>';
-            const fields = ['symbol', 'entryTime', 'direction', 'entryPrice', 'stopLoss', 'target', 'positionSize', 'thesis'];
-            const headers = ['Symbol', 'Time', 'Dir', 'Entry', 'Stop', 'Target', 'Size', 'Thesis'];
+            const fields = ['symbol', 'date', 'direction', 'entryPrice', 'exitPrice', 'pnl', 'positionSize', 'notes'];
+            const headers = ['Symbol', 'Date', 'Dir', 'Entry', 'Exit', 'P/L', 'Size', 'Notes'];
 
             headers.forEach(header => html += `<th>${header}</th>`);
             html += '</tr></thead><tbody>';
@@ -5256,7 +5281,7 @@
                 html += '<tr>';
                 fields.forEach(field => {
                     let value = row[field] || '-';
-                    if (field === 'thesis' && value.length > 50) {
+                    if (field === 'notes' && value.length > 50) {
                         value = value.substring(0, 47) + '...';
                     }
                     html += `<td>${value}</td>`;
@@ -5384,6 +5409,13 @@
             // Reset dropzone
             const dropzone = document.getElementById('csvDropzone');
             dropzone.classList.remove('dragover');
+
+            // Show history sections again
+            const historySections = ['historyFilterSection', 'tradeLogSection', 'sessionHistorySection'];
+            historySections.forEach(id => {
+                const section = document.getElementById(id);
+                if (section) section.style.display = 'block';
+            });
         }
 
         function cancelCSVImport() {
