@@ -1408,14 +1408,23 @@
 
         .csv-preview-container {
             margin-top: 30px;
+            margin-bottom: 50px;
             display: none;
+            background: rgba(21, 27, 40, 0.8);
+            padding: 30px;
+            border-radius: 12px;
+            border: 2px solid rgba(0, 255, 128, 0.3);
+            max-height: 90vh;
+            overflow-y: auto;
         }
 
         .csv-preview-header {
-            font-size: 20px;
+            font-size: 24px;
             font-family: 'Orbitron', sans-serif;
-            color: #ff9500;
-            margin-bottom: 15px;
+            color: #00ff80;
+            margin-bottom: 20px;
+            text-align: center;
+            text-transform: uppercase;
         }
 
         .csv-preview-table {
@@ -1476,19 +1485,23 @@
 
         .csv-btn-group {
             display: flex;
-            gap: 10px;
+            gap: 15px;
             justify-content: center;
             flex-wrap: wrap;
+            margin-top: 30px;
+            padding-top: 30px;
+            border-top: 2px solid rgba(139, 148, 158, 0.2);
         }
 
         .csv-btn {
-            padding: 10px 25px;
+            padding: 15px 35px;
             border: none;
-            border-radius: 6px;
+            border-radius: 8px;
             font-weight: 600;
             cursor: pointer;
             transition: all 0.3s ease;
-            font-size: 14px;
+            font-size: 16px;
+            min-width: 220px;
         }
 
         .csv-btn-primary {
@@ -5212,30 +5225,36 @@
                     errors.push('Symbol is required');
                 }
 
-                // Validate and normalize direction
+                // Validate and normalize direction (very flexible)
                 if (row.direction) {
                     const dir = row.direction.toLowerCase().trim();
-                    if (!['long', 'short', 'buy', 'sell', 'l', 's'].includes(dir)) {
-                        errors.push(`Invalid direction: ${row.direction}`);
-                    } else {
-                        // Normalize direction
-                        if (dir === 'buy' || dir === 'l') row.direction = 'long';
-                        if (dir === 'sell' || dir === 's') row.direction = 'short';
+
+                    // Long/Buy variations
+                    if (['long', 'buy', 'l', 'b', 'bot', 'bought', 'call', 'bullish'].includes(dir)) {
+                        row.direction = 'long';
+                    }
+                    // Short/Sell variations
+                    else if (['short', 'sell', 's', 'sld', 'sold', 'put', 'bearish'].includes(dir)) {
+                        row.direction = 'short';
+                    }
+                    // Invalid
+                    else {
+                        errors.push(`Invalid direction: "${row.direction}" - must be Long/Short/Buy/Sell`);
                     }
                 } else {
                     // Direction is required
                     errors.push('Direction is required');
                 }
 
-                // Validate prices (only if provided)
+                // Validate prices (only if provided) - for historical trades
                 if (row.entryPrice && row.entryPrice !== '' && isNaN(parseFloat(row.entryPrice))) {
                     errors.push('Entry price must be a number');
                 }
-                if (row.stopLoss && row.stopLoss !== '' && isNaN(parseFloat(row.stopLoss))) {
-                    errors.push('Stop loss must be a number');
+                if (row.exitPrice && row.exitPrice !== '' && isNaN(parseFloat(row.exitPrice))) {
+                    errors.push('Exit price must be a number');
                 }
-                if (row.target && row.target !== '' && isNaN(parseFloat(row.target))) {
-                    errors.push('Target must be a number');
+                if (row.pnl && row.pnl !== '' && isNaN(parseFloat(row.pnl))) {
+                    errors.push('P/L must be a number');
                 }
 
                 if (errors.length > 0) {
