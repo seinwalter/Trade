@@ -4975,10 +4975,10 @@
 
             // Define required fields for trade entry
             const requiredFields = {
-                'symbol': 'Symbol (e.g., MNQH5)',
+                'symbol': 'Symbol (e.g., MNQH5) *',
+                'direction': 'Direction (Long/Short) *',
+                'entryPrice': 'Entry Price *',
                 'entryTime': 'Entry Time',
-                'direction': 'Direction (Long/Short)',
-                'entryPrice': 'Entry Price',
                 'stopLoss': 'Stop Loss',
                 'target': 'Target Price',
                 'positionSize': 'Position Size',
@@ -4987,6 +4987,8 @@
                 'rewardAmount': 'Reward Amount ($)'
             };
 
+            const isRequired = ['symbol', 'direction', 'entryPrice'];
+
             // Try to auto-detect column mappings
             csvColumnMapping = autoDetectColumns(columns, requiredFields);
 
@@ -4994,6 +4996,10 @@
             Object.keys(requiredFields).forEach(field => {
                 const row = document.createElement('div');
                 row.className = 'csv-mapping-row';
+                if (isRequired.includes(field)) {
+                    row.style.borderLeftColor = '#ff0055';
+                    row.style.borderLeftWidth = '4px';
+                }
 
                 row.innerHTML = `
                     <div class="csv-mapping-label">${requiredFields[field]}</div>
@@ -5011,8 +5017,15 @@
                 container.appendChild(row);
             });
 
+            // Add note about required fields
+            const note = document.createElement('div');
+            note.style.cssText = 'margin-top: 15px; padding: 10px; background: rgba(255, 0, 85, 0.1); border-left: 3px solid #ff0055; border-radius: 6px; color: #c9d1d9; font-size: 14px;';
+            note.innerHTML = '<strong>* Required fields</strong> - Symbol, Direction, and Entry Price must be mapped';
+            container.appendChild(note);
+
             // Show mapping container
             document.getElementById('csvMappingContainer').style.display = 'block';
+            console.log('Column mapping UI displayed with', columns.length, 'columns');
         }
 
         function autoDetectColumns(columns, requiredFields) {
@@ -5065,6 +5078,8 @@
                 }
             });
 
+            console.log('Column Mapping:', csvColumnMapping);
+
             // Validate that required fields are mapped
             const requiredMappings = ['symbol', 'direction', 'entryPrice'];
             const missingMappings = requiredMappings.filter(field => !csvColumnMapping[field]);
@@ -5072,8 +5087,12 @@
             if (missingMappings.length > 0) {
                 showToast('error', 'Missing Required Fields',
                     `Please map these required fields: ${missingMappings.join(', ')}`, 5000);
+                console.error('Missing mappings:', missingMappings);
                 return;
             }
+
+            // Show progress
+            showToast('info', 'Processing...', 'Mapping and validating data', 2000);
 
             // Map the data
             mapCSVData();
@@ -5081,6 +5100,14 @@
             // Validate and preview
             validateCSVData();
             showPreview();
+
+            // Scroll preview into view
+            setTimeout(() => {
+                document.getElementById('csvPreviewContainer').scrollIntoView({
+                    behavior: 'smooth',
+                    block: 'start'
+                });
+            }, 100);
         }
 
         function mapCSVData() {
@@ -5100,6 +5127,8 @@
             csvData.validated = [];
             csvData.errors = [];
 
+            console.log('Validating CSV data:', csvData.mapped);
+
             csvData.mapped.forEach((row, index) => {
                 const errors = [];
 
@@ -5108,29 +5137,34 @@
                     errors.push('Symbol is required');
                 }
 
-                // Validate direction
+                // Validate and normalize direction
                 if (row.direction) {
-                    const dir = row.direction.toLowerCase();
-                    if (!['long', 'short', 'buy', 'sell'].includes(dir)) {
+                    const dir = row.direction.toLowerCase().trim();
+                    if (!['long', 'short', 'buy', 'sell', 'l', 's'].includes(dir)) {
                         errors.push(`Invalid direction: ${row.direction}`);
+                    } else {
+                        // Normalize direction
+                        if (dir === 'buy' || dir === 'l') row.direction = 'long';
+                        if (dir === 'sell' || dir === 's') row.direction = 'short';
                     }
-                    // Normalize direction
-                    if (dir === 'buy') row.direction = 'long';
-                    if (dir === 'sell') row.direction = 'short';
+                } else {
+                    // Direction is required
+                    errors.push('Direction is required');
                 }
 
-                // Validate prices
-                if (row.entryPrice && isNaN(parseFloat(row.entryPrice))) {
+                // Validate prices (only if provided)
+                if (row.entryPrice && row.entryPrice !== '' && isNaN(parseFloat(row.entryPrice))) {
                     errors.push('Entry price must be a number');
                 }
-                if (row.stopLoss && isNaN(parseFloat(row.stopLoss))) {
+                if (row.stopLoss && row.stopLoss !== '' && isNaN(parseFloat(row.stopLoss))) {
                     errors.push('Stop loss must be a number');
                 }
-                if (row.target && isNaN(parseFloat(row.target))) {
+                if (row.target && row.target !== '' && isNaN(parseFloat(row.target))) {
                     errors.push('Target must be a number');
                 }
 
                 if (errors.length > 0) {
+                    console.log(`Row ${index + 1} validation errors:`, errors, row);
                     csvData.errors.push({
                         row: index + 1,
                         data: row,
@@ -5140,9 +5174,15 @@
                     csvData.validated.push(row);
                 }
             });
+
+            console.log('Validation complete:', {
+                validated: csvData.validated.length,
+                errors: csvData.errors.length
+            });
         }
 
         function showPreview() {
+            console.log('Showing preview...');
             const container = document.getElementById('csvPreviewContainer');
             const table = document.getElementById('csvPreviewTable');
             const statsDiv = document.getElementById('csvPreviewStats');
@@ -5151,6 +5191,8 @@
             // Hide mapping, show preview
             document.getElementById('csvMappingContainer').style.display = 'none';
             container.style.display = 'block';
+
+            console.log('Preview container visible:', container.style.display);
 
             // Build preview table
             let html = '<thead><tr>';
@@ -5242,14 +5284,23 @@
             // Save data
             saveData();
 
-            // Show success
-            showToast('success', 'Import Complete', `Successfully imported ${imported} trades into current session`, 5000);
+            console.log('Imported trades:', imported);
+            console.log('Current session trades:', currentSession.trades);
+            console.log('All trades:', allTrades);
 
             // Reset and close
             resetCSVUpload();
 
-            // Optionally switch to dashboard or show trades
-            showTab('dashboard');
+            // Show success with action button
+            showToast('success', 'Import Complete!',
+                `Successfully imported ${imported} trades. Click "View Today's Trades" to see them.`, 7000);
+
+            // Automatically show the trades viewer after a brief delay
+            setTimeout(() => {
+                viewTodayTrades();
+            }, 1000);
+
+            // Update dashboard
             updateDashboard();
         }
 
