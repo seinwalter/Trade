@@ -1956,6 +1956,13 @@
                         <input type="file" id="csvFileInput" class="csv-file-input" accept=".csv" onchange="handleCSVUpload(event)">
                     </div>
 
+                    <!-- Debug Test Button -->
+                    <div style="margin-top: 15px; text-align: center;">
+                        <button class="csv-btn csv-btn-secondary" onclick="testCSVSystem()">
+                            🔧 Test CSV System
+                        </button>
+                    </div>
+
                     <!-- Progress Bar -->
                     <div class="csv-progress-container" id="csvProgressContainer">
                         <div class="csv-progress-bar">
@@ -4918,13 +4925,27 @@
         }
 
         function handleCSVUpload(event) {
+            console.log('CSV Upload triggered');
             const file = event.target.files[0];
+            console.log('File selected:', file ? file.name : 'NO FILE');
+
             if (file) {
                 processCSVFile(file);
+            } else {
+                showToast('error', 'No File', 'Please select a CSV file', 3000);
             }
         }
 
         function processCSVFile(file) {
+            console.log('Processing CSV file:', file.name, 'Size:', file.size, 'bytes');
+
+            // Check if Papa is available
+            if (typeof Papa === 'undefined') {
+                showToast('error', 'Library Error', 'PapaParse library not loaded. Please refresh the page.', 5000);
+                console.error('PapaParse library not found!');
+                return;
+            }
+
             // Show progress
             document.getElementById('csvProgressContainer').style.display = 'block';
             document.getElementById('csvMappingContainer').style.display = 'none';
@@ -4933,15 +4954,35 @@
             updateProgress(20, 'Reading file...');
 
             // Parse CSV using PapaParse
+            console.log('Starting Papa.parse...');
             Papa.parse(file, {
                 header: true,
                 skipEmptyLines: true,
                 complete: function(results) {
+                    console.log('Papa.parse complete!');
+                    console.log('Parsed rows:', results.data ? results.data.length : 0);
+                    console.log('Columns detected:', results.meta.fields);
+                    console.log('Errors:', results.errors.length);
+
                     updateProgress(50, 'Parsing data...');
 
                     if (results.errors.length > 0) {
                         showToast('warning', 'Parse Warnings', `Found ${results.errors.length} parsing issues. Check console for details.`, 5000);
                         console.warn('CSV Parse Errors:', results.errors);
+                    }
+
+                    if (!results.data || results.data.length === 0) {
+                        showToast('error', 'Empty File', 'CSV file appears to be empty or invalid', 5000);
+                        console.error('No data parsed from CSV');
+                        document.getElementById('csvProgressContainer').style.display = 'none';
+                        return;
+                    }
+
+                    if (!results.meta.fields || results.meta.fields.length === 0) {
+                        showToast('error', 'No Columns', 'Could not detect column headers in CSV file', 5000);
+                        console.error('No column headers found');
+                        document.getElementById('csvProgressContainer').style.display = 'none';
+                        return;
                     }
 
                     csvData.raw = results.data;
@@ -4953,11 +4994,13 @@
                         updateProgress(100, 'Complete!');
                         setTimeout(() => {
                             document.getElementById('csvProgressContainer').style.display = 'none';
+                            console.log('About to show column mapping...');
                             showColumnMapping(results.meta.fields);
                         }, 500);
                     }, 300);
                 },
                 error: function(error) {
+                    console.error('Papa.parse error:', error);
                     showToast('error', 'Parse Error', 'Failed to parse CSV file: ' + error.message, 5000);
                     document.getElementById('csvProgressContainer').style.display = 'none';
                 }
@@ -5343,6 +5386,41 @@
                 section.classList.toggle('collapsed');
                 icon.classList.toggle('collapsed');
             }
+        }
+
+        function testCSVSystem() {
+            console.log('=== CSV System Test ===');
+
+            // Check Papa library
+            console.log('PapaParse loaded:', typeof Papa !== 'undefined');
+
+            // Check DOM elements
+            console.log('csvDropzone exists:', document.getElementById('csvDropzone') !== null);
+            console.log('csvFileInput exists:', document.getElementById('csvFileInput') !== null);
+            console.log('csvProgressContainer exists:', document.getElementById('csvProgressContainer') !== null);
+            console.log('csvMappingContainer exists:', document.getElementById('csvMappingContainer') !== null);
+            console.log('csvPreviewContainer exists:', document.getElementById('csvPreviewContainer') !== null);
+
+            // Check if CSV section is visible
+            const csvSection = document.getElementById('csvSection');
+            console.log('csvSection visible:', csvSection && !csvSection.classList.contains('collapsed'));
+
+            // Test with dummy data
+            console.log('Creating test CSV data...');
+            const testData = [
+                {symbol: 'MNQH5', direction: 'long', entryPrice: '15420.50'},
+                {symbol: 'MESH5', direction: 'short', entryPrice: '4985.25'}
+            ];
+            const testColumns = ['symbol', 'direction', 'entryPrice'];
+
+            showToast('info', 'Test Mode', 'Check console for system test results', 5000);
+            console.log('Test: Simulating column mapping with test data...');
+
+            csvData.parsed = testData;
+            showColumnMapping(testColumns);
+
+            console.log('=== Test Complete ===');
+            console.log('If column mapping UI appeared, the system is working!');
         }
 
         // Initialize voice features and CSV when page loads
