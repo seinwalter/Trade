@@ -5214,6 +5214,23 @@
             });
         }
 
+        // Helper function to clean currency/number formatting
+        function cleanNumericValue(value) {
+            if (!value || value === '') return '';
+
+            let cleaned = String(value).trim();
+
+            // Handle parentheses for negative numbers: ($100.00) -> -100.00
+            if (cleaned.startsWith('(') && cleaned.endsWith(')')) {
+                cleaned = '-' + cleaned.slice(1, -1);
+            }
+
+            // Remove currency symbols, commas, spaces
+            cleaned = cleaned.replace(/[$,\s]/g, '');
+
+            return cleaned;
+        }
+
         function validateCSVData() {
             csvData.validated = [];
             csvData.errors = [];
@@ -5227,6 +5244,12 @@
                 if (!row.symbol || row.symbol.trim() === '') {
                     errors.push('Symbol is required');
                 }
+
+                // Clean numeric fields before validation
+                if (row.entryPrice) row.entryPrice = cleanNumericValue(row.entryPrice);
+                if (row.exitPrice) row.exitPrice = cleanNumericValue(row.exitPrice);
+                if (row.pnl) row.pnl = cleanNumericValue(row.pnl);
+                if (row.positionSize) row.positionSize = cleanNumericValue(row.positionSize);
 
                 // Auto-detect direction from buy/sell times if available
                 if (!row.direction && row.buyTime && row.sellTime) {
