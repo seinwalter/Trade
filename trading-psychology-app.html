@@ -5262,7 +5262,11 @@
                 // Clean numeric fields before validation
                 if (row.entryPrice) row.entryPrice = cleanNumericValue(row.entryPrice);
                 if (row.exitPrice) row.exitPrice = cleanNumericValue(row.exitPrice);
-                if (row.pnl) row.pnl = cleanNumericValue(row.pnl);
+                if (row.pnl) {
+                    const originalPnl = row.pnl;
+                    row.pnl = cleanNumericValue(row.pnl);
+                    console.log(`Row ${index + 1} P/L: "${originalPnl}" -> "${row.pnl}" -> parseFloat: ${parseFloat(row.pnl)}`);
+                }
                 if (row.positionSize) row.positionSize = cleanNumericValue(row.positionSize);
 
                 // Auto-detect direction from buy/sell times if available
@@ -5434,7 +5438,25 @@
                 }
 
                 // Calculate P/L if not provided
-                const calculatedPnl = parseFloat(row.pnl) || (parseFloat(row.exitPrice) - parseFloat(row.entryPrice)) * parseFloat(row.positionSize || 1);
+                let calculatedPnl = 0;
+                if (row.pnl && row.pnl !== '') {
+                    calculatedPnl = parseFloat(row.pnl);
+                    console.log('Using CSV P/L:', row.pnl, '->', calculatedPnl);
+                } else if (row.exitPrice && row.entryPrice) {
+                    calculatedPnl = (parseFloat(row.exitPrice) - parseFloat(row.entryPrice)) * parseFloat(row.positionSize || 1);
+                    console.log('Calculated P/L from prices:', calculatedPnl);
+                }
+
+                // Format result display
+                let resultDisplay = 'Open';
+                if (!isNaN(calculatedPnl)) {
+                    if (calculatedPnl >= 0) {
+                        resultDisplay = `+$${calculatedPnl.toFixed(2)}`;
+                    } else {
+                        resultDisplay = `($${Math.abs(calculatedPnl).toFixed(2)})`;
+                    }
+                }
+                console.log('Trade result display:', resultDisplay, 'from P/L:', calculatedPnl);
 
                 const trade = {
                     id: Date.now() + Math.random(),
@@ -5447,7 +5469,7 @@
                     positionSize: parseFloat(row.positionSize) || 0,
                     notes: row.notes || '',
                     status: 'closed',
-                    result: calculatedPnl >= 0 ? `+$${calculatedPnl.toFixed(2)}` : `-$${Math.abs(calculatedPnl).toFixed(2)}`,
+                    result: resultDisplay,
                     tradeScreenshots: []
                 };
 
