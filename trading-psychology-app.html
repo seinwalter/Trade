@@ -5227,13 +5227,20 @@
 
             let cleaned = String(value).trim();
 
-            // Handle parentheses for negative numbers: ($100.00) -> -100.00
+            // Detect if negative (parentheses format in accounting)
+            let isNegative = false;
             if (cleaned.startsWith('(') && cleaned.endsWith(')')) {
-                cleaned = '-' + cleaned.slice(1, -1);
+                isNegative = true;
+                cleaned = cleaned.slice(1, -1); // Remove parentheses
             }
 
-            // Remove currency symbols, commas, spaces
+            // Remove currency symbols, commas, spaces, and other non-numeric chars except decimal and minus
             cleaned = cleaned.replace(/[$,\s]/g, '');
+
+            // Apply negative sign if needed
+            if (isNegative && !cleaned.startsWith('-')) {
+                cleaned = '-' + cleaned;
+            }
 
             return cleaned;
         }
