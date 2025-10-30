@@ -2210,7 +2210,7 @@
 
                 <div id="csvSection" class="collapsible-content">
                     <p style="margin-bottom: 20px; color: #8b949e;">
-                        Import historical trades from your broker statement or trading journal. This is for trades that have already happened. CSV files with trade data supported.
+                        Import historical trades from your broker statement or trading journal. <strong>No active session required</strong> - the app will automatically create sessions for each trading day. This is for trades that have already happened. CSV files with trade data supported.
                     </p>
 
                     <!-- Dropzone -->
@@ -5681,20 +5681,6 @@
         }
 
         function confirmCSVImport() {
-            // Check for session - either currentSession or today's session in allSessions
-            const today = new Date().toISOString().split('T')[0];
-            const todaySession = currentSession || allSessions.find(s => s.date === today);
-
-            if (!todaySession) {
-                showToast('error', 'No Active Session', 'Please start a trading day before importing historical trades. Go to Dashboard to start.', 5000);
-                return;
-            }
-
-            // If currentSession is null but we found today's session, set it
-            if (!currentSession && todaySession) {
-                currentSession = todaySession;
-            }
-
             if (csvData.validated.length === 0) {
                 showToast('error', 'No Valid Trades', 'There are no valid trades to import', 4000);
                 return;
@@ -5703,6 +5689,10 @@
             // Import all valid historical trades
             let imported = 0;
             lastImportedTradeIds = []; // Reset tracking
+            const today = new Date().toISOString().split('T')[0];
+
+            // Group trades by date for session creation
+            const tradesByDate = {};
 
             csvData.validated.forEach(row => {
                 // Parse date properly - try to convert to ISO format
@@ -5765,9 +5755,11 @@
                 // Track this trade for potential undo
                 lastImportedTradeIds.push(trade.id);
 
-                // Add to session
-                if (!currentSession.trades) currentSession.trades = [];
-                currentSession.trades.push(trade);
+                // Group by date
+                if (!tradesByDate[tradeDate]) {
+                    tradesByDate[tradeDate] = [];
+                }
+                tradesByDate[tradeDate].push(trade);
 
                 // Add to allTrades
                 allTrades.push(trade);
@@ -5775,11 +5767,44 @@
                 imported++;
             });
 
+            // Create or update sessions for each date
+            Object.keys(tradesByDate).forEach(date => {
+                let session = allSessions.find(s => s.date === date);
+
+                if (!session) {
+                    // Create a minimal session for this date
+                    session = {
+                        date: date,
+                        trades: [],
+                        completed: false,
+                        sleepHours: 0,
+                        emotionalState: 5,
+                        stressLevel: 5,
+                        sobrietyStatus: '',
+                        dailyTrend: '',
+                        fourHourStructure: '',
+                        keyLevels: '',
+                        tradingPlan: 'Imported historical trades',
+                        maxRiskPerTrade: 2,
+                        maxTotalRisk: 6,
+                        maxTrades: 2
+                    };
+                    allSessions.push(session);
+                    console.log('Created session for date:', date);
+                }
+
+                // Add trades to session
+                session.trades = session.trades || [];
+                tradesByDate[date].forEach(trade => {
+                    session.trades.push(trade);
+                });
+            });
+
             // Save data
             saveData();
 
             console.log('Imported trades:', imported);
-            console.log('Current session trades:', currentSession.trades);
+            console.log('Sessions created/updated:', Object.keys(tradesByDate).length);
             console.log('All trades:', allTrades);
             console.log('Last imported trade IDs:', lastImportedTradeIds);
 
@@ -5795,15 +5820,11 @@
 
             // Show success with action button
             showToast('success', 'Import Complete!',
-                `Successfully imported ${imported} trades. Click "View Today's Trades" to see them.`, 7000);
+                `Successfully imported ${imported} trades across ${Object.keys(tradesByDate).length} trading days. Go to History to view them.`, 7000);
 
-            // Automatically show the trades viewer after a brief delay
-            setTimeout(() => {
-                viewTodayTrades();
-            }, 1000);
-
-            // Update dashboard
+            // Refresh displays
             updateDashboard();
+            updateStatistics();
         }
 
         function clearLastImport() {

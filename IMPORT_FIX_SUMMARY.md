@@ -2,7 +2,16 @@
 
 ## Issues Fixed
 
-### 1. Win Rate Not Calculating
+### 1. Session Requirement Removed
+**Problem:** CSV imports required starting a trading session first, even for historical data.
+
+**Fix:**
+- Removed session requirement for CSV imports
+- App now automatically creates minimal sessions for each unique date in imported trades
+- Trades are properly grouped by date and assigned to their respective sessions
+- Clear message: "No active session required"
+
+### 2. Win Rate Not Calculating
 **Problem:** The statistics page was showing 0% win rate even though trades were imported.
 
 **Root Cause:** CSV imports were setting `result` to a formatted string like "+$228.75" or "($43.75)", but the statistics function was checking for `result === 'win'` or `result === 'loss'`.
@@ -12,7 +21,7 @@
 - Added a separate `resultDisplay` field for the formatted P&L string
 - Updated statistics calculations to handle both win/loss and P&L values
 
-### 2. Missing Statistics Display
+### 3. Missing Statistics Display
 **Problem:** No total P&L shown, profit factor incorrectly calculated
 
 **Fix:**
@@ -20,7 +29,7 @@
 - Updated profit factor calculation to use actual P&L values instead of simplified R-based calculation
 - Improved win rate display to show: "Win% (XW / YL / ZBE)"
 
-### 3. Dashboard Not Interactive
+### 4. Dashboard Not Interactive
 **Problem:** Couldn't easily navigate through trading days
 
 **Fix:**
@@ -38,19 +47,15 @@ Created `test_trades.csv` with exactly 62 trades matching your P&L values:
 
 ## How to Use
 
-### Step 1: Start a Trading Session
-1. Open `trading-psychology-app.html` in your browser
-2. Go to the **Dashboard** tab
-3. Click "Start Trading Day" to create today's session
-
-### Step 2: Import the Test Data
+### Step 1: Import the Test Data (No Session Required!)
+**Note:** You do NOT need to start a trading session first. The app will automatically create sessions for each date in your CSV.
 1. Go to the **History** tab
 2. In the "Import Trade History from CSV" section, click "Browse Files"
 3. Select `test_trades.csv`
 4. The system will auto-detect columns and show a preview
 5. Click "Confirm & Import All Trades"
 
-### Step 3: View Statistics
+### Step 2: View Statistics
 1. Go to the **Statistics** tab
 2. You should now see:
    - Total Trades: 62
@@ -58,7 +63,7 @@ Created `test_trades.csv` with exactly 62 trades matching your P&L values:
    - Total P/L: (sum of all trades)
    - Profit Factor: (properly calculated)
 
-### Step 4: Navigate Through Days
+### Step 3: Navigate Through Days
 1. Go to the **History** tab
 2. Use the date picker or Previous/Next Day buttons
 3. See daily stats: trades count, W/L, and P/L for that day

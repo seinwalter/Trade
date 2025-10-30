@@ -85,9 +85,11 @@ To test the import fixes with clean data:
 
 ```
 1. Settings → Data Management → Clear All Trades
-2. Dashboard → Start Trading Day
-3. History → Import test_trades.csv
-4. Statistics → Verify win rate, P&L, etc.
+2. History → Import test_trades.csv (no need to start a session!)
+3. Statistics → Verify win rate, P&L, etc.
+4. History → Navigate through days to see trades
 ```
+
+**Note:** You don't need to start a trading session before importing! The app automatically creates sessions for each date in your CSV file.
 
 All clear! 🎯
