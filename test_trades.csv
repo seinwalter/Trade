@@ -1,0 +1,64 @@
+Symbol,Date,Direction,Entry Price,Exit Price,P/L,Position Size,Notes
+AAPL,2025-10-01,Long,150.00,152.29,$228.75,100,Strong breakout trade
+TSLA,2025-10-01,Short,250.00,248.39,$160.50,100,Resistance rejection
+MSFT,2025-10-02,Long,380.00,379.56,($43.75),100,Stopped out early
+NVDA,2025-10-02,Long,500.00,500.51,$51.00,100,Quick scalp
+SPY,2025-10-03,Short,450.00,450.58,($57.50),100,Wrong direction
+QQQ,2025-10-03,Long,380.00,380.00,$0.00,100,Breakeven exit
+AAPL,2025-10-04,Short,152.00,153.62,($162.00),100,Failed short
+TSLA,2025-10-04,Long,248.00,248.68,$67.50,100,Nice bounce
+MSFT,2025-10-07,Long,379.00,380.93,$192.50,100,Strong trend
+NVDA,2025-10-07,Short,501.00,497.38,$362.50,100,Perfect rejection
+SPY,2025-10-08,Long,451.00,450.45,($55.00),100,Fakeout
+QQQ,2025-10-08,Short,381.00,382.30,($130.00),100,Wrong entry
+AAPL,2025-10-09,Long,151.00,149.86,($113.75),100,Support break
+TSLA,2025-10-09,Short,249.00,248.08,$92.50,100,Gap fill
+MSFT,2025-10-10,Long,378.00,379.03,$102.50,100,Morning pop
+NVDA,2025-10-10,Short,502.00,500.74,$126.00,100,Overbought
+SPY,2025-10-11,Long,449.00,451.48,$247.50,100,Bull flag
+QQQ,2025-10-11,Short,382.00,379.48,$252.50,100,Breakdown
+AAPL,2025-10-14,Short,150.00,150.05,($5.00),100,Too tight stop
+TSLA,2025-10-14,Long,247.00,247.08,$7.50,100,Small winner
+MSFT,2025-10-15,Short,380.00,379.93,$7.50,100,Quick scalp
+NVDA,2025-10-15,Long,499.00,499.03,$2.50,100,Tiny winner
+SPY,2025-10-16,Short,452.00,451.08,$92.50,100,Good short
+QQQ,2025-10-16,Long,378.00,379.03,$102.50,100,Reversal
+AAPL,2025-10-17,Short,151.00,149.98,$102.50,100,Nice move
+TSLA,2025-10-17,Long,248.00,247.99,($0.50),100,Tiny loss
+MSFT,2025-10-18,Short,381.00,381.43,($42.50),100,Bad timing
+NVDA,2025-10-18,Long,500.00,499.53,($47.00),100,Failed bounce
+SPY,2025-10-21,Short,453.00,453.47,($47.00),100,Reversal
+QQQ,2025-10-21,Long,379.00,378.53,($47.50),100,Weak follow through
+AAPL,2025-10-22,Short,152.00,151.91,$9.00,100,Small profit
+TSLA,2025-10-22,Long,246.00,246.10,$9.50,100,Scalp
+MSFT,2025-10-23,Short,382.00,380.07,$193.00,100,Strong down move
+NVDA,2025-10-23,Long,498.00,499.64,$163.50,100,Good entry
+SPY,2025-10-24,Short,454.00,455.20,($120.00),100,Got squeezed
+QQQ,2025-10-24,Long,377.00,377.55,$55.00,100,Quick bounce
+AAPL,2025-10-25,Short,153.00,152.16,$84.00,100,Resistance hold
+TSLA,2025-10-25,Long,245.00,246.00,($100.00),100,Stopped out
+MSFT,2025-10-28,Short,383.00,383.30,($30.00),100,Quick reversal
+NVDA,2025-10-28,Long,497.00,496.69,($31.00),100,Failed support
+SPY,2025-10-29,Short,455.00,455.97,($97.00),100,Wrong direction
+QQQ,2025-10-29,Long,376.00,374.58,($142.00),100,Breakdown
+AAPL,2025-10-30,Short,154.00,155.43,($143.00),100,Gap up loss
+TSLA,2025-10-30,Long,244.00,245.88,$187.50,100,Nice recovery
+MSFT,2025-10-31,Short,384.00,381.60,$240.00,100,Perfect short
+NVDA,2025-10-31,Long,496.00,493.14,($286.50),100,Big loss
+SPY,2025-11-01,Short,456.00,457.32,($132.00),100,Failed breakdown
+QQQ,2025-11-01,Long,375.00,375.18,$17.50,100,Small win
+AAPL,2025-11-04,Short,155.00,154.80,$20.00,100,Quick short
+TSLA,2025-11-04,Long,243.00,242.78,($22.00),100,Small loss
+MSFT,2025-11-05,Short,385.00,385.21,($21.00),100,Reversal
+NVDA,2025-11-05,Long,495.00,494.84,($16.50),100,Tight stop
+SPY,2025-11-06,Short,457.00,457.16,($16.00),100,Premature entry
+QQQ,2025-11-06,Long,374.00,373.69,($31.00),100,Failed breakout
+AAPL,2025-11-07,Short,156.00,157.10,($110.00),100,Big loss
+TSLA,2025-11-07,Long,242.00,240.93,($107.00),100,Wrong timing
+MSFT,2025-11-08,Short,386.00,387.20,($120.00),100,Stopped out
+NVDA,2025-11-08,Long,494.00,495.19,$119.00,100,Good reversal
+SPY,2025-11-11,Short,458.00,457.73,$27.50,100,Small short
+QQQ,2025-11-11,Long,373.00,373.38,$37.50,100,Morning gap
+AAPL,2025-11-12,Short,157.00,156.45,$55.50,100,Resistance rejection
+TSLA,2025-11-12,Long,241.00,241.84,$83.75,100,Bounce play
+MSFT,2025-11-13,Short,387.00,384.29,$271.25,100,Big winner
