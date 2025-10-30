@@ -6097,22 +6097,33 @@
             // Common column name patterns for HISTORICAL TRADES
             const patterns = {
                 'symbol': ['symbol', 'ticker', 'instrument', 'contract', 'stock', 'asset'],
-                'date': ['date', 'trade date', 'tradedate', 'day', 'timestamp', 'time', 'datetime'],
+                'date': ['date', 'trade date', 'tradedate', 'day', 'trading date'],
                 'direction': ['direction', 'side', 'type', 'long/short', 'buy/sell', 'action'],
-                'entryPrice': ['entry', 'entry price', 'entryprice', 'buy price', 'open', 'open price', 'entry_price'],
-                'exitPrice': ['exit', 'exit price', 'exitprice', 'sell price', 'close', 'close price', 'exit_price'],
-                'buyTime': ['buy', 'buy time', 'buytime', 'time bought', 'bought', 'boughttimestamp', 'open time', 'entry time', 'buy date', 'buy timestamp'],
-                'sellTime': ['sell', 'sell time', 'selltime', 'time sold', 'sold', 'soldtimestamp', 'close time', 'exit time', 'sell date', 'sell timestamp'],
+                'entryPrice': ['entry', 'entry price', 'entryprice', 'buy price', 'open', 'open price', 'entry_price', 'buyprice'],
+                'exitPrice': ['exit', 'exit price', 'exitprice', 'sell price', 'close', 'close price', 'exit_price', 'sellprice'],
+                'buyTime': ['buy time', 'buytime', 'time bought', 'bought', 'boughttimestamp', 'open time', 'entry time', 'buy timestamp'],
+                'sellTime': ['sell time', 'selltime', 'time sold', 'sold', 'soldtimestamp', 'close time', 'exit time', 'sell timestamp'],
                 'pnl': ['pnl', 'p/l', 'p&l', 'profit', 'loss', 'profit/loss', 'net', 'return'],
                 'positionSize': ['size', 'position', 'position size', 'positionsize', 'qty', 'quantity', 'shares', 'contracts', 'position_size'],
-                'notes': ['notes', 'comment', 'comments', 'description', 'memo', 'remarks']
+                'notes': ['notes', 'comment', 'comments', 'description', 'memo', 'remarks', 'duration']
             };
+
+            // Timestamp column exclusions (don't use these for date)
+            const timestampColumns = ['boughttimestamp', 'soldtimestamp', 'buytime', 'selltime', 'timestamp'];
 
             Object.keys(requiredFields).forEach(field => {
                 const fieldPatterns = patterns[field] || [];
 
                 for (let col of columns) {
                     const colLower = col.toLowerCase().trim();
+
+                    // Special handling for date - exclude timestamp columns
+                    if (field === 'date') {
+                        const isTimestampCol = timestampColumns.some(ts => colLower.includes(ts));
+                        if (isTimestampCol) {
+                            continue; // Skip timestamp columns for date mapping
+                        }
+                    }
 
                     for (let pattern of fieldPatterns) {
                         if (colLower === pattern || colLower.includes(pattern)) {
