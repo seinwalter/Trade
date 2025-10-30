@@ -2293,15 +2293,25 @@
                 </div>
             </div>
 
-            <!-- Clear Last Import Button -->
-            <div class="section" id="clearImportSection" style="display: none; background: rgba(255, 0, 85, 0.1); border-left: 3px solid #ff0055;">
-                <div style="display: flex; justify-content: space-between; align-items: center;">
+            <!-- Clear Trades Section -->
+            <div class="section" id="clearTradesSection" style="display: none; background: rgba(255, 0, 85, 0.1); border-left: 3px solid #ff0055;">
+                <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
                     <div>
-                        <strong>Last Import:</strong> <span id="lastImportCount">0</span> trades imported
+                        <div id="lastImportInfo" style="display: none;">
+                            <strong>Last Import:</strong> <span id="lastImportCount">0</span> trades
+                        </div>
+                        <div id="totalTradesInfo">
+                            <strong>Total Trades:</strong> <span id="totalTradesCount">0</span>
+                        </div>
                     </div>
-                    <button class="btn btn-danger" onclick="clearLastImport()" style="padding: 10px 20px;">
-                        🗑️ Clear Last Import
-                    </button>
+                    <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                        <button id="clearLastImportBtn" class="btn btn-danger" onclick="clearLastImport()" style="padding: 10px 20px; display: none;">
+                            🗑️ Clear Last Import
+                        </button>
+                        <button class="btn btn-danger" onclick="clearAllTrades()" style="padding: 10px 20px; background: #8b0000;">
+                            🗑️ Clear ALL Trades
+                        </button>
+                    </div>
                 </div>
             </div>
 
@@ -5239,12 +5249,14 @@
             if (!value || value === '') return '';
 
             let cleaned = String(value).trim();
+            const original = cleaned; // Keep for debugging
 
             // Detect if negative (parentheses format in accounting)
             let isNegative = false;
-            if (cleaned.startsWith('(') && cleaned.endsWith(')')) {
+            if (cleaned.includes('(') && cleaned.includes(')')) {
                 isNegative = true;
-                cleaned = cleaned.slice(1, -1); // Remove parentheses
+                // Remove all parentheses
+                cleaned = cleaned.replace(/[()]/g, '');
             }
 
             // Remove currency symbols, commas, spaces, and other non-numeric chars except decimal and minus
@@ -5253,6 +5265,11 @@
             // Apply negative sign if needed
             if (isNegative && !cleaned.startsWith('-')) {
                 cleaned = '-' + cleaned;
+            }
+
+            // Extra logging for debugging
+            if (original !== cleaned) {
+                console.log(`cleanNumericValue: "${original}" -> "${cleaned}"`);
             }
 
             return cleaned;
@@ -5326,13 +5343,20 @@
 
                 // Validate prices (only if provided) - for historical trades
                 if (row.entryPrice && row.entryPrice !== '' && isNaN(parseFloat(row.entryPrice))) {
-                    errors.push('Entry price must be a number');
+                    errors.push(`Entry price must be a number (got: "${row.entryPrice}")`);
                 }
                 if (row.exitPrice && row.exitPrice !== '' && isNaN(parseFloat(row.exitPrice))) {
-                    errors.push('Exit price must be a number');
+                    errors.push(`Exit price must be a number (got: "${row.exitPrice}")`);
                 }
                 if (row.pnl && row.pnl !== '' && isNaN(parseFloat(row.pnl))) {
-                    errors.push('P/L must be a number');
+                    const parsed = parseFloat(row.pnl);
+                    errors.push(`P/L must be a number (got: "${row.pnl}", parseFloat: ${parsed})`);
+                    console.error(`Row ${index + 1} P/L validation failed:`, {
+                        original: row.pnl,
+                        type: typeof row.pnl,
+                        parsed: parsed,
+                        isNaN: isNaN(parsed)
+                    });
                 }
 
                 if (errors.length > 0) {
@@ -5509,9 +5533,12 @@
             console.log('All trades:', allTrades);
             console.log('Last imported trade IDs:', lastImportedTradeIds);
 
-            // Show clear import button
-            document.getElementById('clearImportSection').style.display = 'block';
+            // Show clear trades section with import info
+            document.getElementById('clearTradesSection').style.display = 'block';
+            document.getElementById('lastImportInfo').style.display = 'block';
+            document.getElementById('clearLastImportBtn').style.display = 'inline-block';
             document.getElementById('lastImportCount').textContent = imported;
+            document.getElementById('totalTradesCount').textContent = allTrades.length;
 
             // Reset and close
             resetCSVUpload();
@@ -5555,8 +5582,17 @@
             const clearedCount = lastImportedTradeIds.length;
             lastImportedTradeIds = [];
 
-            // Hide clear button
-            document.getElementById('clearImportSection').style.display = 'none';
+            // Hide last import button and info
+            document.getElementById('lastImportInfo').style.display = 'none';
+            document.getElementById('clearLastImportBtn').style.display = 'none';
+
+            // Update total count
+            document.getElementById('totalTradesCount').textContent = allTrades.length;
+
+            // Hide section if no trades left
+            if (allTrades.length === 0) {
+                document.getElementById('clearTradesSection').style.display = 'none';
+            }
 
             saveData();
             showToast('success', 'Import Cleared', `Deleted ${clearedCount} imported trades.`, 3000);
@@ -5564,6 +5600,51 @@
             // Refresh view
             updateDashboard();
             viewTodayTrades();
+        }
+
+        function clearAllTrades() {
+            const totalTrades = allTrades.length;
+
+            if (totalTrades === 0) {
+                showToast('info', 'No Trades', 'There are no trades to clear.', 3000);
+                return;
+            }
+
+            if (!confirm(`⚠️ WARNING: This will delete ALL ${totalTrades} trades from ALL sessions!\n\nThis action cannot be undone. Are you absolutely sure?`)) {
+                return;
+            }
+
+            // Double confirmation for safety
+            if (!confirm(`Last chance! Delete ${totalTrades} trades permanently?`)) {
+                return;
+            }
+
+            console.log('Clearing all trades. Total:', totalTrades);
+
+            // Clear all trades
+            allTrades = [];
+            lastImportedTradeIds = [];
+
+            // Clear all sessions
+            allSessions.forEach(session => {
+                if (session.trades) {
+                    session.trades = [];
+                }
+            });
+
+            // Clear current session
+            if (currentSession && currentSession.trades) {
+                currentSession.trades = [];
+            }
+
+            // Hide clear section
+            document.getElementById('clearTradesSection').style.display = 'none';
+
+            saveData();
+            showToast('success', 'All Trades Cleared', `Deleted all ${totalTrades} trades.`, 4000);
+
+            // Refresh view
+            updateDashboard();
         }
 
         function resetCSVUpload() {
