@@ -1604,8 +1604,7 @@
 
         <div class="nav-tabs">
             <button class="nav-tab active" onclick="switchTab('dashboard')">Dashboard</button>
-            <button class="nav-tab" onclick="switchTab('sunday-prep')">Sunday Prep</button>
-            <button class="nav-tab" onclick="switchTab('post-market')">Post-Market Review</button>
+            <button class="nav-tab" onclick="switchTab('sunday-prep')">Market Prep</button>
             <button class="nav-tab" onclick="switchTab('trade-entry')">Trade Entry</button>
             <button class="nav-tab" onclick="switchTab('end-of-day')">End of Day</button>
             <button class="nav-tab" onclick="switchTab('history')">History</button>
@@ -1637,15 +1636,6 @@
                         <label class="required">Stress Level (1-10)</label>
                         <input type="number" id="dashboardStressLevel" min="1" max="10" required>
                     </div>
-                </div>
-
-                <div class="form-group">
-                    <label class="required">Sobriety Status</label>
-                    <select id="dashboardSobrietyStatus" required>
-                        <option value="">Select...</option>
-                        <option value="clear">Confirmed - Clear minded</option>
-                        <option value="concern">Have concerns - Should not trade</option>
-                    </select>
                 </div>
 
                 <div id="dashboardEmotionalWarning" class="alert alert-danger hidden">
@@ -1709,11 +1699,11 @@
         <!-- Sunday Prep Tab -->
         <div id="sunday-prep" class="tab-content">
             <div class="alert alert-info">
-                <strong>Sunday Weekly Research:</strong> Take 20 minutes to analyze the 4-hour and Daily timeframes. This prepares you for the week ahead.
+                <strong>Market Prep:</strong> Take 20 minutes to analyze the 4-hour and Daily timeframes. Use this for weekly prep (Sundays) or daily prep (evenings) to prepare for upcoming trading sessions.
             </div>
 
             <div class="section">
-                <h2>Weekly Market Research ⏰ (20 minutes minimum)</h2>
+                <h2>Market Research & Prep ⏰ (20 minutes minimum)</h2>
                 <div class="timer-display" id="sundayResearchTimer">Timer: 00:00</div>
                 <button class="btn btn-primary" id="startSundayTimer" onclick="startTimer('sundayResearch', 1200)">Start 20-Minute Timer</button>
 
@@ -1867,89 +1857,9 @@
                 </div>
             </div>
 
-            <button class="btn btn-success" onclick="saveSundayPrep()">Save Sunday Research</button>
-            <button class="btn btn-primary" onclick="exportSundayPrepPDF()">📄 Export Sunday Prep PDF</button>
-            <button class="btn btn-secondary" onclick="viewPastSundayPrep()">View Past Sunday Preps</button>
-        </div>
-
-        <!-- Pre-Market Tab -->
-        <div id="post-market" class="tab-content">
-            <div class="alert alert-info">
-                <strong>Evening Analysis:</strong> Complete this after the trading day ends. Review today's market action and prepare for tomorrow. (Use Monday's review for Tuesday's trading, etc.)
-            </div>
-
-            <div class="section">
-                <h2>Post-Market Reflection ⏰ (15 minutes minimum)</h2>
-                <div class="timer-display" id="mentalCheckTimer">Timer: 00:00</div>
-                <button class="btn btn-primary" id="startMentalCheckTimer" onclick="startTimer('mentalCheck', 900)">Start 15-Minute Timer</button>
-
-                <div class="form-group">
-                    <label class="required">Date (For Tomorrow's Session)</label>
-                    <input type="date" id="sessionDate" required>
-                </div>
-            </div>
-
-            <div class="section">
-                <h2>Today's Trading Review</h2>
-                <div class="form-group">
-                    <label>What Worked Today</label>
-                    <textarea id="whatWorked" placeholder="Successes from today's session"></textarea>
-                </div>
-                <div class="form-group">
-                    <label>What Didn't Work Today</label>
-                    <textarea id="whatDidntWork" placeholder="Mistakes or areas to improve from today"></textarea>
-                </div>
-            </div>
-
-            <div class="section">
-                <h2>Market Analysis for Tomorrow</h2>
-
-                <div class="inline-group">
-                    <div class="form-group">
-                        <label class="required">Daily Trend</label>
-                        <select id="dailyTrend" required>
-                            <option value="">Select...</option>
-                            <option value="bullish">Bullish</option>
-                            <option value="bearish">Bearish</option>
-                            <option value="ranging">Ranging</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label class="required">4hr Structure</label>
-                        <select id="fourHourStructure" required>
-                            <option value="">Select...</option>
-                            <option value="bullish">Bullish</option>
-                            <option value="bearish">Bearish</option>
-                            <option value="ranging">Ranging</option>
-                        </select>
-                    </div>
-                </div>
-
-                <div class="form-group">
-                    <label class="required">Key Levels Identified</label>
-                    <textarea id="keyLevels" placeholder="Support and resistance levels, order blocks, FVGs" required></textarea>
-                </div>
-
-                <div class="form-group">
-                    <label class="required">Tomorrow's Trading Plan</label>
-                    <textarea id="tradingPlan" placeholder="What setups to watch tomorrow? What's my bias for tomorrow?" required></textarea>
-                </div>
-
-                <div class="screenshot-upload-section">
-                    <h3>📊 Post-Market Chart Analysis Screenshots</h3>
-                    <div class="file-input-wrapper">
-                        <input type="file" id="preMarketScreenshots" accept="image/*" multiple onchange="handleScreenshotUpload(event, 'preMarket')">
-                        <label for="preMarketScreenshots" class="file-input-label">
-                            Upload Chart Analysis Screenshots
-                        </label>
-                    </div>
-                    <div id="preMarketScreenshotsGrid" class="screenshot-grid"></div>
-                </div>
-            </div>
-
-            <button class="btn btn-success" onclick="savePostMarket()">💾 Save Post-Market Review</button>
-            <button class="btn btn-primary" onclick="exportPostMarketPDF()">📄 Export Post-Market PDF</button>
-            <button class="btn btn-secondary" onclick="viewPastPostMarket()">📜 View Past Post-Market Reviews</button>
+            <button class="btn btn-success" onclick="saveSundayPrep()">Save Market Prep</button>
+            <button class="btn btn-primary" onclick="exportSundayPrepPDF()">📄 Export Market Prep PDF</button>
+            <button class="btn btn-secondary" onclick="viewPastSundayPrep()">View Past Market Preps</button>
         </div>
 
         <!-- Trade Entry Tab -->
@@ -2652,21 +2562,6 @@
                 <div class="section">
                     <h3 style="color: #ff9500; font-size: 16px; margin-bottom: 15px;">Trading Schedule</h3>
 
-                    <div style="background: rgba(21, 27, 40, 0.6); padding: 20px; border-radius: 3px; margin-bottom: 15px;">
-                        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px;">
-                            <div>
-                                <label style="font-size: 14px; color: #c9d1d9; font-weight: 600; margin-bottom: 5px; display: block;">Enable Post-Market Review</label>
-                                <p style="font-size: 12px; color: #8b949e; margin: 0;">Evening analysis for tomorrow's trading</p>
-                            </div>
-                            <label class="toggle-switch">
-                                <input type="checkbox" id="postMarketToggle" onchange="togglePostMarket()" checked>
-                                <span class="toggle-slider"></span>
-                            </label>
-                        </div>
-                        <div class="alert alert-info" style="margin-top: 15px; margin-bottom: 0;">
-                            <strong>Post-Market Review:</strong> Complete this in the evening after trading. Review today's action and analyze charts for tomorrow. Monday's review prepares you for Tuesday, Tuesday's for Wednesday, etc. When disabled, this tab is hidden - just use Sunday levels all week.
-                        </div>
-                    </div>
                 </div>
 
                 <div class="section success-section">
@@ -2808,7 +2703,6 @@
             eod: []
         };
         let appSettings = {
-            postMarketEnabled: true
         };
 
         // CSV Import state
@@ -2890,24 +2784,7 @@
         }
 
         function applySettings() {
-            // Show/hide post-market tab
-            const postMarketTab = document.querySelector('[onclick="switchTab(\'post-market\')"]');
-            if (postMarketTab) {
-                postMarketTab.style.display = appSettings.postMarketEnabled ? '' : 'none';
-            }
-        }
-
-        function togglePostMarket() {
-            appSettings.postMarketEnabled = !appSettings.postMarketEnabled;
-            saveSettings();
-
-            // If we're on post-market tab and it's being disabled, switch to dashboard
-            const activeTab = document.querySelector('.tab-content.active');
-            if (activeTab && activeTab.id === 'post-market' && !appSettings.postMarketEnabled) {
-                switchTab('dashboard');
-            }
-
-            document.getElementById('postMarketToggle').checked = appSettings.postMarketEnabled;
+            // Settings applied
         }
 
         // Screenshot handling functions
@@ -3802,12 +3679,6 @@
                 document.getElementById('dashboardEmotionalWarning').classList.add('hidden');
             }
 
-            const sobriety = document.getElementById('dashboardSobrietyStatus').value;
-            if (sobriety === 'concern') {
-                showToast('error', 'Trading Blocked', 'Sobriety concerns noted. Take the day off.', 6000);
-                return;
-            }
-
             const today = new Date().toISOString().split('T')[0];
 
             // Check for post-market analysis from yesterday for today
@@ -3820,7 +3691,6 @@
                 sleepHours: document.getElementById('dashboardSleepHours').value,
                 emotionalState: emotionalState,
                 stressLevel: document.getElementById('dashboardStressLevel').value,
-                sobrietyStatus: sobriety,
                 dailyTrend: todaysPostMarket?.dailyTrend || 'See Sunday Prep',
                 fourHourStructure: todaysPostMarket?.fourHourStructure || 'See Sunday Prep',
                 keyLevels: todaysPostMarket?.keyLevels || '',
@@ -5507,6 +5377,7 @@
                                 <th style="padding: 12px; text-align: right; font-weight: 600;">Exit</th>
                                 <th style="padding: 12px; text-align: center; font-weight: 600;">Date</th>
                                 <th style="padding: 12px; text-align: right; font-weight: 600;">Result</th>
+                                <th style="padding: 12px; text-align: center; font-weight: 600; width: 100px;">Actions</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -5516,16 +5387,25 @@
                     const resultColor = trade.result === 'win' ? '#10b981' : trade.result === 'loss' ? '#ef4444' : '#6c757d';
                     const dirColor = trade.direction === 'short' ? '#fbbf24' : '#3b82f6';
                     tableHTML += `
-                        <tr style="border-bottom: 1px solid rgba(255, 255, 255, 0.1); cursor: pointer; transition: background 0.2s;"
+                        <tr style="border-bottom: 1px solid rgba(255, 255, 255, 0.1); transition: background 0.2s;"
                             onmouseover="this.style.background='rgba(255, 255, 255, 0.05)'"
-                            onmouseout="this.style.background='transparent'"
-                            onclick="viewTradeDetail(${trade.id})">
-                            <td style="padding: 12px; font-weight: 600;">${trade.symbol}</td>
-                            <td style="padding: 12px; color: ${dirColor}; font-weight: 600;">${trade.direction?.toUpperCase() || 'LONG'}</td>
-                            <td style="padding: 12px; text-align: right;">${trade.entryPrice ? '$' + trade.entryPrice.toFixed(2) : '-'}</td>
-                            <td style="padding: 12px; text-align: right;">${trade.exitPrice ? '$' + trade.exitPrice.toFixed(2) : '-'}</td>
-                            <td style="padding: 12px; text-align: center;">${trade.date}</td>
-                            <td style="padding: 12px; text-align: right; font-weight: 600; color: ${resultColor};">${trade.resultDisplay || trade.result || 'Open'}</td>
+                            onmouseout="this.style.background='transparent'">
+                            <td style="padding: 12px; font-weight: 600; cursor: pointer;" onclick="viewTradeDetail(${trade.id})">${trade.symbol}</td>
+                            <td style="padding: 12px; color: ${dirColor}; font-weight: 600; cursor: pointer;" onclick="viewTradeDetail(${trade.id})">${trade.direction?.toUpperCase() || 'LONG'}</td>
+                            <td style="padding: 12px; text-align: right; cursor: pointer;" onclick="viewTradeDetail(${trade.id})">${trade.entryPrice ? '$' + trade.entryPrice.toFixed(2) : '-'}</td>
+                            <td style="padding: 12px; text-align: right; cursor: pointer;" onclick="viewTradeDetail(${trade.id})">${trade.exitPrice ? '$' + trade.exitPrice.toFixed(2) : '-'}</td>
+                            <td style="padding: 12px; text-align: center; cursor: pointer;" onclick="viewTradeDetail(${trade.id})">${trade.date}</td>
+                            <td style="padding: 12px; text-align: right; font-weight: 600; color: ${resultColor}; cursor: pointer;" onclick="viewTradeDetail(${trade.id})">${trade.resultDisplay || trade.result || 'Open'}</td>
+                            <td style="padding: 12px; text-align: center;">
+                                <button onclick="event.stopPropagation(); editTrade(${trade.id})"
+                                    style="background: rgba(59, 130, 246, 0.2); border: 1px solid #3b82f6; color: #3b82f6; padding: 4px 8px; border-radius: 4px; cursor: pointer; font-size: 12px; margin-right: 4px;"
+                                    onmouseover="this.style.background='rgba(59, 130, 246, 0.3)'"
+                                    onmouseout="this.style.background='rgba(59, 130, 246, 0.2)'">Edit</button>
+                                <button onclick="event.stopPropagation(); deleteTrade(${trade.id})"
+                                    style="background: rgba(239, 68, 68, 0.2); border: 1px solid #ef4444; color: #ef4444; padding: 4px 8px; border-radius: 4px; cursor: pointer; font-size: 12px;"
+                                    onmouseover="this.style.background='rgba(239, 68, 68, 0.3)'"
+                                    onmouseout="this.style.background='rgba(239, 68, 68, 0.2)'">Delete</button>
+                            </td>
                         </tr>
                     `;
                 });
@@ -5586,6 +5466,115 @@
         // Close modal
         function closeModal() {
             document.getElementById('tradeDetailModal').classList.remove('active');
+        }
+
+        // Delete trade
+        function deleteTrade(tradeId) {
+            if (!confirm('Are you sure you want to delete this trade? This action cannot be undone.')) {
+                return;
+            }
+
+            // Find and remove trade from allTrades
+            const tradeIndex = allTrades.findIndex(t => t.id === tradeId);
+            if (tradeIndex === -1) {
+                showToast('error', 'Error', 'Trade not found', 3000);
+                return;
+            }
+
+            const trade = allTrades[tradeIndex];
+            allTrades.splice(tradeIndex, 1);
+
+            // Remove from session trades as well
+            const session = allSessions.find(s => s.date === trade.date);
+            if (session && session.trades) {
+                const sessionTradeIndex = session.trades.findIndex(t => t.id === tradeId);
+                if (sessionTradeIndex !== -1) {
+                    session.trades.splice(sessionTradeIndex, 1);
+                }
+            }
+
+            // Save and refresh
+            saveData();
+            updateHistory();
+            updateDashboard();
+            updateStatistics();
+            updateAnalytics();
+
+            showToast('success', 'Trade Deleted', `${trade.symbol} trade removed successfully`, 3000);
+        }
+
+        // Edit trade (simple prompt-based editing for now)
+        function editTrade(tradeId) {
+            const trade = allTrades.find(t => t.id === tradeId);
+            if (!trade) {
+                showToast('error', 'Error', 'Trade not found', 3000);
+                return;
+            }
+
+            // Show current values and allow editing
+            const symbol = prompt('Symbol:', trade.symbol);
+            if (!symbol) return;
+
+            const direction = prompt('Direction (long/short):', trade.direction);
+            if (!direction || !['long', 'short'].includes(direction.toLowerCase())) {
+                showToast('error', 'Invalid Direction', 'Direction must be "long" or "short"', 3000);
+                return;
+            }
+
+            const entryPrice = parseFloat(prompt('Entry Price:', trade.entryPrice));
+            if (isNaN(entryPrice)) {
+                showToast('error', 'Invalid Price', 'Entry price must be a number', 3000);
+                return;
+            }
+
+            const exitPrice = parseFloat(prompt('Exit Price:', trade.exitPrice));
+            if (isNaN(exitPrice)) {
+                showToast('error', 'Invalid Price', 'Exit price must be a number', 3000);
+                return;
+            }
+
+            const positionSize = parseFloat(prompt('Position Size:', trade.positionSize || 1));
+            if (isNaN(positionSize)) {
+                showToast('error', 'Invalid Size', 'Position size must be a number', 3000);
+                return;
+            }
+
+            // Calculate new P/L based on direction
+            let pnl;
+            if (direction.toLowerCase() === 'long') {
+                pnl = (exitPrice - entryPrice) * positionSize;
+            } else {
+                pnl = (entryPrice - exitPrice) * positionSize;
+            }
+
+            // Update trade
+            trade.symbol = symbol;
+            trade.direction = direction.toLowerCase();
+            trade.entryPrice = entryPrice;
+            trade.exitPrice = exitPrice;
+            trade.positionSize = positionSize;
+            trade.pnl = pnl;
+
+            // Update result
+            if (pnl > 0) {
+                trade.result = 'win';
+                trade.resultDisplay = `+$${pnl.toFixed(2)}`;
+            } else if (pnl < 0) {
+                trade.result = 'loss';
+                trade.resultDisplay = `($${Math.abs(pnl).toFixed(2)})`;
+            } else {
+                trade.result = 'breakeven';
+                trade.resultDisplay = `$${pnl.toFixed(2)}`;
+            }
+
+            // Save and refresh
+            saveData();
+            updateHistory();
+            updateDashboard();
+            updateStatistics();
+            updateAnalytics();
+
+            showToast('success', 'Trade Updated', `${trade.symbol} trade updated successfully`, 3000);
         }
 
         // Export functions
@@ -6258,6 +6247,10 @@
                         mappedRow[field] = row[column] || '';
                     });
 
+                    // Store original column names for price fields to check if they need swapping for shorts
+                    mappedRow._entryPriceColumn = csvColumnMapping.entryPrice;
+                    mappedRow._exitPriceColumn = csvColumnMapping.exitPrice;
+
                     return mappedRow;
                 })
                 .filter(row => {
@@ -6382,6 +6375,29 @@
                     // Direction is now optional - warn if missing but don't fail validation
                     console.log(`Row ${index + 1}: ⚠ No direction specified (defaulting to 'long')`);
                     row.direction = 'long'; // Default to long if not specified
+                }
+
+                // CRITICAL: For SHORT trades, swap entry/exit if columns were buy/sell based
+                if (row.direction === 'short' && row._entryPriceColumn && row._exitPriceColumn) {
+                    const entryCol = row._entryPriceColumn.toLowerCase();
+                    const exitCol = row._exitPriceColumn.toLowerCase();
+
+                    // Check if columns contain "buy" or "sell" keywords
+                    const entryIsBuyBased = entryCol.includes('buy') || entryCol.includes('open');
+                    const exitIsSellBased = exitCol.includes('sell') || exitCol.includes('close');
+
+                    if (entryIsBuyBased || exitIsSellBased) {
+                        console.log(`Row ${index + 1}: 🔄 SHORT trade detected with buy/sell columns - swapping entry/exit prices`);
+                        console.log(`  Before swap: Entry="${row.entryPrice}" (from "${row._entryPriceColumn}"), Exit="${row.exitPrice}" (from "${row._exitPriceColumn}")`);
+
+                        // Swap the values
+                        const temp = row.entryPrice;
+                        row.entryPrice = row.exitPrice;
+                        row.exitPrice = temp;
+
+                        console.log(`  After swap: Entry="${row.entryPrice}", Exit="${row.exitPrice}"`);
+                        console.log(`  ✓ For SHORT: Entry = Sell Price, Exit = Buy Price`);
+                    }
                 }
 
                 // Validate prices (only if provided) - for historical trades
@@ -6584,7 +6600,6 @@
                         sleepHours: 0,
                         emotionalState: 5,
                         stressLevel: 5,
-                        sobrietyStatus: '',
                         dailyTrend: '',
                         fourHourStructure: '',
                         keyLevels: '',
