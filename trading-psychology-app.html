@@ -2532,6 +2532,92 @@
                         Voice recording is available on all text fields. Click the 🎤 microphone icon to start speaking your analysis while looking at charts. Works best in Chrome and Edge browsers.
                     </p>
                 </div>
+
+                <div class="section danger-section">
+                    <h3 style="color: #ff0055; font-size: 18px; margin-bottom: 15px;">🗑️ Data Management</h3>
+                    <p style="font-size: 13px; color: #8b949e; line-height: 1.6; margin-bottom: 20px;">
+                        Manage your trading data. All delete operations are permanent and cannot be undone. Always export a backup before clearing data.
+                    </p>
+
+                    <!-- Data Stats -->
+                    <div style="background: rgba(139, 148, 158, 0.1); padding: 15px; border-radius: 8px; margin-bottom: 20px;">
+                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 15px;">
+                            <div>
+                                <div style="font-size: 24px; font-weight: bold; color: #58a6ff;" id="settingsTradeCount">0</div>
+                                <div style="font-size: 12px; color: #8b949e;">Total Trades</div>
+                            </div>
+                            <div>
+                                <div style="font-size: 24px; font-weight: bold; color: #58a6ff;" id="settingsSessionCount">0</div>
+                                <div style="font-size: 12px; color: #8b949e;">Trading Sessions</div>
+                            </div>
+                            <div>
+                                <div style="font-size: 24px; font-weight: bold; color: #58a6ff;" id="settingsLastImportCount">0</div>
+                                <div style="font-size: 12px; color: #8b949e;">Last Import</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Clear Options -->
+                    <div style="display: grid; gap: 15px;">
+                        <!-- Clear Last Import -->
+                        <div style="background: rgba(255, 153, 0, 0.1); border-left: 3px solid #ff9500; padding: 15px; border-radius: 6px;">
+                            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+                                <div>
+                                    <h4 style="margin: 0 0 5px 0; color: #ff9500;">Clear Last Import</h4>
+                                    <p style="margin: 0; font-size: 13px; color: #8b949e;">Remove only the most recently imported trades</p>
+                                </div>
+                                <button class="btn btn-warning" onclick="clearLastImportFromSettings()" style="background: #ff9500;">
+                                    🗑️ Clear Last Import
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Clear All Trades -->
+                        <div style="background: rgba(239, 68, 68, 0.1); border-left: 3px solid #ef4444; padding: 15px; border-radius: 6px;">
+                            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+                                <div>
+                                    <h4 style="margin: 0 0 5px 0; color: #ef4444;">Clear All Trades</h4>
+                                    <p style="margin: 0; font-size: 13px; color: #8b949e;">Delete all trades but keep trading sessions</p>
+                                </div>
+                                <button class="btn btn-danger" onclick="clearAllTradesFromSettings()">
+                                    🗑️ Clear All Trades
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Clear All Sessions -->
+                        <div style="background: rgba(255, 0, 85, 0.1); border-left: 3px solid #ff0055; padding: 15px; border-radius: 6px;">
+                            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+                                <div>
+                                    <h4 style="margin: 0 0 5px 0; color: #ff0055;">Clear All Sessions</h4>
+                                    <p style="margin: 0; font-size: 13px; color: #8b949e;">Delete all trading sessions but keep trades</p>
+                                </div>
+                                <button class="btn btn-danger" onclick="clearAllSessions()" style="background: #ff0055;">
+                                    🗑️ Clear All Sessions
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Clear Everything -->
+                        <div style="background: rgba(139, 0, 0, 0.2); border-left: 3px solid #8b0000; padding: 15px; border-radius: 6px;">
+                            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+                                <div>
+                                    <h4 style="margin: 0 0 5px 0; color: #8b0000;">⚠️ Clear Everything</h4>
+                                    <p style="margin: 0; font-size: 13px; color: #8b949e;">Delete ALL data (trades, sessions, settings, everything!)</p>
+                                </div>
+                                <button class="btn btn-danger" onclick="clearAllData()" style="background: #8b0000;">
+                                    ⚠️ DELETE EVERYTHING
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Backup Reminder -->
+                    <div style="background: rgba(88, 166, 255, 0.1); border-left: 3px solid #58a6ff; padding: 15px; border-radius: 6px; margin-top: 20px;">
+                        <strong style="color: #58a6ff;">💡 Pro Tip:</strong>
+                        <span style="color: #8b949e;"> Always export a backup before clearing data. Go to the Statistics tab and click "💾 Export Complete Backup"</span>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -3476,6 +3562,7 @@
             if (tabName === 'statistics') updateStatistics();
             if (tabName === 'history') loadHistory();
             if (tabName === 'trade-entry') checkPostMarketInfo();
+            if (tabName === 'settings') updateSettingsDataCounts();
         }
 
         // Timer functionality
@@ -4828,6 +4915,49 @@
             }
         }
 
+        // Clear functions for Settings page
+        function clearLastImportFromSettings() {
+            clearLastImport();
+            updateSettingsDataCounts();
+        }
+
+        function clearAllTradesFromSettings() {
+            clearAllTrades();
+            updateSettingsDataCounts();
+        }
+
+        function clearAllSessions() {
+            const sessionCount = allSessions.length;
+
+            if (sessionCount === 0) {
+                showToast('info', 'No Sessions', 'There are no sessions to clear.', 3000);
+                return;
+            }
+
+            if (!confirm(`⚠️ WARNING: This will delete ALL ${sessionCount} trading sessions!\n\nTrades will be kept but removed from sessions.\n\nThis cannot be undone. Are you sure?`)) {
+                return;
+            }
+
+            console.log('Clearing all sessions. Total:', sessionCount);
+
+            // Clear all sessions
+            allSessions = [];
+            currentSession = null;
+
+            saveData();
+            showToast('success', 'Sessions Cleared', `Deleted all ${sessionCount} sessions. Trades preserved.`, 4000);
+
+            // Update displays
+            updateDashboard();
+            updateSettingsDataCounts();
+        }
+
+        function updateSettingsDataCounts() {
+            document.getElementById('settingsTradeCount').textContent = allTrades.length;
+            document.getElementById('settingsSessionCount').textContent = allSessions.length;
+            document.getElementById('settingsLastImportCount').textContent = lastImportedTradeIds.length;
+        }
+
         // Filter history
         let currentFilterDate = null;
         let currentFilterRange = null;
@@ -5719,7 +5849,8 @@
 
             // Refresh view
             updateDashboard();
-            viewTodayTrades();
+            updateStatistics();
+            loadHistory();
         }
 
         function clearAllTrades() {
@@ -5765,6 +5896,8 @@
 
             // Refresh view
             updateDashboard();
+            updateStatistics();
+            loadHistory();
         }
 
         function resetCSVUpload() {
