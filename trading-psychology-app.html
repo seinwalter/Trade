@@ -5202,16 +5202,23 @@
         }
 
         function mapCSVData() {
-            csvData.mapped = csvData.parsed.map(row => {
-                const mappedRow = {};
+            csvData.mapped = csvData.parsed
+                .map(row => {
+                    const mappedRow = {};
 
-                Object.keys(csvColumnMapping).forEach(field => {
-                    const column = csvColumnMapping[field];
-                    mappedRow[field] = row[column] || '';
+                    Object.keys(csvColumnMapping).forEach(field => {
+                        const column = csvColumnMapping[field];
+                        mappedRow[field] = row[column] || '';
+                    });
+
+                    return mappedRow;
+                })
+                .filter(row => {
+                    // Filter out completely blank rows - check if at least symbol or entry price exists
+                    const hasSymbol = row.symbol && row.symbol.trim() !== '';
+                    const hasEntryPrice = row.entryPrice && row.entryPrice.trim() !== '';
+                    return hasSymbol || hasEntryPrice;
                 });
-
-                return mappedRow;
-            });
         }
 
         // Helper function to clean currency/number formatting
@@ -5406,17 +5413,34 @@
             // Import all valid historical trades
             let imported = 0;
             csvData.validated.forEach(row => {
+                // Parse date properly - try to convert to ISO format
+                let tradeDate = today;
+                if (row.date && row.date.trim() !== '') {
+                    try {
+                        const parsedDate = new Date(row.date);
+                        if (!isNaN(parsedDate.getTime())) {
+                            tradeDate = parsedDate.toISOString().split('T')[0];
+                        }
+                    } catch (e) {
+                        console.log('Could not parse date:', row.date, 'using today');
+                    }
+                }
+
+                // Calculate P/L if not provided
+                const calculatedPnl = parseFloat(row.pnl) || (parseFloat(row.exitPrice) - parseFloat(row.entryPrice)) * parseFloat(row.positionSize || 1);
+
                 const trade = {
                     id: Date.now() + Math.random(),
                     symbol: row.symbol,
-                    date: row.date || today,
+                    date: tradeDate,
                     direction: row.direction,
                     entryPrice: parseFloat(row.entryPrice) || 0,
                     exitPrice: parseFloat(row.exitPrice) || 0,
-                    pnl: parseFloat(row.pnl) || (parseFloat(row.exitPrice) - parseFloat(row.entryPrice)) * parseFloat(row.positionSize || 1),
+                    pnl: calculatedPnl,
                     positionSize: parseFloat(row.positionSize) || 0,
                     notes: row.notes || '',
                     status: 'closed',
+                    result: calculatedPnl >= 0 ? `+$${calculatedPnl.toFixed(2)}` : `-$${Math.abs(calculatedPnl).toFixed(2)}`,
                     tradeScreenshots: []
                 };
 
