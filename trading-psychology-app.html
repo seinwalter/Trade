@@ -1611,6 +1611,7 @@
             <button class="nav-tab" onclick="switchTab('history')">History</button>
             <button class="nav-tab" onclick="switchTab('protocols')">Protocols</button>
             <button class="nav-tab" onclick="switchTab('statistics')">Statistics</button>
+            <button class="nav-tab" onclick="switchTab('analytics')">📊 Analytics</button>
             <button class="nav-tab" onclick="switchTab('settings')">⚙️ Settings</button>
         </div>
 
@@ -2491,6 +2492,155 @@
             <button class="btn btn-primary" onclick="exportAllData()">💾 Export Complete Backup</button>
             <button class="btn btn-success" onclick="importAllData()">📥 Import Backup</button>
             <button class="btn btn-danger" onclick="clearAllData()">🗑️ Clear All Data</button>
+        </div>
+
+        <!-- Analytics Tab -->
+        <div id="analytics" class="tab-content">
+            <div class="section">
+                <h2>📊 Advanced Analytics Dashboard</h2>
+                <p style="color: #8b949e; margin-bottom: 20px;">Deep dive into your trading performance with comprehensive metrics and visualizations.</p>
+            </div>
+
+            <!-- Performance Breakdown -->
+            <div class="section">
+                <h3 style="color: #58a6ff; margin-bottom: 20px;">📈 Performance Breakdown</h3>
+
+                <!-- Win Rate by Symbol -->
+                <div style="background: rgba(21, 27, 40, 0.6); padding: 20px; border-radius: 8px; margin-bottom: 20px;">
+                    <h4 style="margin-bottom: 15px;">Win Rate by Symbol</h4>
+                    <div id="symbolPerformance"></div>
+                </div>
+
+                <!-- Win Rate by Direction -->
+                <div style="background: rgba(21, 27, 40, 0.6); padding: 20px; border-radius: 8px; margin-bottom: 20px;">
+                    <h4 style="margin-bottom: 15px;">Long vs Short Performance</h4>
+                    <div class="inline-group">
+                        <div class="stat-card" style="background: rgba(16, 185, 129, 0.1); border-left: 3px solid #10b981;">
+                            <h3 id="longWinRate">0%</h3>
+                            <p>Long Win Rate</p>
+                            <div style="font-size: 12px; color: #8b949e; margin-top: 5px;">
+                                <span id="longStats">0 trades</span>
+                            </div>
+                        </div>
+                        <div class="stat-card" style="background: rgba(239, 68, 68, 0.1); border-left: 3px solid #ef4444;">
+                            <h3 id="shortWinRate">0%</h3>
+                            <p>Short Win Rate</p>
+                            <div style="font-size: 12px; color: #8b949e; margin-top: 5px;">
+                                <span id="shortStats">0 trades</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Win Rate by Day of Week -->
+                <div style="background: rgba(21, 27, 40, 0.6); padding: 20px; border-radius: 8px; margin-bottom: 20px;">
+                    <h4 style="margin-bottom: 15px;">Performance by Day of Week</h4>
+                    <div id="dayOfWeekPerformance"></div>
+                </div>
+
+                <!-- Average Win/Loss Sizes -->
+                <div style="background: rgba(21, 27, 40, 0.6); padding: 20px; border-radius: 8px; margin-bottom: 20px;">
+                    <h4 style="margin-bottom: 15px;">Win/Loss Analysis</h4>
+                    <div class="inline-group">
+                        <div class="stat-card">
+                            <h3 id="avgWinSize" style="color: #10b981;">$0.00</h3>
+                            <p>Average Win</p>
+                        </div>
+                        <div class="stat-card">
+                            <h3 id="avgLossSize" style="color: #ef4444;">$0.00</h3>
+                            <p>Average Loss</p>
+                        </div>
+                        <div class="stat-card">
+                            <h3 id="winLossRatio">0.00</h3>
+                            <p>Win/Loss Ratio</p>
+                        </div>
+                        <div class="stat-card">
+                            <h3 id="expectancy">$0.00</h3>
+                            <p>Expectancy</p>
+                            <div style="font-size: 11px; color: #8b949e; margin-top: 5px;">Avg per trade</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Risk Metrics -->
+            <div class="section">
+                <h3 style="color: #ff9500; margin-bottom: 20px;">⚠️ Risk Metrics</h3>
+
+                <div class="inline-group">
+                    <div class="stat-card" style="background: rgba(16, 185, 129, 0.1);">
+                        <h3 id="largestWin" style="color: #10b981;">$0.00</h3>
+                        <p>Largest Win</p>
+                        <div style="font-size: 11px; color: #8b949e; margin-top: 5px;" id="largestWinDate"></div>
+                    </div>
+                    <div class="stat-card" style="background: rgba(239, 68, 68, 0.1);">
+                        <h3 id="largestLoss" style="color: #ef4444;">$0.00</h3>
+                        <p>Largest Loss</p>
+                        <div style="font-size: 11px; color: #8b949e; margin-top: 5px;" id="largestLossDate"></div>
+                    </div>
+                    <div class="stat-card">
+                        <h3 id="currentDrawdown">0%</h3>
+                        <p>Current Drawdown</p>
+                        <div style="font-size: 11px; color: #8b949e; margin-top: 5px;">From peak equity</div>
+                    </div>
+                    <div class="stat-card">
+                        <h3 id="maxDrawdown">0%</h3>
+                        <p>Max Drawdown</p>
+                        <div style="font-size: 11px; color: #8b949e; margin-top: 5px;">Worst peak-to-trough</div>
+                    </div>
+                </div>
+
+                <!-- Consecutive Stats -->
+                <div style="background: rgba(21, 27, 40, 0.6); padding: 20px; border-radius: 8px; margin-top: 20px;">
+                    <h4 style="margin-bottom: 15px;">Streaks</h4>
+                    <div class="inline-group">
+                        <div class="stat-card">
+                            <h3 id="currentStreak">0</h3>
+                            <p id="currentStreakLabel">Current Streak</p>
+                        </div>
+                        <div class="stat-card">
+                            <h3 id="longestWinStreak" style="color: #10b981;">0</h3>
+                            <p>Longest Win Streak</p>
+                        </div>
+                        <div class="stat-card">
+                            <h3 id="longestLossStreak" style="color: #ef4444;">0</h3>
+                            <p>Longest Loss Streak</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Equity Curve -->
+            <div class="section">
+                <h3 style="color: #58a6ff; margin-bottom: 20px;">📉 Equity Curve</h3>
+                <div style="background: rgba(21, 27, 40, 0.6); padding: 20px; border-radius: 8px;">
+                    <canvas id="equityCurveChart" width="800" height="300"></canvas>
+                </div>
+            </div>
+
+            <!-- P/L Distribution -->
+            <div class="section">
+                <h3 style="color: #58a6ff; margin-bottom: 20px;">📊 P/L Distribution</h3>
+                <div style="background: rgba(21, 27, 40, 0.6); padding: 20px; border-radius: 8px;">
+                    <canvas id="pnlDistributionChart" width="800" height="300"></canvas>
+                </div>
+            </div>
+
+            <!-- Calendar Heatmap -->
+            <div class="section">
+                <h3 style="color: #58a6ff; margin-bottom: 20px;">📅 Calendar Heatmap</h3>
+                <div style="background: rgba(21, 27, 40, 0.6); padding: 20px; border-radius: 8px;">
+                    <div id="calendarHeatmap"></div>
+                </div>
+            </div>
+
+            <!-- Rolling Win Rate -->
+            <div class="section">
+                <h3 style="color: #58a6ff; margin-bottom: 20px;">📈 Rolling Win Rate (Last 10 Trades)</h3>
+                <div style="background: rgba(21, 27, 40, 0.6); padding: 20px; border-radius: 8px;">
+                    <canvas id="rollingWinRateChart" width="800" height="250"></canvas>
+                </div>
+            </div>
         </div>
 
         <!-- Settings Tab -->
@@ -3560,6 +3710,7 @@
 
             if (tabName === 'dashboard') updateDashboard();
             if (tabName === 'statistics') updateStatistics();
+            if (tabName === 'analytics') updateAnalytics();
             if (tabName === 'history') loadHistory();
             if (tabName === 'trade-entry') checkPostMarketInfo();
             if (tabName === 'settings') updateSettingsDataCounts();
@@ -4746,6 +4897,562 @@
                     <span>${week.profitable ? 'Profitable' : 'Not Profitable'} (${week.trades} trades, ${week.pl > 0 ? '+' : ''}${week.pl}R)</span>
                 </div>
             `).join('');
+        }
+
+        // Update Analytics
+        function updateAnalytics() {
+            if (allTrades.length === 0) {
+                console.log('No trades to analyze');
+                return;
+            }
+
+            const completedTrades = allTrades.filter(t => t.result && t.result !== 'open');
+
+            // Performance Breakdown
+            updateSymbolPerformance();
+            updateDirectionPerformance();
+            updateDayOfWeekPerformance();
+            updateWinLossAnalysis();
+
+            // Risk Metrics
+            updateRiskMetrics();
+            updateStreakStats();
+
+            // Charts
+            drawEquityCurve();
+            drawPnLDistribution();
+            drawCalendarHeatmap();
+            drawRollingWinRate();
+        }
+
+        function updateSymbolPerformance() {
+            const symbolStats = {};
+
+            allTrades.forEach(trade => {
+                const symbol = trade.symbol;
+                if (!symbolStats[symbol]) {
+                    symbolStats[symbol] = { wins: 0, losses: 0, total: 0, pnl: 0 };
+                }
+                symbolStats[symbol].total++;
+                symbolStats[symbol].pnl += (trade.pnl || 0);
+
+                if (trade.result === 'win') symbolStats[symbol].wins++;
+                if (trade.result === 'loss') symbolStats[symbol].losses++;
+            });
+
+            let html = '<div style="display: grid; gap: 10px;">';
+
+            Object.keys(symbolStats).sort((a, b) => {
+                const winRateA = symbolStats[a].total > 0 ? (symbolStats[a].wins / symbolStats[a].total) : 0;
+                const winRateB = symbolStats[b].total > 0 ? (symbolStats[b].wins / symbolStats[b].total) : 0;
+                return winRateB - winRateA;
+            }).forEach(symbol => {
+                const stats = symbolStats[symbol];
+                const winRate = stats.total > 0 ? ((stats.wins / stats.total) * 100).toFixed(0) : 0;
+                const pnlColor = stats.pnl >= 0 ? '#10b981' : '#ef4444';
+                const pnlFormatted = stats.pnl >= 0 ? `+$${stats.pnl.toFixed(2)}` : `($${Math.abs(stats.pnl).toFixed(2)})`;
+
+                html += `
+                    <div style="display: flex; justify-content: space-between; align-items: center; padding: 10px; background: rgba(139, 148, 158, 0.1); border-radius: 6px;">
+                        <div style="flex: 1;">
+                            <strong style="font-size: 14px;">${symbol}</strong>
+                            <div style="font-size: 12px; color: #8b949e; margin-top: 3px;">
+                                ${stats.wins}W / ${stats.losses}L | ${stats.total} trades
+                            </div>
+                        </div>
+                        <div style="text-align: right;">
+                            <div style="font-size: 16px; font-weight: bold;">${winRate}%</div>
+                            <div style="font-size: 12px; color: ${pnlColor};">${pnlFormatted}</div>
+                        </div>
+                    </div>
+                `;
+            });
+
+            html += '</div>';
+            document.getElementById('symbolPerformance').innerHTML = html;
+        }
+
+        function updateDirectionPerformance() {
+            const longTrades = allTrades.filter(t => t.direction === 'long');
+            const shortTrades = allTrades.filter(t => t.direction === 'short');
+
+            const longWins = longTrades.filter(t => t.result === 'win').length;
+            const longTotal = longTrades.filter(t => t.result && t.result !== 'open').length;
+            const longWinRate = longTotal > 0 ? ((longWins / longTotal) * 100).toFixed(0) : 0;
+            const longPnL = longTrades.reduce((sum, t) => sum + (t.pnl || 0), 0);
+
+            const shortWins = shortTrades.filter(t => t.result === 'win').length;
+            const shortTotal = shortTrades.filter(t => t.result && t.result !== 'open').length;
+            const shortWinRate = shortTotal > 0 ? ((shortWins / shortTotal) * 100).toFixed(0) : 0;
+            const shortPnL = shortTrades.reduce((sum, t) => sum + (t.pnl || 0), 0);
+
+            document.getElementById('longWinRate').textContent = `${longWinRate}%`;
+            document.getElementById('longStats').textContent = `${longWins}W / ${longTotal - longWins}L | ${longTrades.length} trades | ${longPnL >= 0 ? '+' : ''}$${longPnL.toFixed(2)}`;
+
+            document.getElementById('shortWinRate').textContent = `${shortWinRate}%`;
+            document.getElementById('shortStats').textContent = `${shortWins}W / ${shortTotal - shortWins}L | ${shortTrades.length} trades | ${shortPnL >= 0 ? '+' : ''}$${shortPnL.toFixed(2)}`;
+        }
+
+        function updateDayOfWeekPerformance() {
+            const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+            const dayStats = {};
+
+            days.forEach(day => {
+                dayStats[day] = { wins: 0, losses: 0, total: 0, pnl: 0 };
+            });
+
+            allTrades.forEach(trade => {
+                const date = new Date(trade.date);
+                const dayName = days[date.getDay()];
+
+                dayStats[dayName].total++;
+                dayStats[dayName].pnl += (trade.pnl || 0);
+
+                if (trade.result === 'win') dayStats[dayName].wins++;
+                if (trade.result === 'loss') dayStats[dayName].losses++;
+            });
+
+            let html = '<div style="display: grid; gap: 10px;">';
+
+            days.forEach(day => {
+                const stats = dayStats[day];
+                if (stats.total === 0) return;
+
+                const winRate = stats.total > 0 ? ((stats.wins / stats.total) * 100).toFixed(0) : 0;
+                const pnlColor = stats.pnl >= 0 ? '#10b981' : '#ef4444';
+                const pnlFormatted = stats.pnl >= 0 ? `+$${stats.pnl.toFixed(2)}` : `($${Math.abs(stats.pnl).toFixed(2)})`;
+
+                html += `
+                    <div style="display: flex; justify-content: space-between; align-items: center; padding: 10px; background: rgba(139, 148, 158, 0.1); border-radius: 6px;">
+                        <div style="flex: 1;">
+                            <strong style="font-size: 14px;">${day}</strong>
+                            <div style="font-size: 12px; color: #8b949e; margin-top: 3px;">
+                                ${stats.wins}W / ${stats.losses}L | ${stats.total} trades
+                            </div>
+                        </div>
+                        <div style="text-align: right;">
+                            <div style="font-size: 16px; font-weight: bold;">${winRate}%</div>
+                            <div style="font-size: 12px; color: ${pnlColor};">${pnlFormatted}</div>
+                        </div>
+                    </div>
+                `;
+            });
+
+            html += '</div>';
+            document.getElementById('dayOfWeekPerformance').innerHTML = html;
+        }
+
+        function updateWinLossAnalysis() {
+            const wins = allTrades.filter(t => t.result === 'win');
+            const losses = allTrades.filter(t => t.result === 'loss');
+
+            const avgWin = wins.length > 0 ? (wins.reduce((sum, t) => sum + Math.abs(t.pnl || 0), 0) / wins.length) : 0;
+            const avgLoss = losses.length > 0 ? (losses.reduce((sum, t) => sum + Math.abs(t.pnl || 0), 0) / losses.length) : 0;
+            const winLossRatio = avgLoss > 0 ? (avgWin / avgLoss).toFixed(2) : '0.00';
+
+            const completedTrades = allTrades.filter(t => t.result && t.result !== 'open');
+            const winRate = completedTrades.length > 0 ? (wins.length / completedTrades.length) : 0;
+            const expectancy = completedTrades.length > 0 ? ((winRate * avgWin) - ((1 - winRate) * avgLoss)) : 0;
+
+            document.getElementById('avgWinSize').textContent = `+$${avgWin.toFixed(2)}`;
+            document.getElementById('avgLossSize').textContent = `($${avgLoss.toFixed(2)})`;
+            document.getElementById('winLossRatio').textContent = winLossRatio;
+
+            const expectancyFormatted = expectancy >= 0 ? `+$${expectancy.toFixed(2)}` : `($${Math.abs(expectancy).toFixed(2)})`;
+            const expectancyEl = document.getElementById('expectancy');
+            expectancyEl.textContent = expectancyFormatted;
+            expectancyEl.style.color = expectancy >= 0 ? '#10b981' : '#ef4444';
+        }
+
+        function updateRiskMetrics() {
+            const wins = allTrades.filter(t => t.result === 'win').sort((a, b) => b.pnl - a.pnl);
+            const losses = allTrades.filter(t => t.result === 'loss').sort((a, b) => a.pnl - b.pnl);
+
+            if (wins.length > 0) {
+                const largestWin = wins[0];
+                document.getElementById('largestWin').textContent = `+$${largestWin.pnl.toFixed(2)}`;
+                document.getElementById('largestWinDate').textContent = `${largestWin.symbol} on ${largestWin.date}`;
+            }
+
+            if (losses.length > 0) {
+                const largestLoss = losses[0];
+                document.getElementById('largestLoss').textContent = `($${Math.abs(largestLoss.pnl).toFixed(2)})`;
+                document.getElementById('largestLossDate').textContent = `${largestLoss.symbol} on ${largestLoss.date}`;
+            }
+
+            // Calculate drawdown
+            const sortedTrades = [...allTrades].sort((a, b) => new Date(a.date) - new Date(b.date));
+            let peak = 0;
+            let currentEquity = 0;
+            let maxDrawdown = 0;
+
+            sortedTrades.forEach(trade => {
+                currentEquity += (trade.pnl || 0);
+                if (currentEquity > peak) peak = currentEquity;
+                const drawdown = peak > 0 ? ((peak - currentEquity) / peak) * 100 : 0;
+                if (drawdown > maxDrawdown) maxDrawdown = drawdown;
+            });
+
+            const currentDrawdown = peak > 0 ? ((peak - currentEquity) / peak) * 100 : 0;
+
+            document.getElementById('currentDrawdown').textContent = `${currentDrawdown.toFixed(1)}%`;
+            document.getElementById('maxDrawdown').textContent = `${maxDrawdown.toFixed(1)}%`;
+        }
+
+        function updateStreakStats() {
+            let currentStreak = 0;
+            let currentStreakType = '';
+            let longestWinStreak = 0;
+            let longestLossStreak = 0;
+            let tempWinStreak = 0;
+            let tempLossStreak = 0;
+
+            for (let i = allTrades.length - 1; i >= 0; i--) {
+                const trade = allTrades[i];
+
+                if (trade.result === 'win') {
+                    tempWinStreak++;
+                    tempLossStreak = 0;
+                    if (i === allTrades.length - 1) {
+                        currentStreak = tempWinStreak;
+                        currentStreakType = 'win';
+                    }
+                } else if (trade.result === 'loss') {
+                    tempLossStreak++;
+                    tempWinStreak = 0;
+                    if (i === allTrades.length - 1) {
+                        currentStreak = tempLossStreak;
+                        currentStreakType = 'loss';
+                    }
+                } else {
+                    tempWinStreak = 0;
+                    tempLossStreak = 0;
+                }
+
+                longestWinStreak = Math.max(longestWinStreak, tempWinStreak);
+                longestLossStreak = Math.max(longestLossStreak, tempLossStreak);
+            }
+
+            const currentStreakEl = document.getElementById('currentStreak');
+            const currentStreakLabel = document.getElementById('currentStreakLabel');
+
+            if (currentStreakType === 'win') {
+                currentStreakEl.textContent = currentStreak;
+                currentStreakEl.style.color = '#10b981';
+                currentStreakLabel.textContent = `Win Streak`;
+            } else if (currentStreakType === 'loss') {
+                currentStreakEl.textContent = currentStreak;
+                currentStreakEl.style.color = '#ef4444';
+                currentStreakLabel.textContent = `Loss Streak`;
+            } else {
+                currentStreakEl.textContent = '0';
+                currentStreakEl.style.color = '';
+                currentStreakLabel.textContent = 'Current Streak';
+            }
+
+            document.getElementById('longestWinStreak').textContent = longestWinStreak;
+            document.getElementById('longestLossStreak').textContent = longestLossStreak;
+        }
+
+        // Chart Drawing Functions
+        function drawEquityCurve() {
+            const canvas = document.getElementById('equityCurveChart');
+            if (!canvas) return;
+
+            const ctx = canvas.getContext('2d');
+            const width = canvas.width;
+            const height = canvas.height;
+
+            // Clear canvas
+            ctx.clearRect(0, 0, width, height);
+
+            if (allTrades.length === 0) {
+                ctx.fillStyle = '#8b949e';
+                ctx.font = '14px Arial';
+                ctx.textAlign = 'center';
+                ctx.fillText('No trades to display', width / 2, height / 2);
+                return;
+            }
+
+            // Sort trades by date
+            const sortedTrades = [...allTrades].sort((a, b) => new Date(a.date) - new Date(b.date));
+
+            // Calculate equity curve
+            let equity = 0;
+            const equityPoints = [{x: 0, y: 0}];
+
+            sortedTrades.forEach((trade, index) => {
+                equity += (trade.pnl || 0);
+                equityPoints.push({x: index + 1, y: equity});
+            });
+
+            // Find min/max for scaling
+            const minEquity = Math.min(0, ...equityPoints.map(p => p.y));
+            const maxEquity = Math.max(100, ...equityPoints.map(p => p.y));
+
+            // Draw grid and axes
+            ctx.strokeStyle = 'rgba(139, 148, 158, 0.2)';
+            ctx.lineWidth = 1;
+
+            // Horizontal grid lines
+            for (let i = 0; i <= 5; i++) {
+                const y = (height - 40) * (i / 5) + 20;
+                ctx.beginPath();
+                ctx.moveTo(50, y);
+                ctx.lineTo(width - 20, y);
+                ctx.stroke();
+
+                // Labels
+                const value = maxEquity - (maxEquity - minEquity) * (i / 5);
+                ctx.fillStyle = '#8b949e';
+                ctx.font = '11px Arial';
+                ctx.textAlign = 'right';
+                ctx.fillText(`$${value.toFixed(0)}`, 45, y + 4);
+            }
+
+            // Draw equity curve
+            ctx.strokeStyle = '#58a6ff';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+
+            equityPoints.forEach((point, index) => {
+                const x = 50 + ((width - 70) * (point.x / sortedTrades.length));
+                const y = 20 + ((height - 40) * (1 - ((point.y - minEquity) / (maxEquity - minEquity))));
+
+                if (index === 0) {
+                    ctx.moveTo(x, y);
+                } else {
+                    ctx.lineTo(x, y);
+                }
+            });
+
+            ctx.stroke();
+
+            // Draw zero line
+            if (minEquity < 0 && maxEquity > 0) {
+                const zeroY = 20 + ((height - 40) * (1 - ((0 - minEquity) / (maxEquity - minEquity))));
+                ctx.strokeStyle = 'rgba(255, 255, 255, 0.3)';
+                ctx.setLineDash([5, 5]);
+                ctx.beginPath();
+                ctx.moveTo(50, zeroY);
+                ctx.lineTo(width - 20, zeroY);
+                ctx.stroke();
+                ctx.setLineDash([]);
+            }
+
+            // X-axis label
+            ctx.fillStyle = '#8b949e';
+            ctx.font = '11px Arial';
+            ctx.textAlign = 'center';
+            ctx.fillText(`Trades (1 - ${sortedTrades.length})`, width / 2, height - 5);
+        }
+
+        function drawPnLDistribution() {
+            const canvas = document.getElementById('pnlDistributionChart');
+            if (!canvas) return;
+
+            const ctx = canvas.getContext('2d');
+            const width = canvas.width;
+            const height = canvas.height;
+
+            ctx.clearRect(0, 0, width, height);
+
+            if (allTrades.length === 0) {
+                ctx.fillStyle = '#8b949e';
+                ctx.font = '14px Arial';
+                ctx.textAlign = 'center';
+                ctx.fillText('No trades to display', width / 2, height / 2);
+                return;
+            }
+
+            // Create bins
+            const pnls = allTrades.map(t => t.pnl || 0);
+            const minPnL = Math.min(...pnls);
+            const maxPnL = Math.max(...pnls);
+            const binCount = 15;
+            const binSize = (maxPnL - minPnL) / binCount;
+
+            const bins = Array(binCount).fill(0);
+            pnls.forEach(pnl => {
+                const binIndex = Math.min(binCount - 1, Math.floor((pnl - minPnL) / binSize));
+                bins[binIndex]++;
+            });
+
+            const maxBinValue = Math.max(...bins);
+
+            // Draw bars
+            const barWidth = (width - 80) / binCount;
+
+            bins.forEach((count, index) => {
+                const barHeight = (height - 60) * (count / maxBinValue);
+                const x = 50 + (index * barWidth);
+                const y = height - 40 - barHeight;
+
+                const binValue = minPnL + (index * binSize);
+                const color = binValue >= 0 ? 'rgba(16, 185, 129, 0.7)' : 'rgba(239, 68, 68, 0.7)';
+
+                ctx.fillStyle = color;
+                ctx.fillRect(x, y, barWidth - 2, barHeight);
+
+                // Count label
+                if (count > 0) {
+                    ctx.fillStyle = '#c9d1d9';
+                    ctx.font = '10px Arial';
+                    ctx.textAlign = 'center';
+                    ctx.fillText(count.toString(), x + barWidth / 2, y - 5);
+                }
+            });
+
+            // X-axis labels
+            ctx.fillStyle = '#8b949e';
+            ctx.font = '10px Arial';
+            ctx.textAlign = 'center';
+            ctx.fillText(`$${minPnL.toFixed(0)}`, 50, height - 20);
+            ctx.fillText(`$${maxPnL.toFixed(0)}`, width - 30, height - 20);
+            ctx.fillText('P/L Distribution', width / 2, height - 5);
+        }
+
+        function drawCalendarHeatmap() {
+            const container = document.getElementById('calendarHeatmap');
+            if (!container) return;
+
+            if (allTrades.length === 0) {
+                container.innerHTML = '<p style="color: #8b949e; text-align: center;">No trades to display</p>';
+                return;
+            }
+
+            // Group trades by date
+            const tradesByDate = {};
+            allTrades.forEach(trade => {
+                if (!tradesByDate[trade.date]) {
+                    tradesByDate[trade.date] = { pnl: 0, count: 0 };
+                }
+                tradesByDate[trade.date].pnl += (trade.pnl || 0);
+                tradesByDate[trade.date].count++;
+            });
+
+            // Get date range
+            const dates = Object.keys(tradesByDate).sort();
+            const startDate = new Date(dates[0]);
+            const endDate = new Date(dates[dates.length - 1]);
+
+            // Find min/max P/L for color scaling
+            const pnls = Object.values(tradesByDate).map(d => d.pnl);
+            const maxAbsPnL = Math.max(...pnls.map(Math.abs));
+
+            let html = '<div style="display: grid; grid-template-columns: repeat(auto-fill, 40px); gap: 5px; max-width: 600px;">';
+
+            // Generate all dates in range
+            const currentDate = new Date(startDate);
+            while (currentDate <= endDate) {
+                const dateStr = currentDate.toISOString().split('T')[0];
+                const data = tradesByDate[dateStr];
+
+                let bgColor = 'rgba(139, 148, 158, 0.1)';
+                let title = dateStr;
+
+                if (data) {
+                    const intensity = Math.min(1, Math.abs(data.pnl) / maxAbsPnL);
+                    const color = data.pnl >= 0 ? '16, 185, 129' : '239, 68, 68';
+                    bgColor = `rgba(${color}, ${0.3 + intensity * 0.7})`;
+                    title = `${dateStr}\n${data.count} trades\n${data.pnl >= 0 ? '+' : ''}$${data.pnl.toFixed(2)}`;
+                }
+
+                html += `
+                    <div style="width: 35px; height: 35px; background: ${bgColor}; border-radius: 4px; display: flex; align-items: center; justify-content: center; font-size: 10px; color: #c9d1d9; cursor: pointer;" title="${title}">
+                        ${currentDate.getDate()}
+                    </div>
+                `;
+
+                currentDate.setDate(currentDate.getDate() + 1);
+            }
+
+            html += '</div>';
+            html += '<div style="margin-top: 15px; font-size: 12px; color: #8b949e;">Hover over days to see details. Green = profit, Red = loss, intensity = magnitude</div>';
+
+            container.innerHTML = html;
+        }
+
+        function drawRollingWinRate() {
+            const canvas = document.getElementById('rollingWinRateChart');
+            if (!canvas) return;
+
+            const ctx = canvas.getContext('2d');
+            const width = canvas.width;
+            const height = canvas.height;
+
+            ctx.clearRect(0, 0, width, height);
+
+            if (allTrades.length < 10) {
+                ctx.fillStyle = '#8b949e';
+                ctx.font = '14px Arial';
+                ctx.textAlign = 'center';
+                ctx.fillText('Need at least 10 trades for rolling win rate', width / 2, height / 2);
+                return;
+            }
+
+            // Calculate rolling win rate (last 10 trades)
+            const windowSize = 10;
+            const rollingRates = [];
+
+            for (let i = windowSize - 1; i < allTrades.length; i++) {
+                const window = allTrades.slice(i - windowSize + 1, i + 1);
+                const wins = window.filter(t => t.result === 'win').length;
+                const winRate = (wins / windowSize) * 100;
+                rollingRates.push(winRate);
+            }
+
+            // Draw grid
+            ctx.strokeStyle = 'rgba(139, 148, 158, 0.2)';
+            ctx.lineWidth = 1;
+
+            for (let i = 0; i <= 5; i++) {
+                const y = (height - 40) * (i / 5) + 20;
+                ctx.beginPath();
+                ctx.moveTo(50, y);
+                ctx.lineTo(width - 20, y);
+                ctx.stroke();
+
+                const value = 100 - (i * 20);
+                ctx.fillStyle = '#8b949e';
+                ctx.font = '11px Arial';
+                ctx.textAlign = 'right';
+                ctx.fillText(`${value}%`, 45, y + 4);
+            }
+
+            // Draw rolling win rate line
+            ctx.strokeStyle = '#ff9500';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+
+            rollingRates.forEach((rate, index) => {
+                const x = 50 + ((width - 70) * (index / (rollingRates.length - 1)));
+                const y = 20 + ((height - 40) * (1 - (rate / 100)));
+
+                if (index === 0) {
+                    ctx.moveTo(x, y);
+                } else {
+                    ctx.lineTo(x, y);
+                }
+            });
+
+            ctx.stroke();
+
+            // Draw 50% line
+            const fiftyY = 20 + ((height - 40) * 0.5);
+            ctx.strokeStyle = 'rgba(255, 255, 255, 0.3)';
+            ctx.setLineDash([5, 5]);
+            ctx.beginPath();
+            ctx.moveTo(50, fiftyY);
+            ctx.lineTo(width - 20, fiftyY);
+            ctx.stroke();
+            ctx.setLineDash([]);
+
+            // X-axis label
+            ctx.fillStyle = '#8b949e';
+            ctx.font = '11px Arial';
+            ctx.textAlign = 'center';
+            ctx.fillText(`Trade ${windowSize} - ${allTrades.length}`, width / 2, height - 5);
         }
 
         // Load history
