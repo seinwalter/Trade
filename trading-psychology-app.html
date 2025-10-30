@@ -5496,19 +5496,46 @@
             if (filteredTrades.length === 0) {
                 tradeHistoryDiv.innerHTML = '<p>No trades found for the selected filter.</p>';
             } else {
-                tradeHistoryDiv.innerHTML = filteredTrades.slice().reverse().map(trade => `
-                    <div class="trade-card ${trade.result || ''}" onclick="viewTradeDetail(${trade.id})">
-                        <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
-                            <strong>${trade.symbol} - ${trade.direction?.toUpperCase()}</strong>
-                            <span>${trade.date} ${trade.entryTime}</span>
-                        </div>
-                        <div>${trade.thesis?.substring(0, 100)}...</div>
-                        <div style="margin-top: 10px;">
-                            <strong>Result:</strong> ${trade.resultDisplay || trade.result || 'Open'} |
-                            <strong>R:R:</strong> ${trade.rrRatio || 'N/A'}
-                        </div>
-                    </div>
-                `).join('');
+                // Create table format similar to CSV preview
+                let tableHTML = `
+                    <table style="width: 100%; border-collapse: collapse; background: rgba(255, 255, 255, 0.05); border-radius: 8px; overflow: hidden;">
+                        <thead>
+                            <tr style="background: rgba(255, 0, 85, 0.1); border-bottom: 2px solid #ff0055;">
+                                <th style="padding: 12px; text-align: left; font-weight: 600;">Symbol</th>
+                                <th style="padding: 12px; text-align: left; font-weight: 600;">Direction</th>
+                                <th style="padding: 12px; text-align: right; font-weight: 600;">Entry</th>
+                                <th style="padding: 12px; text-align: right; font-weight: 600;">Exit</th>
+                                <th style="padding: 12px; text-align: center; font-weight: 600;">Date</th>
+                                <th style="padding: 12px; text-align: right; font-weight: 600;">Result</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                `;
+
+                filteredTrades.slice().reverse().forEach(trade => {
+                    const resultColor = trade.result === 'win' ? '#10b981' : trade.result === 'loss' ? '#ef4444' : '#6c757d';
+                    const dirColor = trade.direction === 'short' ? '#fbbf24' : '#3b82f6';
+                    tableHTML += `
+                        <tr style="border-bottom: 1px solid rgba(255, 255, 255, 0.1); cursor: pointer; transition: background 0.2s;"
+                            onmouseover="this.style.background='rgba(255, 255, 255, 0.05)'"
+                            onmouseout="this.style.background='transparent'"
+                            onclick="viewTradeDetail(${trade.id})">
+                            <td style="padding: 12px; font-weight: 600;">${trade.symbol}</td>
+                            <td style="padding: 12px; color: ${dirColor}; font-weight: 600;">${trade.direction?.toUpperCase() || 'LONG'}</td>
+                            <td style="padding: 12px; text-align: right;">${trade.entryPrice ? '$' + trade.entryPrice.toFixed(2) : '-'}</td>
+                            <td style="padding: 12px; text-align: right;">${trade.exitPrice ? '$' + trade.exitPrice.toFixed(2) : '-'}</td>
+                            <td style="padding: 12px; text-align: center;">${trade.date}</td>
+                            <td style="padding: 12px; text-align: right; font-weight: 600; color: ${resultColor};">${trade.resultDisplay || trade.result || 'Open'}</td>
+                        </tr>
+                    `;
+                });
+
+                tableHTML += `
+                        </tbody>
+                    </table>
+                `;
+
+                tradeHistoryDiv.innerHTML = tableHTML;
             }
 
             // Session history
@@ -6164,6 +6191,13 @@
             Object.keys(mapping).forEach(field => {
                 console.log(`  ${field}: "${mapping[field]}"`);
             });
+            if (mapping.buyTime) console.log(`  ✓ buyTime mapped to: "${mapping.buyTime}"`);
+            if (mapping.sellTime) console.log(`  ✓ sellTime mapped to: "${mapping.sellTime}"`);
+            if (mapping.direction) {
+                console.log(`  ✓ Direction column found: "${mapping.direction}"`);
+            } else {
+                console.log(`  ⚠ No Direction column - will attempt auto-detection from timestamps`);
+            }
             console.log('===================================');
 
             return mapping;
@@ -6289,55 +6323,64 @@
                 }
                 if (row.positionSize) row.positionSize = cleanNumericValue(row.positionSize);
 
+                // Log initial direction state
+                console.log(`Row ${index + 1}: Initial direction="${row.direction}", buyTime="${row.buyTime}", sellTime="${row.sellTime}"`);
+
                 // Auto-detect direction from buy/sell times if available
                 if (!row.direction && row.buyTime && row.sellTime) {
                     try {
-                        console.log(`Row ${index + 1}: Attempting direction auto-detection. buyTime="${row.buyTime}", sellTime="${row.sellTime}"`);
+                        console.log(`Row ${index + 1}: 🔍 Attempting direction auto-detection...`);
 
                         const buyTimestamp = new Date(row.buyTime).getTime();
                         const sellTimestamp = new Date(row.sellTime).getTime();
 
-                        console.log(`Row ${index + 1}: Parsed timestamps - buy: ${buyTimestamp}, sell: ${sellTimestamp}`);
+                        console.log(`Row ${index + 1}: Parsed timestamps - buy: ${buyTimestamp} (${new Date(buyTimestamp).toLocaleString()}), sell: ${sellTimestamp} (${new Date(sellTimestamp).toLocaleString()})`);
 
                         if (!isNaN(buyTimestamp) && !isNaN(sellTimestamp)) {
                             if (buyTimestamp < sellTimestamp) {
                                 row.direction = 'long';
-                                console.log(`Row ${index + 1}: ✓ Auto-detected LONG (buy ${new Date(buyTimestamp).toLocaleString()} before sell ${new Date(sellTimestamp).toLocaleString()})`);
+                                console.log(`Row ${index + 1}: ✓ Auto-detected LONG (buy first, then sell)`);
                             } else if (sellTimestamp < buyTimestamp) {
                                 row.direction = 'short';
-                                console.log(`Row ${index + 1}: ✓ Auto-detected SHORT (sell ${new Date(sellTimestamp).toLocaleString()} before buy ${new Date(buyTimestamp).toLocaleString()})`);
+                                console.log(`Row ${index + 1}: ✓ Auto-detected SHORT (sell first, then buy)`);
                             } else {
                                 console.log(`Row ${index + 1}: ⚠ Timestamps are equal, cannot determine direction`);
                             }
                         } else {
-                            console.log(`Row ${index + 1}: ⚠ Invalid timestamps - buyTimestamp: ${buyTimestamp}, sellTimestamp: ${sellTimestamp}`);
+                            console.log(`Row ${index + 1}: ❌ Invalid timestamps - buyTimestamp: ${buyTimestamp}, sellTimestamp: ${sellTimestamp}`);
                         }
                     } catch (e) {
                         console.log(`Row ${index + 1}: ❌ Could not parse timestamps for auto-detection:`, e);
                     }
                 } else if (!row.direction) {
-                    console.log(`Row ${index + 1}: No direction and missing timestamps - buyTime: ${row.buyTime}, sellTime: ${row.sellTime}`);
+                    console.log(`Row ${index + 1}: ⚠ No direction and missing timestamps - buyTime: "${row.buyTime}", sellTime: "${row.sellTime}"`);
+                } else {
+                    console.log(`Row ${index + 1}: ✓ Direction already set to "${row.direction}" from CSV column`);
                 }
 
                 // Validate and normalize direction (very flexible)
                 if (row.direction) {
+                    const originalDirection = row.direction;
                     const dir = row.direction.toLowerCase().trim();
 
                     // Long/Buy variations
                     if (['long', 'buy', 'l', 'b', 'bot', 'bought', 'call', 'bullish'].includes(dir)) {
                         row.direction = 'long';
+                        console.log(`Row ${index + 1}: Normalized direction "${originalDirection}" -> "long"`);
                     }
                     // Short/Sell variations
                     else if (['short', 'sell', 's', 'sld', 'sold', 'put', 'bearish'].includes(dir)) {
                         row.direction = 'short';
+                        console.log(`Row ${index + 1}: Normalized direction "${originalDirection}" -> "short"`);
                     }
                     // Invalid
                     else {
                         errors.push(`Invalid direction: "${row.direction}" - must be Long/Short/Buy/Sell`);
+                        console.log(`Row ${index + 1}: ❌ Invalid direction: "${row.direction}"`);
                     }
                 } else {
                     // Direction is now optional - warn if missing but don't fail validation
-                    console.log(`Row ${index + 1}: No direction specified (will default to 'long')`);
+                    console.log(`Row ${index + 1}: ⚠ No direction specified (defaulting to 'long')`);
                     row.direction = 'long'; // Default to long if not specified
                 }
 
@@ -6509,6 +6552,9 @@
                     resultDisplay: resultDisplay,
                     tradeScreenshots: []
                 };
+
+                // Log the trade being imported
+                console.log(`💾 Importing trade: ${trade.symbol} ${trade.direction.toUpperCase()} - Entry: ${trade.entryPrice}, Exit: ${trade.exitPrice}, P/L: ${trade.pnl}, Result: ${trade.result}`);
 
                 // Track this trade for potential undo
                 lastImportedTradeIds.push(trade.id);
