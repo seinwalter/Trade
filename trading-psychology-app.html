@@ -2293,6 +2293,18 @@
                 </div>
             </div>
 
+            <!-- Clear Last Import Button -->
+            <div class="section" id="clearImportSection" style="display: none; background: rgba(255, 0, 85, 0.1); border-left: 3px solid #ff0055;">
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <div>
+                        <strong>Last Import:</strong> <span id="lastImportCount">0</span> trades imported
+                    </div>
+                    <button class="btn btn-danger" onclick="clearLastImport()" style="padding: 10px 20px;">
+                        🗑️ Clear Last Import
+                    </button>
+                </div>
+            </div>
+
             <div class="section" id="historyFilterSection">
                 <h2>Trading History</h2>
                 <div class="inline-group">
@@ -2542,6 +2554,7 @@
             errors: []
         };
         let csvColumnMapping = {};
+        let lastImportedTradeIds = []; // Track last import for undo functionality
 
         // Toast notification system
         function showToast(type, title, message, duration = 4000) {
@@ -5423,6 +5436,8 @@
 
             // Import all valid historical trades
             let imported = 0;
+            lastImportedTradeIds = []; // Reset tracking
+
             csvData.validated.forEach(row => {
                 // Parse date properly - try to convert to ISO format
                 let tradeDate = today;
@@ -5473,6 +5488,9 @@
                     tradeScreenshots: []
                 };
 
+                // Track this trade for potential undo
+                lastImportedTradeIds.push(trade.id);
+
                 // Add to session
                 if (!currentSession.trades) currentSession.trades = [];
                 currentSession.trades.push(trade);
@@ -5489,6 +5507,11 @@
             console.log('Imported trades:', imported);
             console.log('Current session trades:', currentSession.trades);
             console.log('All trades:', allTrades);
+            console.log('Last imported trade IDs:', lastImportedTradeIds);
+
+            // Show clear import button
+            document.getElementById('clearImportSection').style.display = 'block';
+            document.getElementById('lastImportCount').textContent = imported;
 
             // Reset and close
             resetCSVUpload();
@@ -5504,6 +5527,43 @@
 
             // Update dashboard
             updateDashboard();
+        }
+
+        function clearLastImport() {
+            if (lastImportedTradeIds.length === 0) {
+                showToast('info', 'No Import to Clear', 'There are no recently imported trades to clear.', 3000);
+                return;
+            }
+
+            if (!confirm(`Are you sure you want to delete the last ${lastImportedTradeIds.length} imported trades? This cannot be undone.`)) {
+                return;
+            }
+
+            console.log('Clearing last import. Trade IDs:', lastImportedTradeIds);
+
+            // Remove from currentSession
+            if (currentSession && currentSession.trades) {
+                currentSession.trades = currentSession.trades.filter(t => !lastImportedTradeIds.includes(t.id));
+                console.log('After removing from currentSession:', currentSession.trades.length);
+            }
+
+            // Remove from allTrades
+            allTrades = allTrades.filter(t => !lastImportedTradeIds.includes(t.id));
+            console.log('After removing from allTrades:', allTrades.length);
+
+            // Clear tracking
+            const clearedCount = lastImportedTradeIds.length;
+            lastImportedTradeIds = [];
+
+            // Hide clear button
+            document.getElementById('clearImportSection').style.display = 'none';
+
+            saveData();
+            showToast('success', 'Import Cleared', `Deleted ${clearedCount} imported trades.`, 3000);
+
+            // Refresh view
+            updateDashboard();
+            viewTodayTrades();
         }
 
         function resetCSVUpload() {
