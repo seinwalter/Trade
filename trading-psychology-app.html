@@ -6101,8 +6101,8 @@
                 'direction': ['direction', 'side', 'type', 'long/short', 'buy/sell', 'action'],
                 'entryPrice': ['entry', 'entry price', 'entryprice', 'buy price', 'open', 'open price', 'entry_price'],
                 'exitPrice': ['exit', 'exit price', 'exitprice', 'sell price', 'close', 'close price', 'exit_price'],
-                'buyTime': ['buy', 'buy time', 'buytime', 'time bought', 'bought', 'open time', 'entry time', 'buy date'],
-                'sellTime': ['sell', 'sell time', 'selltime', 'time sold', 'sold', 'close time', 'exit time', 'sell date'],
+                'buyTime': ['buy', 'buy time', 'buytime', 'time bought', 'bought', 'boughttimestamp', 'open time', 'entry time', 'buy date', 'buy timestamp'],
+                'sellTime': ['sell', 'sell time', 'selltime', 'time sold', 'sold', 'soldtimestamp', 'close time', 'exit time', 'sell date', 'sell timestamp'],
                 'pnl': ['pnl', 'p/l', 'p&l', 'profit', 'loss', 'profit/loss', 'net', 'return'],
                 'positionSize': ['size', 'position', 'position size', 'positionsize', 'qty', 'quantity', 'shares', 'contracts', 'position_size'],
                 'notes': ['notes', 'comment', 'comments', 'description', 'memo', 'remarks']
@@ -6124,6 +6124,13 @@
                     if (mapping[field]) break;
                 }
             });
+
+            // Log detected mappings
+            console.log('=== Auto-detected column mappings ===');
+            Object.keys(mapping).forEach(field => {
+                console.log(`  ${field}: "${mapping[field]}"`);
+            });
+            console.log('===================================');
 
             return mapping;
         }
@@ -6251,21 +6258,31 @@
                 // Auto-detect direction from buy/sell times if available
                 if (!row.direction && row.buyTime && row.sellTime) {
                     try {
+                        console.log(`Row ${index + 1}: Attempting direction auto-detection. buyTime="${row.buyTime}", sellTime="${row.sellTime}"`);
+
                         const buyTimestamp = new Date(row.buyTime).getTime();
                         const sellTimestamp = new Date(row.sellTime).getTime();
+
+                        console.log(`Row ${index + 1}: Parsed timestamps - buy: ${buyTimestamp}, sell: ${sellTimestamp}`);
 
                         if (!isNaN(buyTimestamp) && !isNaN(sellTimestamp)) {
                             if (buyTimestamp < sellTimestamp) {
                                 row.direction = 'long';
-                                console.log(`Row ${index + 1}: Auto-detected LONG (buy before sell)`);
+                                console.log(`Row ${index + 1}: ✓ Auto-detected LONG (buy ${new Date(buyTimestamp).toLocaleString()} before sell ${new Date(sellTimestamp).toLocaleString()})`);
                             } else if (sellTimestamp < buyTimestamp) {
                                 row.direction = 'short';
-                                console.log(`Row ${index + 1}: Auto-detected SHORT (sell before buy)`);
+                                console.log(`Row ${index + 1}: ✓ Auto-detected SHORT (sell ${new Date(sellTimestamp).toLocaleString()} before buy ${new Date(buyTimestamp).toLocaleString()})`);
+                            } else {
+                                console.log(`Row ${index + 1}: ⚠ Timestamps are equal, cannot determine direction`);
                             }
+                        } else {
+                            console.log(`Row ${index + 1}: ⚠ Invalid timestamps - buyTimestamp: ${buyTimestamp}, sellTimestamp: ${sellTimestamp}`);
                         }
                     } catch (e) {
-                        console.log(`Row ${index + 1}: Could not parse timestamps for auto-detection`, e);
+                        console.log(`Row ${index + 1}: ❌ Could not parse timestamps for auto-detection:`, e);
                     }
+                } else if (!row.direction) {
+                    console.log(`Row ${index + 1}: No direction and missing timestamps - buyTime: ${row.buyTime}, sellTime: ${row.sellTime}`);
                 }
 
                 // Validate and normalize direction (very flexible)
