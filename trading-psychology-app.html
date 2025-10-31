@@ -4053,8 +4053,8 @@
             const winRateCtx = document.getElementById('weeklyWinRateChart');
             if (winRateCtx) {
                 const trades = getTradesThisWeek();
-                const wins = trades.filter(t => t.outcome === 'win').length;
-                const losses = trades.filter(t => t.outcome === 'loss').length;
+                const wins = trades.filter(t => t.result === 'win').length;
+                const losses = trades.filter(t => t.result === 'loss').length;
 
                 new Chart(winRateCtx, {
                     type: 'doughnut',
@@ -6273,10 +6273,10 @@
                 return;
             }
 
-            const longTrades = allTrades.filter(t => t.direction === 'long');
-            const shortTrades = allTrades.filter(t => t.direction === 'short');
-            const longWins = longTrades.filter(t => t.outcome === 'win').length;
-            const shortWins = shortTrades.filter(t => t.outcome === 'win').length;
+            const longTrades = allTrades.filter(t => t.direction === 'long' && t.result && t.result !== 'open');
+            const shortTrades = allTrades.filter(t => t.direction === 'short' && t.result && t.result !== 'open');
+            const longWins = longTrades.filter(t => t.result === 'win').length;
+            const shortWins = shortTrades.filter(t => t.result === 'win').length;
             const longWinRate = longTrades.length > 0 ? (longWins / longTrades.length) * 100 : 0;
             const shortWinRate = shortTrades.length > 0 ? (shortWins / shortTrades.length) * 100 : 0;
 
@@ -6341,6 +6341,7 @@
             dayNames.forEach(day => dayStats[day] = { wins: 0, total: 0 });
 
             allTrades.forEach(trade => {
+                if (!trade.result || trade.result === 'open') return;
                 const dateParts = trade.date.split(/[-\/]/);
                 let date;
                 if (dateParts.length === 3) {
@@ -6351,7 +6352,7 @@
                     }
                     const dayName = dayNames[date.getDay()];
                     dayStats[dayName].total++;
-                    if (trade.outcome === 'win') dayStats[dayName].wins++;
+                    if (trade.result === 'win') dayStats[dayName].wins++;
                 }
             });
 
