@@ -5400,7 +5400,9 @@
                     return sum + rr;
                 }, 0) / completedTrades.length).toFixed(2)
                 : 0;
-            document.getElementById('avgRR').textContent = avgRR;
+            if (document.getElementById('avgRR')) {
+                document.getElementById('avgRR').textContent = avgRR;
+            }
 
             // Profit factor (total wins / total losses)
             const totalWinAmount = completedTrades
@@ -5410,94 +5412,89 @@
                 .filter(t => t.result === 'loss')
                 .reduce((sum, t) => sum + Math.abs(t.pnl || 0), 0);
             const profitFactor = totalLossAmount > 0 ? (totalWinAmount / totalLossAmount).toFixed(2) : (totalWinAmount > 0 ? '∞' : '0.00');
-            document.getElementById('profitFactor').textContent = profitFactor;
-
-            // Process metrics
-            const sessionsWithAdherence = allSessions.filter(s => s.rulesAdherence);
-            const avgAdherence = sessionsWithAdherence.length > 0
-                ? (sessionsWithAdherence.reduce((sum, s) => sum + parseInt(s.rulesAdherence), 0) / sessionsWithAdherence.length).toFixed(0)
-                : 0;
-            document.getElementById('avgRulesAdherence').textContent = avgAdherence + '%';
-
-            const avgEmotional = allSessions.length > 0
-                ? (allSessions.reduce((sum, s) => sum + parseInt(s.emotionalState || 5), 0) / allSessions.length).toFixed(1)
-                : 0;
-            document.getElementById('avgEmotionalState').textContent = avgEmotional;
-
-            // Consecutive wins
-            let consecutive = 0;
-            let maxConsecutive = 0;
-            for (let i = allTrades.length - 1; i >= 0; i--) {
-                if (allTrades[i].result === 'win') {
-                    consecutive++;
-                    maxConsecutive = Math.max(maxConsecutive, consecutive);
-                } else if (allTrades[i].result === 'loss') {
-                    break;
-                }
+            if (document.getElementById('profitFactor')) {
+                document.getElementById('profitFactor').textContent = profitFactor;
             }
-            document.getElementById('consecutiveWins').textContent = consecutive;
 
-            // Emergency exits
-            const emergencyExitCount = allTrades.filter(t => t.emergencyExit).length;
-            document.getElementById('emergencyExits').textContent = emergencyExitCount;
-
-            // Phase progress
-            updatePhaseProgress();
+            console.log('Stats updated:', {
+                totalTrades: allTrades.length,
+                completedTrades: completedTrades.length,
+                wins: wins,
+                losses: losses,
+                winRate: winRate,
+                totalPnL: totalPnL
+            });
         }
 
         // Update phase progress
-        function updatePhaseProgress() {
-            // Get last 3 weeks
-            const weeks = [];
-            for (let i = 0; i < 3; i++) {
-                const weekEnd = new Date();
-                weekEnd.setDate(weekEnd.getDate() - (i * 7));
-                const weekStart = new Date(weekEnd);
-                weekStart.setDate(weekStart.getDate() - 6);
+        function updateWeeklyStats() {
+            const container = document.getElementById('weeklyStats');
+            if (!container) return;
 
-                const weekTrades = allTrades.filter(t => {
-                    const tradeDate = new Date(t.date);
-                    return tradeDate >= weekStart && tradeDate <= weekEnd && t.result;
-                });
+            // Group trades by week
+            const weeklyData = {};
 
-                const wins = weekTrades.filter(t => t.result === 'win').length;
-                const totalPL = wins * 2 - (weekTrades.length - wins);
+            allTrades.forEach(trade => {
+                if (!trade.date || !trade.result || trade.result === 'open') return;
 
-                weeks.push({
-                    start: weekStart.toLocaleDateString(),
-                    end: weekEnd.toLocaleDateString(),
-                    profitable: totalPL > 0,
-                    pl: totalPL,
-                    trades: weekTrades.length
-                });
-            }
+                const tradeDate = new Date(trade.date);
+                const weekStart = new Date(tradeDate);
+                weekStart.setDate(tradeDate.getDate() - tradeDate.getDay()); // Start of week (Sunday)
+                const weekKey = weekStart.toISOString().split('T')[0];
 
-            // Count consecutive profitable weeks from most recent
-            let consecutiveProfitable = 0;
-            for (const week of weeks) {
-                if (week.profitable && week.trades > 0) {
-                    consecutiveProfitable++;
-                } else {
-                    break;
+                if (!weeklyData[weekKey]) {
+                    weeklyData[weekKey] = {
+                        wins: 0,
+                        losses: 0,
+                        total: 0,
+                        pnl: 0,
+                        weekStart: weekStart
+                    };
                 }
+
+                weeklyData[weekKey].total++;
+                weeklyData[weekKey].pnl += (trade.pnl || 0);
+                if (trade.result === 'win') weeklyData[weekKey].wins++;
+                if (trade.result === 'loss') weeklyData[weekKey].losses++;
+            });
+
+            // Sort weeks by date (most recent first)
+            const sortedWeeks = Object.entries(weeklyData)
+                .sort((a, b) => new Date(b[0]) - new Date(a[0]))
+                .slice(0, 12); // Show last 12 weeks
+
+            if (sortedWeeks.length === 0) {
+                container.innerHTML = '<p style="color: #8b949e; text-align: center; padding: 20px;">No weekly data available yet</p>';
+                return;
             }
 
-            const progress = (consecutiveProfitable / 3) * 100;
-            const progressBar = document.getElementById('phaseProgress');
-            progressBar.style.width = progress + '%';
-            progressBar.textContent = `${consecutiveProfitable} / 3 weeks`;
+            let html = '<div style="display: grid; gap: 10px;">';
 
-            // Details
-            const detailsDiv = document.getElementById('phaseProgressDetails');
-            detailsDiv.innerHTML = weeks.map((week, i) => `
-                <div class="protocol-status">
-                    <span><span class="status-indicator ${week.profitable ? 'green' : 'red'}"></span>Week ${3-i}: ${week.start} - ${week.end}</span>
-                    <span>${week.profitable ? 'Profitable' : 'Not Profitable'} (${week.trades} trades, ${week.pl > 0 ? '+' : ''}${week.pl}R)</span>
-                </div>
-            `).join('');
+            sortedWeeks.forEach(([weekKey, stats]) => {
+                const weekEnd = new Date(stats.weekStart);
+                weekEnd.setDate(weekEnd.getDate() + 6);
+                const winRate = stats.total > 0 ? ((stats.wins / stats.total) * 100).toFixed(0) : 0;
+                const pnlColor = stats.pnl >= 0 ? '#10b981' : '#ef4444';
+                const pnlFormatted = stats.pnl >= 0 ? `+$${stats.pnl.toFixed(2)}` : `($${Math.abs(stats.pnl).toFixed(2)})`;
 
-            // Update current positions widget
-            updateCurrentPositions();
+                html += `
+                    <div style="display: flex; justify-content: space-between; align-items: center; padding: 12px; background: rgba(139, 148, 158, 0.1); border-radius: 6px; border-left: 3px solid ${pnlColor};">
+                        <div style="flex: 1;">
+                            <strong style="font-size: 14px;">${stats.weekStart.toLocaleDateString()} - ${weekEnd.toLocaleDateString()}</strong>
+                            <div style="font-size: 12px; color: #8b949e; margin-top: 3px;">
+                                ${stats.wins}W / ${stats.losses}L | ${stats.total} trades
+                            </div>
+                        </div>
+                        <div style="text-align: right;">
+                            <div style="font-size: 16px; font-weight: bold;">${winRate}%</div>
+                            <div style="font-size: 14px; font-weight: bold; color: ${pnlColor};">${pnlFormatted}</div>
+                        </div>
+                    </div>
+                `;
+            });
+
+            html += '</div>';
+            container.innerHTML = html;
         }
 
         // Update Analytics
@@ -5567,6 +5564,7 @@
             updateHoldDurationAnalysis();
             updateCorrelationMatrix();
             updateMonteCarloSimulation();
+            updateWeeklyStats();
         }
 
         function updateSymbolPerformance() {
