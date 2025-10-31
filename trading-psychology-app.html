@@ -2809,14 +2809,6 @@
                 </div>
             </div>
 
-            <!-- Setup Type Performance -->
-            <div class="section">
-                <h2>ICT/SMT Setup Performance</h2>
-                <div id="setupPerformance" style="color: #8b949e; font-style: italic;">
-                    No setup data available yet. Setup tracking was recently added.
-                </div>
-            </div>
-
             <!-- Day of Week Performance -->
             <div class="section">
                 <h2>Performance by Day of Week</h2>
@@ -5833,7 +5825,6 @@
             // Performance Breakdown
             updateSymbolPerformance();
             updateDirectionPerformance();
-            updateSetupPerformance();
             updateDayOfWeekPerformance();
             updateWinLossAnalysis();
 
@@ -5923,56 +5914,6 @@
 
             document.getElementById('shortWinRate').textContent = `${shortWinRate}%`;
             document.getElementById('shortStats').textContent = `${shortWins}W / ${shortTotal - shortWins}L | ${shortTrades.length} trades | ${shortPnL >= 0 ? '+' : ''}$${shortPnL.toFixed(2)}`;
-        }
-
-        function updateSetupPerformance() {
-            const container = document.getElementById('setupPerformance');
-            if (!container) return;
-
-            // Collect all trades with setup types
-            const tradesWithSetups = allTrades.filter(t => t.setupTypes && t.setupTypes.length > 0 && t.result && t.result !== 'open');
-
-            if (tradesWithSetups.length === 0) {
-                container.innerHTML = '<p style="color: #8b949e; font-style: italic;">No setup data available yet. Setup tracking was recently added.</p>';
-                return;
-            }
-
-            // Calculate stats for each setup type
-            const setupStats = {};
-            tradesWithSetups.forEach(trade => {
-                trade.setupTypes.forEach(setup => {
-                    if (!setupStats[setup]) {
-                        setupStats[setup] = { wins: 0, losses: 0, total: 0, pnl: 0 };
-                    }
-                    setupStats[setup].total++;
-                    setupStats[setup].pnl += (trade.pnl || 0);
-                    if (trade.result === 'win') setupStats[setup].wins++;
-                    if (trade.result === 'loss') setupStats[setup].losses++;
-                });
-            });
-
-            // Sort by total trades (most common setups first)
-            const sortedSetups = Object.entries(setupStats).sort((a, b) => b[1].total - a[1].total);
-
-            let html = '<div class="dashboard-grid" style="grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));">';
-
-            sortedSetups.forEach(([setup, stats]) => {
-                const winRate = stats.total > 0 ? ((stats.wins / stats.total) * 100).toFixed(0) : 0;
-                const pnlColor = stats.pnl >= 0 ? '#10b981' : '#ef4444';
-                const pnlFormatted = stats.pnl >= 0 ? `+$${stats.pnl.toFixed(2)}` : `-$${Math.abs(stats.pnl).toFixed(2)}`;
-
-                html += `
-                    <div style="padding: 15px; background: rgba(21, 27, 40, 0.5); border-radius: 3px; border-left: 3px solid ${pnlColor};">
-                        <h3 style="font-size: 13px; margin-bottom: 8px; color: #ff9500;">${setup}</h3>
-                        <div style="font-size: 22px; font-weight: 700; color: ${pnlColor}; margin-bottom: 5px;">${winRate}%</div>
-                        <p style="color: #8b949e; font-size: 12px;">${stats.wins}W / ${stats.losses}L | ${stats.total} trades</p>
-                        <p style="color: ${pnlColor}; font-size: 13px; font-weight: 600; margin-top: 5px;">${pnlFormatted}</p>
-                    </div>
-                `;
-            });
-
-            html += '</div>';
-            container.innerHTML = html;
         }
 
         function updateDayOfWeekPerformance() {
