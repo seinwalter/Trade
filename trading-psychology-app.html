@@ -5912,247 +5912,273 @@
 
         // Time of Day Performance
         function updateTimeOfDayPerformance() {
-            const tradesWithTime = allTrades.filter(t => t.entryTime && t.result && t.result !== 'open');
+            try {
+                const canvas = document.getElementById('timeOfDayChart');
+                if (!canvas) return;
 
-            if (tradesWithTime.length === 0) {
-                document.getElementById('timeOfDayStats').innerHTML = '<p style="color: #8b949e; text-align: center;">No trade time data available. Import trades with entry times or add times to your trade notes.</p>';
-                return;
-            }
+                const ctx = canvas.getContext('2d');
+                const width = canvas.width;
+                const height = canvas.height;
+                ctx.clearRect(0, 0, width, height);
 
-            // Group trades by hour
-            const hourStats = {};
-            for (let i = 0; i < 24; i++) {
-                hourStats[i] = { wins: 0, losses: 0, total: 0, pnl: 0 };
-            }
+                const tradesWithTime = allTrades.filter(t => t.entryTime && t.result && t.result !== 'open');
 
-            tradesWithTime.forEach(trade => {
-                const hour = parseInt(trade.entryTime.split(':')[0]);
-                if (!isNaN(hour) && hour >= 0 && hour < 24) {
-                    hourStats[hour].total++;
-                    hourStats[hour].pnl += (trade.pnl || 0);
-                    if (trade.result === 'win') hourStats[hour].wins++;
-                    if (trade.result === 'loss') hourStats[hour].losses++;
+                if (tradesWithTime.length === 0) {
+                    // Show message on canvas
+                    ctx.fillStyle = '#8b949e';
+                    ctx.font = '14px Arial';
+                    ctx.textAlign = 'center';
+                    ctx.fillText('No trade time data available', width / 2, height / 2 - 10);
+                    ctx.font = '12px Arial';
+                    ctx.fillText('Import CSV with entry times or manually track trade times', width / 2, height / 2 + 10);
+
+                    document.getElementById('timeOfDayStats').innerHTML = '<p style="color: #8b949e; text-align: center;">Time tracking will be available once you import trades with entry times.</p>';
+                    return;
                 }
-            });
 
-            // Draw chart
-            const canvas = document.getElementById('timeOfDayChart');
-            if (!canvas) return;
+                // Group trades by hour
+                const hourStats = {};
+                for (let i = 0; i < 24; i++) {
+                    hourStats[i] = { wins: 0, losses: 0, total: 0, pnl: 0 };
+                }
 
-            const ctx = canvas.getContext('2d');
-            const width = canvas.width;
-            const height = canvas.height;
+                tradesWithTime.forEach(trade => {
+                    const hour = parseInt(trade.entryTime.split(':')[0]);
+                    if (!isNaN(hour) && hour >= 0 && hour < 24) {
+                        hourStats[hour].total++;
+                        hourStats[hour].pnl += (trade.pnl || 0);
+                        if (trade.result === 'win') hourStats[hour].wins++;
+                        if (trade.result === 'loss') hourStats[hour].losses++;
+                    }
+                });
 
-            ctx.clearRect(0, 0, width, height);
+                // Find max values for scaling
+                const maxTrades = Math.max(...Object.values(hourStats).map(h => h.total), 1);
 
-            // Find max values for scaling
-            const maxTrades = Math.max(...Object.values(hourStats).map(h => h.total));
-            const maxPnL = Math.max(...Object.values(hourStats).map(h => Math.abs(h.pnl)));
+                // Draw bars
+                const barWidth = (width - 100) / 24;
+                const chartHeight = height - 80;
 
-            // Draw bars
-            const barWidth = (width - 100) / 24;
-            const chartHeight = height - 80;
+                Object.keys(hourStats).forEach(hour => {
+                    const stats = hourStats[hour];
+                    if (stats.total === 0) return;
 
-            Object.keys(hourStats).forEach(hour => {
-                const stats = hourStats[hour];
-                if (stats.total === 0) return;
+                    const x = 60 + (parseInt(hour) * barWidth);
+                    const winHeight = (stats.wins / maxTrades) * chartHeight;
+                    const lossHeight = (stats.losses / maxTrades) * chartHeight;
 
-                const x = 60 + (parseInt(hour) * barWidth);
-                const winHeight = (stats.wins / maxTrades) * chartHeight;
-                const lossHeight = (stats.losses / maxTrades) * chartHeight;
+                    // Draw win bar
+                    ctx.fillStyle = 'rgba(16, 185, 129, 0.7)';
+                    ctx.fillRect(x, height - 60 - winHeight, barWidth - 2, winHeight);
 
-                // Draw win bar
-                ctx.fillStyle = 'rgba(16, 185, 129, 0.7)';
-                ctx.fillRect(x, height - 60 - winHeight, barWidth - 2, winHeight);
+                    // Draw loss bar
+                    ctx.fillStyle = 'rgba(239, 68, 68, 0.7)';
+                    ctx.fillRect(x, height - 60 - winHeight - lossHeight, barWidth - 2, lossHeight);
 
-                // Draw loss bar
-                ctx.fillStyle = 'rgba(239, 68, 68, 0.7)';
-                ctx.fillRect(x, height - 60 - winHeight - lossHeight, barWidth - 2, lossHeight);
+                    // Hour label
+                    ctx.fillStyle = '#8b949e';
+                    ctx.font = '10px Arial';
+                    ctx.textAlign = 'center';
+                    ctx.fillText(`${hour}:00`, x + barWidth / 2, height - 40);
+                });
 
-                // Hour label
-                ctx.fillStyle = '#8b949e';
-                ctx.font = '10px Arial';
-                ctx.textAlign = 'center';
-                ctx.fillText(`${hour}:00`, x + barWidth / 2, height - 40);
-            });
+                // Legend
+                ctx.fillStyle = '#10b981';
+                ctx.fillRect(width - 150, 20, 15, 15);
+                ctx.fillStyle = '#c9d1d9';
+                ctx.font = '12px Arial';
+                ctx.textAlign = 'left';
+                ctx.fillText('Wins', width - 130, 32);
 
-            // Legend
-            ctx.fillStyle = '#10b981';
-            ctx.fillRect(width - 150, 20, 15, 15);
-            ctx.fillStyle = '#c9d1d9';
-            ctx.font = '12px Arial';
-            ctx.textAlign = 'left';
-            ctx.fillText('Wins', width - 130, 32);
+                ctx.fillStyle = '#ef4444';
+                ctx.fillRect(width - 150, 40, 15, 15);
+                ctx.fillStyle = '#c9d1d9';
+                ctx.fillText('Losses', width - 130, 52);
 
-            ctx.fillStyle = '#ef4444';
-            ctx.fillRect(width - 150, 40, 15, 15);
-            ctx.fillStyle = '#c9d1d9';
-            ctx.fillText('Losses', width - 130, 52);
+                // Stats table
+                const bestHours = Object.entries(hourStats)
+                    .filter(([_, stats]) => stats.total > 0)
+                    .sort(([_, a], [__, b]) => {
+                        const winRateA = a.total > 0 ? (a.wins / a.total) : 0;
+                        const winRateB = b.total > 0 ? (b.wins / b.total) : 0;
+                        return winRateB - winRateA;
+                    })
+                    .slice(0, 3);
 
-            // Stats table
-            const bestHours = Object.entries(hourStats)
-                .filter(([_, stats]) => stats.total > 0)
-                .sort(([_, a], [__, b]) => {
-                    const winRateA = a.total > 0 ? (a.wins / a.total) : 0;
-                    const winRateB = b.total > 0 ? (b.wins / b.total) : 0;
-                    return winRateB - winRateA;
-                })
-                .slice(0, 3);
+                const worstHours = Object.entries(hourStats)
+                    .filter(([_, stats]) => stats.total > 0)
+                    .sort(([_, a], [__, b]) => {
+                        const winRateA = a.total > 0 ? (a.wins / a.total) : 0;
+                        const winRateB = b.total > 0 ? (b.wins / b.total) : 0;
+                        return winRateA - winRateB;
+                    })
+                    .slice(0, 3);
 
-            const worstHours = Object.entries(hourStats)
-                .filter(([_, stats]) => stats.total > 0)
-                .sort(([_, a], [__, b]) => {
-                    const winRateA = a.total > 0 ? (a.wins / a.total) : 0;
-                    const winRateB = b.total > 0 ? (b.wins / b.total) : 0;
-                    return winRateA - winRateB;
-                })
-                .slice(0, 3);
+                let statsHTML = '<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-top: 20px;">';
 
-            let statsHTML = '<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-top: 20px;">';
+                // Best hours
+                statsHTML += '<div style="background: rgba(16, 185, 129, 0.1); padding: 15px; border-radius: 8px;">';
+                statsHTML += '<h4 style="color: #10b981; margin-bottom: 10px;">🔥 Best Trading Hours</h4>';
+                bestHours.forEach(([hour, stats]) => {
+                    const winRate = ((stats.wins / stats.total) * 100).toFixed(0);
+                    const pnlFormatted = stats.pnl >= 0 ? `+$${stats.pnl.toFixed(2)}` : `($${Math.abs(stats.pnl).toFixed(2)})`;
+                    statsHTML += `
+                        <div style="margin-bottom: 8px;">
+                            <strong>${hour}:00</strong> - ${winRate}% WR (${stats.wins}W/${stats.losses}L) ${pnlFormatted}
+                        </div>
+                    `;
+                });
+                statsHTML += '</div>';
 
-            // Best hours
-            statsHTML += '<div style="background: rgba(16, 185, 129, 0.1); padding: 15px; border-radius: 8px;">';
-            statsHTML += '<h4 style="color: #10b981; margin-bottom: 10px;">🔥 Best Trading Hours</h4>';
-            bestHours.forEach(([hour, stats]) => {
-                const winRate = ((stats.wins / stats.total) * 100).toFixed(0);
-                const pnlFormatted = stats.pnl >= 0 ? `+$${stats.pnl.toFixed(2)}` : `($${Math.abs(stats.pnl).toFixed(2)})`;
-                statsHTML += `
-                    <div style="margin-bottom: 8px;">
-                        <strong>${hour}:00</strong> - ${winRate}% WR (${stats.wins}W/${stats.losses}L) ${pnlFormatted}
-                    </div>
-                `;
-            });
-            statsHTML += '</div>';
+                // Worst hours
+                statsHTML += '<div style="background: rgba(239, 68, 68, 0.1); padding: 15px; border-radius: 8px;">';
+                statsHTML += '<h4 style="color: #ef4444; margin-bottom: 10px;">⚠️ Worst Trading Hours</h4>';
+                worstHours.forEach(([hour, stats]) => {
+                    const winRate = ((stats.wins / stats.total) * 100).toFixed(0);
+                    const pnlFormatted = stats.pnl >= 0 ? `+$${stats.pnl.toFixed(2)}` : `($${Math.abs(stats.pnl).toFixed(2)})`;
+                    statsHTML += `
+                        <div style="margin-bottom: 8px;">
+                            <strong>${hour}:00</strong> - ${winRate}% WR (${stats.wins}W/${stats.losses}L) ${pnlFormatted}
+                        </div>
+                    `;
+                });
+                statsHTML += '</div>';
 
-            // Worst hours
-            statsHTML += '<div style="background: rgba(239, 68, 68, 0.1); padding: 15px; border-radius: 8px;">';
-            statsHTML += '<h4 style="color: #ef4444; margin-bottom: 10px;">⚠️ Worst Trading Hours</h4>';
-            worstHours.forEach(([hour, stats]) => {
-                const winRate = ((stats.wins / stats.total) * 100).toFixed(0);
-                const pnlFormatted = stats.pnl >= 0 ? `+$${stats.pnl.toFixed(2)}` : `($${Math.abs(stats.pnl).toFixed(2)})`;
-                statsHTML += `
-                    <div style="margin-bottom: 8px;">
-                        <strong>${hour}:00</strong> - ${winRate}% WR (${stats.wins}W/${stats.losses}L) ${pnlFormatted}
-                    </div>
-                `;
-            });
-            statsHTML += '</div>';
+                statsHTML += '</div>';
 
-            statsHTML += '</div>';
-
-            document.getElementById('timeOfDayStats').innerHTML = statsHTML;
+                document.getElementById('timeOfDayStats').innerHTML = statsHTML;
+            } catch (error) {
+                console.error('Error in updateTimeOfDayPerformance:', error);
+                document.getElementById('timeOfDayStats').innerHTML = '<p style="color: #ef4444;">Error loading time of day analytics</p>';
+            }
         }
 
         // Hold Duration Analysis
         function updateHoldDurationAnalysis() {
-            const tradesWithDuration = allTrades.filter(t => t.duration && t.duration > 0 && t.result && t.result !== 'open');
+            try {
+                const tradesWithDuration = allTrades.filter(t => t.duration && t.duration > 0 && t.result && t.result !== 'open');
 
-            if (tradesWithDuration.length === 0) {
-                document.getElementById('avgHoldWinner').textContent = 'N/A';
-                document.getElementById('avgHoldLoser').textContent = 'N/A';
-                document.getElementById('optimalHoldTime').textContent = 'N/A';
-                return;
-            }
+                const canvas = document.getElementById('durationDistributionChart');
+                if (!canvas) return;
 
-            const winners = tradesWithDuration.filter(t => t.result === 'win');
-            const losers = tradesWithDuration.filter(t => t.result === 'loss');
+                const ctx = canvas.getContext('2d');
+                const width = canvas.width;
+                const height = canvas.height;
+                ctx.clearRect(0, 0, width, height);
 
-            const avgWinnerDuration = winners.length > 0
-                ? winners.reduce((sum, t) => sum + t.duration, 0) / winners.length
-                : 0;
+                if (tradesWithDuration.length === 0) {
+                    document.getElementById('avgHoldWinner').textContent = 'N/A';
+                    document.getElementById('avgHoldLoser').textContent = 'N/A';
+                    document.getElementById('optimalHoldTime').textContent = 'N/A';
 
-            const avgLoserDuration = losers.length > 0
-                ? losers.reduce((sum, t) => sum + t.duration, 0) / losers.length
-                : 0;
-
-            document.getElementById('avgHoldWinner').textContent = `${Math.round(avgWinnerDuration)} min`;
-            document.getElementById('avgHoldLoser').textContent = `${Math.round(avgLoserDuration)} min`;
-            document.getElementById('optimalHoldTime').textContent = `${Math.round(avgWinnerDuration)} min`;
-
-            // Draw duration distribution chart
-            const canvas = document.getElementById('durationDistributionChart');
-            if (!canvas) return;
-
-            const ctx = canvas.getContext('2d');
-            const width = canvas.width;
-            const height = canvas.height;
-
-            ctx.clearRect(0, 0, width, height);
-
-            // Create buckets (0-5min, 5-10min, 10-15min, etc.)
-            const buckets = {};
-            const bucketSize = 5; // 5 minute intervals
-
-            tradesWithDuration.forEach(trade => {
-                const bucket = Math.floor(trade.duration / bucketSize) * bucketSize;
-                if (!buckets[bucket]) {
-                    buckets[bucket] = { wins: 0, losses: 0 };
+                    // Show message on canvas
+                    ctx.fillStyle = '#8b949e';
+                    ctx.font = '14px Arial';
+                    ctx.textAlign = 'center';
+                    ctx.fillText('No hold duration data available', width / 2, height / 2 - 10);
+                    ctx.font = '12px Arial';
+                    ctx.fillText('Import CSV with buy/sell times or add duration to trade notes', width / 2, height / 2 + 10);
+                    return;
                 }
-                if (trade.result === 'win') buckets[bucket].wins++;
-                if (trade.result === 'loss') buckets[bucket].losses++;
-            });
 
-            const sortedBuckets = Object.keys(buckets).sort((a, b) => parseInt(a) - parseInt(b));
-            const maxCount = Math.max(...sortedBuckets.map(b => buckets[b].wins + buckets[b].losses));
+                const winners = tradesWithDuration.filter(t => t.result === 'win');
+                const losers = tradesWithDuration.filter(t => t.result === 'loss');
 
-            const barWidth = Math.min((width - 100) / sortedBuckets.length, 60);
-            const chartHeight = height - 80;
+                const avgWinnerDuration = winners.length > 0
+                    ? winners.reduce((sum, t) => sum + t.duration, 0) / winners.length
+                    : 0;
 
-            sortedBuckets.forEach((bucket, index) => {
-                const stats = buckets[bucket];
-                const x = 60 + (index * (barWidth + 5));
+                const avgLoserDuration = losers.length > 0
+                    ? losers.reduce((sum, t) => sum + t.duration, 0) / losers.length
+                    : 0;
 
-                const winHeight = (stats.wins / maxCount) * chartHeight;
-                const lossHeight = (stats.losses / maxCount) * chartHeight;
+                document.getElementById('avgHoldWinner').textContent = `${Math.round(avgWinnerDuration)} min`;
+                document.getElementById('avgHoldLoser').textContent = `${Math.round(avgLoserDuration)} min`;
+                document.getElementById('optimalHoldTime').textContent = `${Math.round(avgWinnerDuration)} min`;
 
-                // Win bar
-                ctx.fillStyle = 'rgba(16, 185, 129, 0.7)';
-                ctx.fillRect(x, height - 60 - winHeight, barWidth / 2 - 1, winHeight);
+                // Create buckets (0-5min, 5-10min, 10-15min, etc.)
+                const buckets = {};
+                const bucketSize = 5; // 5 minute intervals
 
-                // Loss bar
-                ctx.fillStyle = 'rgba(239, 68, 68, 0.7)';
-                ctx.fillRect(x + barWidth / 2, height - 60 - lossHeight, barWidth / 2 - 1, lossHeight);
+                tradesWithDuration.forEach(trade => {
+                    const bucket = Math.floor(trade.duration / bucketSize) * bucketSize;
+                    if (!buckets[bucket]) {
+                        buckets[bucket] = { wins: 0, losses: 0 };
+                    }
+                    if (trade.result === 'win') buckets[bucket].wins++;
+                    if (trade.result === 'loss') buckets[bucket].losses++;
+                });
 
-                // Label
+                const sortedBuckets = Object.keys(buckets).sort((a, b) => parseInt(a) - parseInt(b));
+                const maxCount = Math.max(...sortedBuckets.map(b => buckets[b].wins + buckets[b].losses), 1);
+
+                const barWidth = Math.min((width - 100) / sortedBuckets.length, 60);
+                const chartHeight = height - 80;
+
+                sortedBuckets.forEach((bucket, index) => {
+                    const stats = buckets[bucket];
+                    const x = 60 + (index * (barWidth + 5));
+
+                    const winHeight = (stats.wins / maxCount) * chartHeight;
+                    const lossHeight = (stats.losses / maxCount) * chartHeight;
+
+                    // Win bar
+                    ctx.fillStyle = 'rgba(16, 185, 129, 0.7)';
+                    ctx.fillRect(x, height - 60 - winHeight, barWidth / 2 - 1, winHeight);
+
+                    // Loss bar
+                    ctx.fillStyle = 'rgba(239, 68, 68, 0.7)';
+                    ctx.fillRect(x + barWidth / 2, height - 60 - lossHeight, barWidth / 2 - 1, lossHeight);
+
+                    // Label
+                    ctx.fillStyle = '#8b949e';
+                    ctx.font = '10px Arial';
+                    ctx.textAlign = 'center';
+                    ctx.fillText(`${bucket}-${parseInt(bucket) + bucketSize}m`, x + barWidth / 2, height - 40);
+                });
+
+                // Y-axis
                 ctx.fillStyle = '#8b949e';
-                ctx.font = '10px Arial';
+                ctx.font = '11px Arial';
+                ctx.textAlign = 'right';
+                for (let i = 0; i <= 5; i++) {
+                    const y = height - 60 - (chartHeight * (i / 5));
+                    ctx.fillText(Math.round(maxCount * (i / 5)), 50, y);
+                }
+
+                // Title
+                ctx.fillStyle = '#c9d1d9';
+                ctx.font = '12px Arial';
                 ctx.textAlign = 'center';
-                ctx.fillText(`${bucket}-${parseInt(bucket) + bucketSize}m`, x + barWidth / 2, height - 40);
-            });
-
-            // Y-axis
-            ctx.fillStyle = '#8b949e';
-            ctx.font = '11px Arial';
-            ctx.textAlign = 'right';
-            for (let i = 0; i <= 5; i++) {
-                const y = height - 60 - (chartHeight * (i / 5));
-                ctx.fillText(Math.round(maxCount * (i / 5)), 50, y);
+                ctx.fillText('Duration Distribution (minutes)', width / 2, 20);
+            } catch (error) {
+                console.error('Error in updateHoldDurationAnalysis:', error);
+                document.getElementById('avgHoldWinner').textContent = 'Error';
+                document.getElementById('avgHoldLoser').textContent = 'Error';
+                document.getElementById('optimalHoldTime').textContent = 'Error';
             }
-
-            // Title
-            ctx.fillStyle = '#c9d1d9';
-            ctx.font = '12px Arial';
-            ctx.textAlign = 'center';
-            ctx.fillText('Duration Distribution (minutes)', width / 2, 20);
         }
 
         // Correlation Matrix
         function updateCorrelationMatrix() {
-            const container = document.getElementById('correlationMatrix');
-            const completedTrades = allTrades.filter(t => t.result && t.result !== 'open');
+            try {
+                const container = document.getElementById('correlationMatrix');
+                if (!container) return;
 
-            if (completedTrades.length < 10) {
-                container.innerHTML = '<p style="color: #8b949e; text-align: center;">Need at least 10 completed trades for correlation analysis</p>';
-                return;
-            }
+                const completedTrades = allTrades.filter(t => t.result && t.result !== 'open');
 
-            // Get all symbols
-            const symbols = [...new Set(completedTrades.map(t => t.symbol))];
+                if (completedTrades.length < 10) {
+                    container.innerHTML = '<p style="color: #8b949e; text-align: center; padding: 40px;">Need at least 10 completed trades for correlation analysis</p>';
+                    return;
+                }
 
-            if (symbols.length < 2) {
-                container.innerHTML = '<p style="color: #8b949e; text-align: center;">Need trades from multiple symbols for correlation analysis</p>';
-                return;
-            }
+                // Get all symbols
+                const symbols = [...new Set(completedTrades.map(t => t.symbol))].filter(s => s);
+
+                if (symbols.length < 2) {
+                    container.innerHTML = '<p style="color: #8b949e; text-align: center; padding: 40px;">Need trades from multiple symbols for correlation analysis</p>';
+                    return;
+                }
 
             // Calculate correlation between symbols based on win rate patterns
             const correlationMatrix = {};
@@ -6191,148 +6217,169 @@
                 html += '</tr>';
             });
 
-            html += '</tbody></table></div>';
-            html += '<div style="margin-top: 15px; padding: 10px; background: rgba(255, 149, 0, 0.1); border-radius: 4px; font-size: 12px;">';
-            html += '<strong>💡 Correlation Guide:</strong> High correlation (>80%, red) means symbols perform similarly. Avoid over-concentration in correlated symbols.';
-            html += '</div>';
+                html += '</tbody></table></div>';
+                html += '<div style="margin-top: 15px; padding: 10px; background: rgba(255, 149, 0, 0.1); border-radius: 4px; font-size: 12px;">';
+                html += '<strong>💡 Correlation Guide:</strong> High correlation (>80%, red) means symbols perform similarly. Avoid over-concentration in correlated symbols.';
+                html += '</div>';
 
-            container.innerHTML = html;
+                container.innerHTML = html;
+            } catch (error) {
+                console.error('Error in updateCorrelationMatrix:', error);
+                const container = document.getElementById('correlationMatrix');
+                if (container) {
+                    container.innerHTML = '<p style="color: #ef4444; text-align: center; padding: 40px;">Error loading correlation analysis</p>';
+                }
+            }
         }
 
         // MFE/MAE Analysis
         function updateMFEMAEAnalysis() {
-            const completedTrades = allTrades.filter(t => t.result && t.result !== 'open');
+            try {
+                const completedTrades = allTrades.filter(t => t.result && t.result !== 'open');
 
-            if (completedTrades.length === 0) {
-                document.getElementById('avgMFE').textContent = 'N/A';
-                document.getElementById('avgMAE').textContent = 'N/A';
-                document.getElementById('mfeCapture').textContent = 'N/A';
-                return;
-            }
+                const canvas = document.getElementById('mfeMaeScatterChart');
+                if (!canvas) return;
 
-            // For now, use estimated MFE/MAE based on trade data
-            // In a real system, this would track intra-trade price movements
-            const tradesWithMFEMAE = completedTrades.map(trade => {
-                let mfe = trade.mfe || 0;
-                let mae = trade.mae || 0;
+                const ctx = canvas.getContext('2d');
+                const width = canvas.width;
+                const height = canvas.height;
+                ctx.clearRect(0, 0, width, height);
 
-                // Estimate MFE/MAE if not provided
-                if (mfe === 0 && trade.target) {
-                    const potentialGain = Math.abs((trade.target - trade.entryPrice) / trade.entryPrice) * 100;
-                    mfe = trade.result === 'win' ? potentialGain * 0.8 : potentialGain * 0.5;
+                if (completedTrades.length === 0) {
+                    document.getElementById('avgMFE').textContent = 'N/A';
+                    document.getElementById('avgMAE').textContent = 'N/A';
+                    document.getElementById('mfeCapture').textContent = 'N/A';
+
+                    // Show message on canvas
+                    ctx.fillStyle = '#8b949e';
+                    ctx.font = '14px Arial';
+                    ctx.textAlign = 'center';
+                    ctx.fillText('No completed trades available', width / 2, height / 2 - 10);
+                    ctx.font = '12px Arial';
+                    ctx.fillText('MFE/MAE will be estimated from your stop loss and target prices', width / 2, height / 2 + 10);
+                    return;
                 }
 
-                if (mae === 0 && trade.stopLoss) {
-                    const potentialLoss = Math.abs((trade.stopLoss - trade.entryPrice) / trade.entryPrice) * 100;
-                    mae = trade.result === 'loss' ? potentialLoss * 0.9 : potentialLoss * 0.3;
-                }
+                // For now, use estimated MFE/MAE based on trade data
+                // In a real system, this would track intra-trade price movements
+                const tradesWithMFEMAE = completedTrades.map(trade => {
+                    let mfe = trade.mfe || 0;
+                    let mae = trade.mae || 0;
 
-                return { ...trade, mfe, mae };
-            });
+                    // Estimate MFE/MAE if not provided
+                    if (mfe === 0 && trade.target && trade.entryPrice) {
+                        const potentialGain = Math.abs((trade.target - trade.entryPrice) / trade.entryPrice) * 100;
+                        mfe = trade.result === 'win' ? potentialGain * 0.8 : potentialGain * 0.5;
+                    }
 
-            const avgMFE = tradesWithMFEMAE.reduce((sum, t) => sum + t.mfe, 0) / tradesWithMFEMAE.length;
-            const avgMAE = tradesWithMFEMAE.reduce((sum, t) => sum + t.mae, 0) / tradesWithMFEMAE.length;
+                    if (mae === 0 && trade.stopLoss && trade.entryPrice) {
+                        const potentialLoss = Math.abs((trade.stopLoss - trade.entryPrice) / trade.entryPrice) * 100;
+                        mae = trade.result === 'loss' ? potentialLoss * 0.9 : potentialLoss * 0.3;
+                    }
 
-            // MFE capture rate: how much of the MFE was captured in final P/L
-            const winners = tradesWithMFEMAE.filter(t => t.result === 'win');
-            const mfeCapture = winners.length > 0
-                ? (winners.reduce((sum, t) => {
-                    const actualGain = Math.abs((t.exitPrice - t.entryPrice) / t.entryPrice) * 100;
-                    return sum + (t.mfe > 0 ? (actualGain / t.mfe) : 0);
-                }, 0) / winners.length) * 100
-                : 0;
+                    return { ...trade, mfe, mae };
+                });
 
-            document.getElementById('avgMFE').textContent = `${avgMFE.toFixed(1)}%`;
-            document.getElementById('avgMAE').textContent = `${avgMAE.toFixed(1)}%`;
-            document.getElementById('mfeCapture').textContent = `${mfeCapture.toFixed(0)}%`;
+                const avgMFE = tradesWithMFEMAE.reduce((sum, t) => sum + t.mfe, 0) / tradesWithMFEMAE.length;
+                const avgMAE = tradesWithMFEMAE.reduce((sum, t) => sum + t.mae, 0) / tradesWithMFEMAE.length;
 
-            // Draw MFE/MAE scatter plot
-            const canvas = document.getElementById('mfeMaeScatterChart');
-            if (!canvas) return;
+                // MFE capture rate: how much of the MFE was captured in final P/L
+                const winners = tradesWithMFEMAE.filter(t => t.result === 'win');
+                const mfeCapture = winners.length > 0
+                    ? (winners.reduce((sum, t) => {
+                        if (!t.exitPrice || !t.entryPrice) return sum;
+                        const actualGain = Math.abs((t.exitPrice - t.entryPrice) / t.entryPrice) * 100;
+                        return sum + (t.mfe > 0 ? (actualGain / t.mfe) : 0);
+                    }, 0) / winners.length) * 100
+                    : 0;
 
-            const ctx = canvas.getContext('2d');
-            const width = canvas.width;
-            const height = canvas.height;
+                document.getElementById('avgMFE').textContent = `${avgMFE.toFixed(1)}%`;
+                document.getElementById('avgMAE').textContent = `${avgMAE.toFixed(1)}%`;
+                document.getElementById('mfeCapture').textContent = `${mfeCapture.toFixed(0)}%`;
 
-            ctx.clearRect(0, 0, width, height);
+                const maxMFE = Math.max(...tradesWithMFEMAE.map(t => t.mfe), 10);
+                const maxMAE = Math.max(...tradesWithMFEMAE.map(t => t.mae), 10);
 
-            const maxMFE = Math.max(...tradesWithMFEMAE.map(t => t.mfe), 10);
-            const maxMAE = Math.max(...tradesWithMFEMAE.map(t => t.mae), 10);
-
-            // Draw axes
-            ctx.strokeStyle = 'rgba(139, 148, 158, 0.5)';
-            ctx.lineWidth = 2;
-            ctx.beginPath();
-            ctx.moveTo(60, height - 60);
-            ctx.lineTo(width - 20, height - 60);
-            ctx.moveTo(60, 20);
-            ctx.lineTo(60, height - 60);
-            ctx.stroke();
-
-            // Axis labels
-            ctx.fillStyle = '#8b949e';
-            ctx.font = '12px Arial';
-            ctx.textAlign = 'center';
-            ctx.fillText('MAE (Max Drawdown %)', width / 2, height - 20);
-
-            ctx.save();
-            ctx.translate(20, height / 2);
-            ctx.rotate(-Math.PI / 2);
-            ctx.fillText('MFE (Max Profit %)', 0, 0);
-            ctx.restore();
-
-            // Grid lines and labels
-            for (let i = 0; i <= 5; i++) {
-                const x = 60 + ((width - 80) * (i / 5));
-                const y = height - 60 - ((height - 80) * (i / 5));
-
-                ctx.strokeStyle = 'rgba(139, 148, 158, 0.1)';
-                ctx.lineWidth = 1;
-
-                // Vertical grid
+                // Draw axes
+                ctx.strokeStyle = 'rgba(139, 148, 158, 0.5)';
+                ctx.lineWidth = 2;
                 ctx.beginPath();
-                ctx.moveTo(x, height - 60);
-                ctx.lineTo(x, 20);
+                ctx.moveTo(60, height - 60);
+                ctx.lineTo(width - 20, height - 60);
+                ctx.moveTo(60, 20);
+                ctx.lineTo(60, height - 60);
                 ctx.stroke();
 
-                // Horizontal grid
-                ctx.beginPath();
-                ctx.moveTo(60, y);
-                ctx.lineTo(width - 20, y);
-                ctx.stroke();
-
-                // Labels
+                // Axis labels
                 ctx.fillStyle = '#8b949e';
-                ctx.font = '10px Arial';
+                ctx.font = '12px Arial';
                 ctx.textAlign = 'center';
-                ctx.fillText((maxMAE * (i / 5)).toFixed(0), x, height - 45);
-                ctx.textAlign = 'right';
-                ctx.fillText((maxMFE * (i / 5)).toFixed(0), 50, y + 4);
+                ctx.fillText('MAE (Max Drawdown %)', width / 2, height - 20);
+
+                ctx.save();
+                ctx.translate(20, height / 2);
+                ctx.rotate(-Math.PI / 2);
+                ctx.fillText('MFE (Max Profit %)', 0, 0);
+                ctx.restore();
+
+                // Grid lines and labels
+                for (let i = 0; i <= 5; i++) {
+                    const x = 60 + ((width - 80) * (i / 5));
+                    const y = height - 60 - ((height - 80) * (i / 5));
+
+                    ctx.strokeStyle = 'rgba(139, 148, 158, 0.1)';
+                    ctx.lineWidth = 1;
+
+                    // Vertical grid
+                    ctx.beginPath();
+                    ctx.moveTo(x, height - 60);
+                    ctx.lineTo(x, 20);
+                    ctx.stroke();
+
+                    // Horizontal grid
+                    ctx.beginPath();
+                    ctx.moveTo(60, y);
+                    ctx.lineTo(width - 20, y);
+                    ctx.stroke();
+
+                    // Labels
+                    ctx.fillStyle = '#8b949e';
+                    ctx.font = '10px Arial';
+                    ctx.textAlign = 'center';
+                    ctx.fillText((maxMAE * (i / 5)).toFixed(0), x, height - 45);
+                    ctx.textAlign = 'right';
+                    ctx.fillText((maxMFE * (i / 5)).toFixed(0), 50, y + 4);
+                }
+
+                // Plot points
+                tradesWithMFEMAE.forEach(trade => {
+                    const x = 60 + ((trade.mae / maxMAE) * (width - 80));
+                    const y = height - 60 - ((trade.mfe / maxMFE) * (height - 80));
+
+                    ctx.fillStyle = trade.result === 'win' ? 'rgba(16, 185, 129, 0.6)' : 'rgba(239, 68, 68, 0.6)';
+                    ctx.beginPath();
+                    ctx.arc(x, y, 5, 0, 2 * Math.PI);
+                    ctx.fill();
+                });
+
+                // Legend
+                ctx.fillStyle = '#10b981';
+                ctx.fillRect(width - 150, 30, 12, 12);
+                ctx.fillStyle = '#c9d1d9';
+                ctx.font = '11px Arial';
+                ctx.textAlign = 'left';
+                ctx.fillText('Winners', width - 135, 40);
+
+                ctx.fillStyle = '#ef4444';
+                ctx.fillRect(width - 150, 50, 12, 12);
+                ctx.fillStyle = '#c9d1d9';
+                ctx.fillText('Losers', width - 135, 60);
+            } catch (error) {
+                console.error('Error in updateMFEMAEAnalysis:', error);
+                document.getElementById('avgMFE').textContent = 'Error';
+                document.getElementById('avgMAE').textContent = 'Error';
+                document.getElementById('mfeCapture').textContent = 'Error';
             }
-
-            // Plot points
-            tradesWithMFEMAE.forEach(trade => {
-                const x = 60 + ((trade.mae / maxMAE) * (width - 80));
-                const y = height - 60 - ((trade.mfe / maxMFE) * (height - 80));
-
-                ctx.fillStyle = trade.result === 'win' ? 'rgba(16, 185, 129, 0.6)' : 'rgba(239, 68, 68, 0.6)';
-                ctx.beginPath();
-                ctx.arc(x, y, 5, 0, 2 * Math.PI);
-                ctx.fill();
-            });
-
-            // Legend
-            ctx.fillStyle = '#10b981';
-            ctx.fillRect(width - 150, 30, 12, 12);
-            ctx.fillStyle = '#c9d1d9';
-            ctx.font = '11px Arial';
-            ctx.textAlign = 'left';
-            ctx.fillText('Winners', width - 135, 40);
-
-            ctx.fillStyle = '#ef4444';
-            ctx.fillRect(width - 150, 50, 12, 12);
-            ctx.fillStyle = '#c9d1d9';
-            ctx.fillText('Losers', width - 135, 60);
         }
 
         // Load history
