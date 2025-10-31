@@ -2488,6 +2488,34 @@
                 </div>
             </div>
 
+            <!-- Calendar Heatmap -->
+            <div class="section">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                    <h2 style="margin: 0;">📅 Trading Calendar</h2>
+                    <div style="display: flex; gap: 10px; align-items: center;">
+                        <button onclick="changeCalendarMonth(-1)" style="padding: 5px 15px; background: rgba(255, 149, 0, 0.2); color: #ff9500; border: 1px solid #ff9500; border-radius: 3px; cursor: pointer; font-weight: bold;">◀ Prev</button>
+                        <select id="calendarMonth" onchange="drawCalendarHeatmap()" style="padding: 5px 10px; background: rgba(21, 27, 40, 0.8); color: #c9d1d9; border: 1px solid #30363d; border-radius: 3px; cursor: pointer;">
+                            <option value="0">January</option>
+                            <option value="1">February</option>
+                            <option value="2">March</option>
+                            <option value="3">April</option>
+                            <option value="4">May</option>
+                            <option value="5">June</option>
+                            <option value="6">July</option>
+                            <option value="7">August</option>
+                            <option value="8">September</option>
+                            <option value="9">October</option>
+                            <option value="10">November</option>
+                            <option value="11">December</option>
+                        </select>
+                        <input id="calendarYear" type="number" placeholder="Year" onchange="drawCalendarHeatmap()" style="width: 80px; padding: 5px 10px; background: rgba(21, 27, 40, 0.8); color: #c9d1d9; border: 1px solid #30363d; border-radius: 3px;">
+                        <button onclick="changeCalendarMonth(1)" style="padding: 5px 15px; background: rgba(255, 149, 0, 0.2); color: #ff9500; border: 1px solid #ff9500; border-radius: 3px; cursor: pointer; font-weight: bold;">Next ▶</button>
+                    </div>
+                </div>
+                <p style="color: #8b949e; font-size: 13px; margin-bottom: 15px;">Visual heatmap of your daily P/L - green for profits, red for losses. Click on any day to see trade details.</p>
+                <div id="calendarHeatmap" style="padding: 20px; background: rgba(13, 17, 23, 0.6); border-radius: 6px; border: 1px solid rgba(255, 149, 0, 0.2);"></div>
+            </div>
+
             <!-- Win/Loss Analysis -->
             <div class="section">
                 <h2>Win/Loss Distribution & Analysis</h2>
@@ -7858,8 +7886,21 @@
 
             // Add note about required fields
             const note = document.createElement('div');
-            note.style.cssText = 'margin-top: 15px; padding: 10px; background: rgba(255, 0, 85, 0.1); border-left: 3px solid #ff0055; border-radius: 6px; color: #c9d1d9; font-size: 14px;';
-            note.innerHTML = '<strong>* Required fields</strong> - Symbol, Date, Entry Price, and Exit Price must be mapped<br><strong>Direction auto-detected:</strong> If you have Buy Time and Sell Time columns, direction will be automatically determined (buy first = long, sell first = short)';
+            note.style.cssText = 'margin-top: 15px; padding: 10px; background: rgba(255, 0, 85, 0.1); border-left: 3px solid #ff0055; border-radius: 6px; color: #c9d1d9; font-size: 13px; line-height: 1.6;';
+            note.innerHTML = `
+                <strong>* Required fields:</strong> Symbol, Date, Entry Price, and Exit Price must be mapped<br>
+                <strong>📅 Date:</strong> If no Date column, the date will be extracted from Buy/Sell Time timestamps<br>
+                <strong>🔄 Direction auto-detect:</strong> If you have Buy Time and Sell Time columns, direction will be automatically determined (buy first = long, sell first = short)<br>
+                <strong>⏱️ Duration:</strong> Can include duration in minutes in the Notes field (e.g., "15 min" or "20 minutes")<br>
+                <strong>📊 MFE/MAE (Optional but recommended):</strong><br>
+                • <strong>MFE</strong> (Max Favorable Excursion) = Best profit % the trade reached before exit<br>
+                &nbsp;&nbsp;→ For LONG: (Highest Price - Entry) / Entry × 100<br>
+                &nbsp;&nbsp;→ For SHORT: (Entry - Lowest Price) / Entry × 100<br>
+                • <strong>MAE</strong> (Max Adverse Excursion) = Worst loss % the trade reached before exit<br>
+                &nbsp;&nbsp;→ For LONG: (Entry - Lowest Price) / Entry × 100<br>
+                &nbsp;&nbsp;→ For SHORT: (Highest Price - Entry) / Entry × 100<br>
+                <em style="color: #8b949e;">MFE/MAE help analyze if you're exiting too early or holding losers too long</em>
+            `;
             container.appendChild(note);
 
             // Show mapping container and hide history sections
@@ -8259,8 +8300,10 @@
             const tradesByDate = {};
 
             csvData.validated.forEach(row => {
-                // Parse date properly - try to convert to ISO format
+                // Parse date properly - try multiple sources
                 let tradeDate = today;
+
+                // First try the date field
                 if (row.date && row.date.trim() !== '') {
                     try {
                         const parsedDate = new Date(row.date);
@@ -8268,7 +8311,21 @@
                             tradeDate = parsedDate.toISOString().split('T')[0];
                         }
                     } catch (e) {
-                        console.log('Could not parse date:', row.date, 'using today');
+                        console.log('Could not parse date field:', row.date);
+                    }
+                }
+
+                // If date is still today and we have timestamps, extract date from them
+                if (tradeDate === today && (row.buyTime || row.sellTime)) {
+                    try {
+                        const timestamp = row.buyTime || row.sellTime;
+                        const parsedDate = new Date(timestamp);
+                        if (!isNaN(parsedDate.getTime())) {
+                            tradeDate = parsedDate.toISOString().split('T')[0];
+                            console.log(`Extracted date ${tradeDate} from timestamp: ${timestamp}`);
+                        }
+                    } catch (e) {
+                        console.log('Could not parse timestamp for date:', e);
                     }
                 }
 
