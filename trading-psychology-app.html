@@ -2610,6 +2610,126 @@
                 </div>
             </div>
 
+            <!-- Detailed Analytics Sections -->
+            <!-- Symbol Performance -->
+            <div class="section">
+                <h2>Performance by Symbol</h2>
+                <div id="symbolPerformance"></div>
+            </div>
+
+            <!-- Long vs Short Detailed Stats -->
+            <div class="section">
+                <h2>Long vs Short Performance Details</h2>
+                <div class="dashboard-grid">
+                    <div style="padding: 20px; background: rgba(16, 185, 129, 0.05); border-radius: 3px; border-left: 3px solid #10b981;">
+                        <h3 style="color: #10b981; font-size: 16px; margin-bottom: 10px;">Long Trades</h3>
+                        <div style="font-size: 24px; font-weight: 700; margin-bottom: 5px;" id="longWinRate">0%</div>
+                        <p style="color: #8b949e; font-size: 13px;" id="longStats">0 trades</p>
+                    </div>
+                    <div style="padding: 20px; background: rgba(239, 68, 68, 0.05); border-radius: 3px; border-left: 3px solid #ef4444;">
+                        <h3 style="color: #ef4444; font-size: 16px; margin-bottom: 10px;">Short Trades</h3>
+                        <div style="font-size: 24px; font-weight: 700; margin-bottom: 5px;" id="shortWinRate">0%</div>
+                        <p style="color: #8b949e; font-size: 13px;" id="shortStats">0 trades</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Day of Week Performance -->
+            <div class="section">
+                <h2>Performance by Day of Week</h2>
+                <div id="dayOfWeekPerformance"></div>
+            </div>
+
+            <!-- Streak Stats -->
+            <div class="section">
+                <h2>Winning & Losing Streaks</h2>
+                <div class="dashboard-grid">
+                    <div style="padding: 15px; background: rgba(21, 27, 40, 0.5); border-radius: 3px; border-left: 3px solid #ff9500;">
+                        <p style="color: #8b949e; font-size: 12px; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px;">Current Streak</p>
+                        <div class="data-value neutral" id="currentStreak">0</div>
+                        <p style="color: #8b949e; font-size: 10px; margin-top: 4px;" id="currentStreakLabel">No trades yet</p>
+                    </div>
+                    <div style="padding: 15px; background: rgba(21, 27, 40, 0.5); border-radius: 3px; border-left: 3px solid #48bb78;">
+                        <p style="color: #8b949e; font-size: 12px; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px;">Longest Win Streak</p>
+                        <div class="data-value positive" id="longestWinStreak">0</div>
+                    </div>
+                    <div style="padding: 15px; background: rgba(21, 27, 40, 0.5); border-radius: 3px; border-left: 3px solid #e53e3e;">
+                        <p style="color: #8b949e; font-size: 12px; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px;">Longest Loss Streak</p>
+                        <div class="data-value negative" id="longestLossStreak">0</div>
+                    </div>
+                    <div style="padding: 15px; background: rgba(21, 27, 40, 0.5); border-radius: 3px; border-left: 3px solid #ff9500;">
+                        <p style="color: #8b949e; font-size: 12px; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px;">Win/Loss Ratio</p>
+                        <div class="data-value neutral" id="winLossRatio">0.00</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Rolling Win Rate Chart -->
+            <div class="section">
+                <h2>Rolling Win Rate (Last 10 Trades)</h2>
+                <div class="chart-container full-chart">
+                    <canvas id="rollingWinRateChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Time of Day Stats -->
+            <div class="section">
+                <h2>Time of Day Performance</h2>
+                <div id="timeOfDayStats"></div>
+            </div>
+
+            <!-- Hold Duration -->
+            <div class="section">
+                <h2>Hold Duration Analysis</h2>
+                <div class="dashboard-grid">
+                    <div style="padding: 15px; background: rgba(21, 27, 40, 0.5); border-radius: 3px; border-left: 3px solid #48bb78;">
+                        <p style="color: #8b949e; font-size: 12px; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px;">Avg Hold (Winners)</p>
+                        <div class="data-value positive" id="avgHoldWinner">0 min</div>
+                    </div>
+                    <div style="padding: 15px; background: rgba(21, 27, 40, 0.5); border-radius: 3px; border-left: 3px solid #e53e3e;">
+                        <p style="color: #8b949e; font-size: 12px; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px;">Avg Hold (Losers)</p>
+                        <div class="data-value negative" id="avgHoldLoser">0 min</div>
+                    </div>
+                    <div style="padding: 15px; background: rgba(21, 27, 40, 0.5); border-radius: 3px; border-left: 3px solid #ff9500;">
+                        <p style="color: #8b949e; font-size: 12px; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px;">Optimal Hold Time</p>
+                        <div class="data-value neutral" id="optimalHoldTime">0 min</div>
+                    </div>
+                </div>
+                <div class="chart-container full-chart" style="margin-top: 20px;">
+                    <canvas id="durationDistributionChart"></canvas>
+                </div>
+            </div>
+
+            <!-- MFE/MAE Analysis -->
+            <div class="section">
+                <h2>MFE/MAE Analysis</h2>
+                <p style="color: #8b949e; font-size: 13px; margin-bottom: 15px;">Maximum Favorable/Adverse Excursion - shows if you're managing winners/losers optimally.</p>
+                <div class="dashboard-grid">
+                    <div style="padding: 15px; background: rgba(16, 185, 129, 0.05); border-radius: 3px; border-left: 3px solid #10b981;">
+                        <p style="color: #8b949e; font-size: 12px; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px;">Avg MFE (Max Profit)</p>
+                        <div class="data-value positive" id="avgMFE">0%</div>
+                    </div>
+                    <div style="padding: 15px; background: rgba(239, 68, 68, 0.05); border-radius: 3px; border-left: 3px solid #ef4444;">
+                        <p style="color: #8b949e; font-size: 12px; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px;">Avg MAE (Max Drawdown)</p>
+                        <div class="data-value negative" id="avgMAE">0%</div>
+                    </div>
+                    <div style="padding: 15px; background: rgba(21, 27, 40, 0.5); border-radius: 3px; border-left: 3px solid #ff9500;">
+                        <p style="color: #8b949e; font-size: 12px; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px;">MFE Capture Rate</p>
+                        <div class="data-value neutral" id="mfeCapture">0%</div>
+                    </div>
+                </div>
+                <div class="chart-container full-chart" style="margin-top: 20px;">
+                    <canvas id="mfeMaeScatterChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Correlation Matrix -->
+            <div class="section">
+                <h2>Symbol & Setup Correlation</h2>
+                <p style="color: #8b949e; font-size: 13px; margin-bottom: 15px;">Which symbols/setups have similar outcomes? Avoid over-concentration.</p>
+                <div id="correlationMatrix"></div>
+            </div>
+
             <!-- Data Management -->
             <div class="section">
                 <h2>Data Management</h2>
@@ -3727,6 +3847,7 @@
             }
             if (tabName === 'performance') {
                 updateStatistics();
+                updateAnalytics();
                 initPerformanceCharts();
             }
             if (tabName === 'history') loadHistory();
