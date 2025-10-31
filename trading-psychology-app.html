@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Trading Psychology Protocol - Dr. Ellis Hartwin</title>
+    <title>Trade Analytics Pro - Professional Trading Analysis</title>
 
     <!-- Favicon -->
     <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect fill='%230a0e27' width='100' height='100'/><path d='M20,80 L35,40 L50,60 L65,30 L80,50' stroke='%23ff9500' stroke-width='4' fill='none'/><circle cx='35' cy='40' r='3' fill='%2300ff80'/><circle cx='50' cy='60' r='3' fill='%23ff0055'/><circle cx='65' cy='30' r='3' fill='%2300ff80'/></svg>">
@@ -1736,12 +1736,12 @@
 
     <div class="app-container">
         <div class="app-header">
-            <h1>Trading Psychology Protocol</h1>
-            <div class="subtitle">Dr. Ellis Hartwin - Patient: Sean</div>
+            <h1>Trade Analytics Pro</h1>
+            <div class="subtitle">Professional Trading Analysis & Performance Tracking</div>
         </div>
 
         <div class="nav-tabs">
-            <button class="nav-tab active" onclick="switchTab('dashboard')">Performance Analytics</button>
+            <button class="nav-tab active" onclick="switchTab('dashboard')">Dashboard</button>
             <button class="nav-tab" onclick="switchTab('sunday-prep')">Market Prep</button>
             <button class="nav-tab" onclick="switchTab('trade-entry')">Trade Calculator</button>
             <button class="nav-tab" onclick="switchTab('end-of-day')">End of Day</button>
@@ -1750,7 +1750,7 @@
             <button class="nav-tab" onclick="switchTab('settings')">⚙️ Settings</button>
         </div>
 
-        <!-- Performance Analytics Tab -->
+        <!-- Dashboard Tab -->
         <div id="dashboard" class="tab-content active">
             <div id="circuitBreakerAlert"></div>
 
@@ -2038,12 +2038,15 @@
 
             <div class="section">
                 <h2>Pre-Trade Checklist - ALL MUST BE CHECKED</h2>
-                <p style="color: #8b949e; margin-bottom: 15px; font-size: 13px;">Click each section header to expand/collapse. Complete all items before trading.</p>
+                <p style="color: #8b949e; margin-bottom: 15px; font-size: 13px;">Click each section header to expand/collapse. Click "Select All" to check all items in that section.</p>
 
                 <!-- Section 1: Timeframe Alignment -->
                 <div class="checklist-section-header" onclick="toggleChecklistSection('timeframe')">
                     <span><span style="color: #e53e3e;">⚠️ CRITICAL:</span> Timeframe Alignment (5 items)</span>
-                    <span class="collapse-icon" id="timeframe-icon">▼</span>
+                    <span style="display: flex; gap: 10px; align-items: center;">
+                        <a href="#" onclick="event.stopPropagation(); event.preventDefault(); selectAllChecklist('timeframe');" style="color: #ff9500; font-size: 12px; text-decoration: none;">Select All</a>
+                        <span class="collapse-icon" id="timeframe-icon">▼</span>
+                    </span>
                 </div>
                 <div class="checklist-section-content" id="timeframe-content">
                     <div class="checkbox-group">
@@ -2071,7 +2074,10 @@
                 <!-- Section 2: Technical Confirmation -->
                 <div class="checklist-section-header" onclick="toggleChecklistSection('technical')" style="margin-top: 10px;">
                     <span><span style="color: #ffc107;">⚡</span> Technical Confirmation (5 items)</span>
-                    <span class="collapse-icon" id="technical-icon">▼</span>
+                    <span style="display: flex; gap: 10px; align-items: center;">
+                        <a href="#" onclick="event.stopPropagation(); event.preventDefault(); selectAllChecklist('technical');" style="color: #ff9500; font-size: 12px; text-decoration: none;">Select All</a>
+                        <span class="collapse-icon" id="technical-icon">▼</span>
+                    </span>
                 </div>
                 <div class="checklist-section-content" id="technical-content">
                     <div class="checkbox-group">
@@ -2099,7 +2105,10 @@
                 <!-- Section 3: Risk Management -->
                 <div class="checklist-section-header" onclick="toggleChecklistSection('risk')" style="margin-top: 10px;">
                     <span><span style="color: #48bb78;">✓</span> Risk Management & Logistics (7 items)</span>
-                    <span class="collapse-icon" id="risk-icon">▼</span>
+                    <span style="display: flex; gap: 10px; align-items: center;">
+                        <a href="#" onclick="event.stopPropagation(); event.preventDefault(); selectAllChecklist('risk');" style="color: #ff9500; font-size: 12px; text-decoration: none;">Select All</a>
+                        <span class="collapse-icon" id="risk-icon">▼</span>
+                    </span>
                 </div>
                 <div class="checklist-section-content" id="risk-content">
                     <div class="checkbox-group">
@@ -3899,6 +3908,19 @@
             }
         }
 
+        // Select All Checkboxes in Section
+        function selectAllChecklist(sectionId) {
+            const content = document.getElementById(sectionId + '-content');
+            if (!content) return;
+
+            const checkboxes = content.querySelectorAll('input[type="checkbox"]');
+            checkboxes.forEach(checkbox => {
+                checkbox.checked = true;
+            });
+
+            updateTradeEntryButton();
+        }
+
         // Initialize Dashboard Charts
         function initDashboardCharts() {
             // Only initialize if charts haven't been created yet
@@ -4255,7 +4277,7 @@
             const todaySession = currentSession || allSessions.find(s => s.date === today);
 
             if (!todaySession) {
-                showToast('error', 'No Session Started', 'Please start your trading day first! Complete the "Start Trading Day" section on the Performance Analytics tab.', 5000);
+                showToast('error', 'No Session Started', 'Please start your trading day first! Complete the "Start Trading Day" section on the Dashboard.', 5000);
                 switchTab('dashboard');
                 return;
             }
