@@ -2566,43 +2566,55 @@
                 </div>
             </div>
 
-            <!-- Psychology & Process Metrics -->
-            <div class="section success-section">
-                <h2>Psychology & Process Metrics</h2>
-                <p style="color: #8b949e; margin-bottom: 15px; font-size: 13px;">These are your most important metrics - focus on process, not just outcomes.</p>
+            <!-- Forward Projections & Monte Carlo Simulation -->
+            <div class="section" style="border-left: 3px solid #58a6ff;">
+                <h2>📈 Forward Projections & Forecasting</h2>
+                <p style="color: #8b949e; margin-bottom: 15px; font-size: 13px;">Based on your current performance, here's what you can expect in the future.</p>
 
                 <div class="dashboard-grid">
-                    <div style="padding: 15px; background: rgba(21, 27, 40, 0.5); border-radius: 3px; border-left: 3px solid #48bb78;">
-                        <p style="color: #8b949e; font-size: 12px; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px;">Rules Adherence</p>
-                        <div class="data-value positive" id="avgRulesAdherence">0%</div>
+                    <div style="padding: 15px; background: rgba(88, 166, 255, 0.1); border-radius: 3px; border-left: 3px solid #58a6ff;">
+                        <p style="color: #8b949e; font-size: 12px; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px;">Projected Monthly P/L</p>
+                        <div class="data-value neutral" id="projectedMonthly">$0.00</div>
+                        <p style="color: #8b949e; font-size: 10px; margin-top: 4px;">based on current run rate</p>
                     </div>
-                    <div style="padding: 15px; background: rgba(21, 27, 40, 0.5); border-radius: 3px; border-left: 3px solid #ff9500;">
-                        <p style="color: #8b949e; font-size: 12px; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px;">Avg Emotional State</p>
-                        <div class="data-value neutral" id="avgEmotionalState">0</div>
-                        <p style="color: #8b949e; font-size: 10px; margin-top: 4px;">out of 10</p>
+                    <div style="padding: 15px; background: rgba(88, 166, 255, 0.1); border-radius: 3px; border-left: 3px solid #58a6ff;">
+                        <p style="color: #8b949e; font-size: 12px; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px;">Projected Yearly P/L</p>
+                        <div class="data-value neutral" id="projectedYearly">$0.00</div>
+                        <p style="color: #8b949e; font-size: 10px; margin-top: 4px;">annualized projection</p>
                     </div>
-                    <div style="padding: 15px; background: rgba(21, 27, 40, 0.5); border-radius: 3px; border-left: 3px solid #48bb78;">
-                        <p style="color: #8b949e; font-size: 12px; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px;">Current Streak</p>
-                        <div class="data-value positive" id="consecutiveWins">0</div>
-                        <p style="color: #8b949e; font-size: 10px; margin-top: 4px;">consecutive wins</p>
+                    <div style="padding: 15px; background: rgba(16, 185, 129, 0.1); border-radius: 3px; border-left: 3px solid #10b981;">
+                        <p style="color: #8b949e; font-size: 12px; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px;">Monte Carlo Best Case</p>
+                        <div class="data-value positive" id="monteCarloBest">$0.00</div>
+                        <p style="color: #8b949e; font-size: 10px; margin-top: 4px;">90th percentile (1 year)</p>
                     </div>
-                    <div style="padding: 15px; background: rgba(21, 27, 40, 0.5); border-radius: 3px; border-left: 3px solid #e53e3e;">
-                        <p style="color: #8b949e; font-size: 12px; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px;">Emergency Exits</p>
-                        <div class="data-value negative" id="emergencyExits">0</div>
+                    <div style="padding: 15px; background: rgba(239, 68, 68, 0.1); border-radius: 3px; border-left: 3px solid #ef4444;">
+                        <p style="color: #8b949e; font-size: 12px; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px;">Monte Carlo Worst Case</p>
+                        <div class="data-value negative" id="monteCarloWorst">$0.00</div>
+                        <p style="color: #8b949e; font-size: 10px; margin-top: 4px;">10th percentile (1 year)</p>
                     </div>
                 </div>
-            </div>
 
-            <!-- Recovery Protocol Progress -->
-            <div class="section warning-section">
-                <h2>Recovery Protocol Progress</h2>
-                <div class="form-group">
-                    <label style="color: #ffc107;">Progress to Phase 2 (Need 3 consecutive profitable weeks)</label>
-                    <div class="progress-bar">
-                        <div class="progress-fill" id="phaseProgress" style="width: 0%;">0 / 3 weeks</div>
+                <div style="margin-top: 20px; padding: 15px; background: rgba(13, 17, 23, 0.6); border-radius: 6px; border: 1px solid rgba(88, 166, 255, 0.2);">
+                    <h3 style="font-size: 16px; margin-bottom: 10px; color: #58a6ff;">📊 Monte Carlo Simulation (10,000 scenarios)</h3>
+                    <p style="color: #8b949e; font-size: 13px; margin-bottom: 15px;">Simulates 10,000 possible futures based on your actual win rate, average win/loss, and trade frequency.</p>
+                    <div class="chart-container" style="height: 300px; margin-top: 15px;">
+                        <canvas id="monteCarloChart"></canvas>
+                    </div>
+                    <div style="margin-top: 15px; display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px;">
+                        <div style="text-align: center; padding: 10px; background: rgba(88, 166, 255, 0.1); border-radius: 3px;">
+                            <div style="font-size: 12px; color: #8b949e; margin-bottom: 5px;">Expected Value (Mean)</div>
+                            <div style="font-size: 18px; font-weight: bold; color: #58a6ff;" id="monteCarloMean">$0.00</div>
+                        </div>
+                        <div style="text-align: center; padding: 10px; background: rgba(88, 166, 255, 0.1); border-radius: 3px;">
+                            <div style="font-size: 12px; color: #8b949e; margin-bottom: 5px;">Median Outcome (50th %)</div>
+                            <div style="font-size: 18px; font-weight: bold; color: #58a6ff;" id="monteCarloMedian">$0.00</div>
+                        </div>
+                        <div style="text-align: center; padding: 10px; background: rgba(88, 166, 255, 0.1); border-radius: 3px;">
+                            <div style="font-size: 12px; color: #8b949e; margin-bottom: 5px;">Probability of Profit</div>
+                            <div style="font-size: 18px; font-weight: bold; color: #10b981;" id="monteCarloProbProfit">0%</div>
+                        </div>
                     </div>
                 </div>
-                <div id="phaseProgressDetails" style="margin-top: 15px;"></div>
             </div>
 
             <!-- Weekly Performance Breakdown -->
@@ -2725,29 +2737,6 @@
                 </div>
                 <div class="chart-container full-chart" style="margin-top: 20px;">
                     <canvas id="durationDistributionChart"></canvas>
-                </div>
-            </div>
-
-            <!-- MFE/MAE Analysis -->
-            <div class="section">
-                <h2>MFE/MAE Analysis</h2>
-                <p style="color: #8b949e; font-size: 13px; margin-bottom: 15px;">Maximum Favorable/Adverse Excursion - shows if you're managing winners/losers optimally.</p>
-                <div class="dashboard-grid">
-                    <div style="padding: 15px; background: rgba(16, 185, 129, 0.05); border-radius: 3px; border-left: 3px solid #10b981;">
-                        <p style="color: #8b949e; font-size: 12px; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px;">Avg MFE (Max Profit)</p>
-                        <div class="data-value positive" id="avgMFE">0%</div>
-                    </div>
-                    <div style="padding: 15px; background: rgba(239, 68, 68, 0.05); border-radius: 3px; border-left: 3px solid #ef4444;">
-                        <p style="color: #8b949e; font-size: 12px; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px;">Avg MAE (Max Drawdown)</p>
-                        <div class="data-value negative" id="avgMAE">0%</div>
-                    </div>
-                    <div style="padding: 15px; background: rgba(21, 27, 40, 0.5); border-radius: 3px; border-left: 3px solid #ff9500;">
-                        <p style="color: #8b949e; font-size: 12px; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px;">MFE Capture Rate</p>
-                        <div class="data-value neutral" id="mfeCapture">0%</div>
-                    </div>
-                </div>
-                <div class="chart-container full-chart" style="margin-top: 20px;">
-                    <canvas id="mfeMaeScatterChart"></canvas>
                 </div>
             </div>
 
@@ -5517,7 +5506,7 @@
             const canvasIds = [
                 'equityCurveChart', 'pnlDistributionChart', 'directionPerformanceChart',
                 'dayOfWeekChart', 'timeOfDayChart', 'rollingWinRateChart',
-                'durationDistributionChart', 'mfeMaeScatterChart',
+                'durationDistributionChart', 'monteCarloChart',
                 'weeklyWinRateChart', 'weeklyPLChart'
             ];
 
@@ -5577,7 +5566,7 @@
             updateTimeOfDayPerformance();
             updateHoldDurationAnalysis();
             updateCorrelationMatrix();
-            updateMFEMAEAnalysis();
+            updateMonteCarloSimulation();
         }
 
         function updateSymbolPerformance() {
@@ -6611,11 +6600,86 @@
         }
 
         // MFE/MAE Analysis
-        function updateMFEMAEAnalysis() {
+        // Monte Carlo Simulation for forward projections
+        function updateMonteCarloSimulation() {
             try {
                 const completedTrades = allTrades.filter(t => t.result && t.result !== 'open');
 
-                const canvas = document.getElementById('mfeMaeScatterChart');
+                if (completedTrades.length < 5) {
+                    document.getElementById('projectedMonthly').textContent = 'N/A';
+                    document.getElementById('projectedYearly').textContent = 'N/A';
+                    document.getElementById('monteCarloBest').textContent = 'N/A';
+                    document.getElementById('monteCarloWorst').textContent = 'N/A';
+                    document.getElementById('monteCarloMean').textContent = 'N/A';
+                    document.getElementById('monteCarloMedian').textContent = 'N/A';
+                    document.getElementById('monteCarloProbProfit').textContent = 'N/A';
+
+                    const canvas = document.getElementById('monteCarloChart');
+                    if (canvas) {
+                        const ctx = canvas.getContext('2d');
+                        ctx.clearRect(0, 0, canvas.width, canvas.height);
+                        ctx.fillStyle = '#8b949e';
+                        ctx.font = '14px Arial';
+                        ctx.textAlign = 'center';
+                        ctx.fillText('Need at least 5 completed trades for Monte Carlo simulation', canvas.width / 2, canvas.height / 2);
+                    }
+                    return;
+                }
+
+                // Calculate statistics from actual trades
+                const winners = completedTrades.filter(t => t.result === 'win');
+                const losers = completedTrades.filter(t => t.result === 'loss');
+                const winRate = winners.length / completedTrades.length;
+                const avgWin = winners.length > 0 ? winners.reduce((sum, t) => sum + (t.pnl || 0), 0) / winners.length : 0;
+                const avgLoss = losers.length > 0 ? losers.reduce((sum, t) => sum + (t.pnl || 0), 0) / losers.length : 0;
+
+                // Calculate average trades per day
+                const dates = [...new Set(completedTrades.map(t => t.date))];
+                const tradingDays = dates.length;
+                const tradesPerDay = completedTrades.length / tradingDays;
+
+                // Simple projections based on run rate
+                const dailyExpectation = (winRate * avgWin) + ((1 - winRate) * avgLoss);
+                const monthlyProjection = dailyExpectation * tradesPerDay * 20; // 20 trading days
+                const yearlyProjection = dailyExpectation * tradesPerDay * 252; // 252 trading days
+
+                document.getElementById('projectedMonthly').textContent = `${monthlyProjection >= 0 ? '+' : ''}$${monthlyProjection.toFixed(2)}`;
+                document.getElementById('projectedYearly').textContent = `${yearlyProjection >= 0 ? '+' : ''}$${yearlyProjection.toFixed(2)}`;
+
+                // Run Monte Carlo simulation (10,000 scenarios)
+                const numSimulations = 10000;
+                const numTrades = Math.round(tradesPerDay * 252); // Simulate 1 year
+                const results = [];
+
+                for (let sim = 0; sim < numSimulations; sim++) {
+                    let equity = 0;
+                    for (let trade = 0; trade < numTrades; trade++) {
+                        if (Math.random() < winRate) {
+                            equity += avgWin;
+                        } else {
+                            equity += avgLoss; // avgLoss is already negative
+                        }
+                    }
+                    results.push(equity);
+                }
+
+                // Sort results for percentile calculations
+                results.sort((a, b) => a - b);
+
+                const mean = results.reduce((sum, val) => sum + val, 0) / results.length;
+                const median = results[Math.floor(results.length * 0.5)];
+                const percentile10 = results[Math.floor(results.length * 0.1)];
+                const percentile90 = results[Math.floor(results.length * 0.9)];
+                const probProfit = (results.filter(r => r > 0).length / results.length) * 100;
+
+                document.getElementById('monteCarloMean').textContent = `${mean >= 0 ? '+' : ''}$${mean.toFixed(2)}`;
+                document.getElementById('monteCarloMedian').textContent = `${median >= 0 ? '+' : ''}$${median.toFixed(2)}`;
+                document.getElementById('monteCarloBest').textContent = `+$${percentile90.toFixed(2)}`;
+                document.getElementById('monteCarloWorst').textContent = `${percentile10 >= 0 ? '+' : ''}$${percentile10.toFixed(2)}`;
+                document.getElementById('monteCarloProbProfit').textContent = `${probProfit.toFixed(1)}%`;
+
+                // Draw distribution histogram
+                const canvas = document.getElementById('monteCarloChart');
                 if (!canvas) return;
 
                 const ctx = canvas.getContext('2d');
@@ -6623,60 +6687,36 @@
                 const height = canvas.height;
                 ctx.clearRect(0, 0, width, height);
 
-                if (completedTrades.length === 0) {
-                    document.getElementById('avgMFE').textContent = 'N/A';
-                    document.getElementById('avgMAE').textContent = 'N/A';
-                    document.getElementById('mfeCapture').textContent = 'N/A';
+                // Create histogram bins
+                const numBins = 50;
+                const minResult = results[0];
+                const maxResult = results[results.length - 1];
+                const binWidth = (maxResult - minResult) / numBins;
+                const bins = new Array(numBins).fill(0);
 
-                    // Show message on canvas
-                    ctx.fillStyle = '#8b949e';
-                    ctx.font = '14px Arial';
-                    ctx.textAlign = 'center';
-                    ctx.fillText('No completed trades available', width / 2, height / 2 - 10);
-                    ctx.font = '12px Arial';
-                    ctx.fillText('MFE/MAE will be estimated from your stop loss and target prices', width / 2, height / 2 + 10);
-                    return;
-                }
-
-                // For now, use estimated MFE/MAE based on trade data
-                // In a real system, this would track intra-trade price movements
-                const tradesWithMFEMAE = completedTrades.map(trade => {
-                    let mfe = trade.mfe || 0;
-                    let mae = trade.mae || 0;
-
-                    // Estimate MFE/MAE if not provided
-                    if (mfe === 0 && trade.target && trade.entryPrice) {
-                        const potentialGain = Math.abs((trade.target - trade.entryPrice) / trade.entryPrice) * 100;
-                        mfe = trade.result === 'win' ? potentialGain * 0.8 : potentialGain * 0.5;
-                    }
-
-                    if (mae === 0 && trade.stopLoss && trade.entryPrice) {
-                        const potentialLoss = Math.abs((trade.stopLoss - trade.entryPrice) / trade.entryPrice) * 100;
-                        mae = trade.result === 'loss' ? potentialLoss * 0.9 : potentialLoss * 0.3;
-                    }
-
-                    return { ...trade, mfe, mae };
+                results.forEach(result => {
+                    const binIndex = Math.min(Math.floor((result - minResult) / binWidth), numBins - 1);
+                    bins[binIndex]++;
                 });
 
-                const avgMFE = tradesWithMFEMAE.reduce((sum, t) => sum + t.mfe, 0) / tradesWithMFEMAE.length;
-                const avgMAE = tradesWithMFEMAE.reduce((sum, t) => sum + t.mae, 0) / tradesWithMFEMAE.length;
+                const maxBinCount = Math.max(...bins);
 
-                // MFE capture rate: how much of the MFE was captured in final P/L
-                const winners = tradesWithMFEMAE.filter(t => t.result === 'win');
-                const mfeCapture = winners.length > 0
-                    ? (winners.reduce((sum, t) => {
-                        if (!t.exitPrice || !t.entryPrice) return sum;
-                        const actualGain = Math.abs((t.exitPrice - t.entryPrice) / t.entryPrice) * 100;
-                        return sum + (t.mfe > 0 ? (actualGain / t.mfe) : 0);
-                    }, 0) / winners.length) * 100
-                    : 0;
+                // Draw histogram
+                const chartWidth = width - 100;
+                const chartHeight = height - 80;
+                const barWidth = chartWidth / numBins;
 
-                document.getElementById('avgMFE').textContent = `${avgMFE.toFixed(1)}%`;
-                document.getElementById('avgMAE').textContent = `${avgMAE.toFixed(1)}%`;
-                document.getElementById('mfeCapture').textContent = `${mfeCapture.toFixed(0)}%`;
+                bins.forEach((count, i) => {
+                    const barHeight = (count / maxBinCount) * chartHeight;
+                    const x = 60 + (i * barWidth);
+                    const y = height - 60 - barHeight;
 
-                const maxMFE = Math.max(...tradesWithMFEMAE.map(t => t.mfe), 10);
-                const maxMAE = Math.max(...tradesWithMFEMAE.map(t => t.mae), 10);
+                    const binValue = minResult + (i * binWidth);
+                    const color = binValue >= 0 ? 'rgba(16, 185, 129, 0.7)' : 'rgba(239, 68, 68, 0.7)';
+
+                    ctx.fillStyle = color;
+                    ctx.fillRect(x, y, barWidth - 1, barHeight);
+                });
 
                 // Draw axes
                 ctx.strokeStyle = 'rgba(139, 148, 158, 0.5)';
@@ -6684,79 +6724,43 @@
                 ctx.beginPath();
                 ctx.moveTo(60, height - 60);
                 ctx.lineTo(width - 20, height - 60);
-                ctx.moveTo(60, 20);
-                ctx.lineTo(60, height - 60);
                 ctx.stroke();
 
-                // Axis labels
+                // X-axis labels
                 ctx.fillStyle = '#8b949e';
-                ctx.font = '12px Arial';
+                ctx.font = '11px Arial';
                 ctx.textAlign = 'center';
-                ctx.fillText('MAE (Max Drawdown %)', width / 2, height - 20);
-
-                ctx.save();
-                ctx.translate(20, height / 2);
-                ctx.rotate(-Math.PI / 2);
-                ctx.fillText('MFE (Max Profit %)', 0, 0);
-                ctx.restore();
-
-                // Grid lines and labels
                 for (let i = 0; i <= 5; i++) {
-                    const x = 60 + ((width - 80) * (i / 5));
-                    const y = height - 60 - ((height - 80) * (i / 5));
-
-                    ctx.strokeStyle = 'rgba(139, 148, 158, 0.1)';
-                    ctx.lineWidth = 1;
-
-                    // Vertical grid
-                    ctx.beginPath();
-                    ctx.moveTo(x, height - 60);
-                    ctx.lineTo(x, 20);
-                    ctx.stroke();
-
-                    // Horizontal grid
-                    ctx.beginPath();
-                    ctx.moveTo(60, y);
-                    ctx.lineTo(width - 20, y);
-                    ctx.stroke();
-
-                    // Labels
-                    ctx.fillStyle = '#8b949e';
-                    ctx.font = '10px Arial';
-                    ctx.textAlign = 'center';
-                    ctx.fillText((maxMAE * (i / 5)).toFixed(0), x, height - 45);
-                    ctx.textAlign = 'right';
-                    ctx.fillText((maxMFE * (i / 5)).toFixed(0), 50, y + 4);
+                    const value = minResult + ((maxResult - minResult) * (i / 5));
+                    const x = 60 + (chartWidth * (i / 5));
+                    ctx.fillText(`$${value.toFixed(0)}`, x, height - 40);
                 }
 
-                // Plot points
-                tradesWithMFEMAE.forEach(trade => {
-                    const x = 60 + ((trade.mae / maxMAE) * (width - 80));
-                    const y = height - 60 - ((trade.mfe / maxMFE) * (height - 80));
-
-                    ctx.fillStyle = trade.result === 'win' ? 'rgba(16, 185, 129, 0.6)' : 'rgba(239, 68, 68, 0.6)';
-                    ctx.beginPath();
-                    ctx.arc(x, y, 5, 0, 2 * Math.PI);
-                    ctx.fill();
-                });
-
-                // Legend
-                ctx.fillStyle = '#10b981';
-                ctx.fillRect(width - 150, 30, 12, 12);
+                // Title and labels
                 ctx.fillStyle = '#c9d1d9';
-                ctx.font = '11px Arial';
-                ctx.textAlign = 'left';
-                ctx.fillText('Winners', width - 135, 40);
+                ctx.font = '12px Arial';
+                ctx.textAlign = 'center';
+                ctx.fillText('Distribution of 10,000 Simulated Year Outcomes', width / 2, 20);
 
-                ctx.fillStyle = '#ef4444';
-                ctx.fillRect(width - 150, 50, 12, 12);
-                ctx.fillStyle = '#c9d1d9';
-                ctx.fillText('Losers', width - 135, 60);
+                // Mean line
+                const meanX = 60 + ((mean - minResult) / (maxResult - minResult)) * chartWidth;
+                ctx.strokeStyle = '#58a6ff';
+                ctx.setLineDash([5, 5]);
+                ctx.lineWidth = 2;
+                ctx.beginPath();
+                ctx.moveTo(meanX, 30);
+                ctx.lineTo(meanX, height - 60);
+                ctx.stroke();
+                ctx.setLineDash([]);
+
+                ctx.fillStyle = '#58a6ff';
+                ctx.font = '10px Arial';
+                ctx.fillText('Mean', meanX, 25);
+
             } catch (error) {
-                console.error('Error in updateMFEMAEAnalysis:', error);
-                document.getElementById('avgMFE').textContent = 'Error';
-                document.getElementById('avgMAE').textContent = 'Error';
-                document.getElementById('mfeCapture').textContent = 'Error';
+                console.error('Error in updateMonteCarloSimulation:', error);
+                document.getElementById('projectedMonthly').textContent = 'Error';
+                document.getElementById('projectedYearly').textContent = 'Error';
             }
         }
 
@@ -7849,9 +7853,7 @@
                 'sellTime': 'Sell Time (optional - for direction auto-detect)',
                 'pnl': 'Profit/Loss ($)',
                 'positionSize': 'Position Size/Quantity',
-                'notes': 'Notes/Comments (can include duration in minutes)',
-                'mfe': 'MFE - Max Favorable Excursion (%)',
-                'mae': 'MAE - Max Adverse Excursion (%)'
+                'notes': 'Notes/Comments (can include duration in minutes)'
             };
 
             const isRequired = ['symbol', 'date', 'entryPrice', 'exitPrice'];
@@ -7891,15 +7893,7 @@
                 <strong>* Required fields:</strong> Symbol, Date, Entry Price, and Exit Price must be mapped<br>
                 <strong>📅 Date:</strong> If no Date column, the date will be extracted from Buy/Sell Time timestamps<br>
                 <strong>🔄 Direction auto-detect:</strong> If you have Buy Time and Sell Time columns, direction will be automatically determined (buy first = long, sell first = short)<br>
-                <strong>⏱️ Duration:</strong> Can include duration in minutes in the Notes field (e.g., "15 min" or "20 minutes")<br>
-                <strong>📊 MFE/MAE (Optional but recommended):</strong><br>
-                • <strong>MFE</strong> (Max Favorable Excursion) = Best profit % the trade reached before exit<br>
-                &nbsp;&nbsp;→ For LONG: (Highest Price - Entry) / Entry × 100<br>
-                &nbsp;&nbsp;→ For SHORT: (Entry - Lowest Price) / Entry × 100<br>
-                • <strong>MAE</strong> (Max Adverse Excursion) = Worst loss % the trade reached before exit<br>
-                &nbsp;&nbsp;→ For LONG: (Entry - Lowest Price) / Entry × 100<br>
-                &nbsp;&nbsp;→ For SHORT: (Highest Price - Entry) / Entry × 100<br>
-                <em style="color: #8b949e;">MFE/MAE help analyze if you're exiting too early or holding losers too long</em>
+                <strong>⏱️ Duration:</strong> Can include duration in minutes in the Notes field (e.g., "15 min" or "20 minutes")
             `;
             container.appendChild(note);
 
@@ -7930,9 +7924,7 @@
                 'sellTime': ['sell time', 'selltime', 'time sold', 'sold', 'soldtimestamp', 'close time', 'exit time', 'sell timestamp'],
                 'pnl': ['pnl', 'p/l', 'p&l', 'profit', 'loss', 'profit/loss', 'net', 'return'],
                 'positionSize': ['size', 'position', 'position size', 'positionsize', 'qty', 'quantity', 'shares', 'contracts', 'position_size'],
-                'notes': ['notes', 'comment', 'comments', 'description', 'memo', 'remarks', 'duration'],
-                'mfe': ['mfe', 'max favorable', 'maxfavorable', 'max profit', 'maxprofit', 'max_favorable_excursion'],
-                'mae': ['mae', 'max adverse', 'maxadverse', 'max loss', 'maxloss', 'max_adverse_excursion']
+                'notes': ['notes', 'comment', 'comments', 'description', 'memo', 'remarks', 'duration']
             };
 
             // Timestamp column exclusions (don't use these for date)
@@ -8392,22 +8384,6 @@
                     }
                 }
 
-                // Extract MFE/MAE from mapped columns
-                let mfe = 0;
-                let mae = 0;
-                if (row.mfe && row.mfe !== '') {
-                    const mfeValue = parseFloat(cleanNumericValue(row.mfe));
-                    if (!isNaN(mfeValue)) {
-                        mfe = mfeValue;
-                    }
-                }
-                if (row.mae && row.mae !== '') {
-                    const maeValue = parseFloat(cleanNumericValue(row.mae));
-                    if (!isNaN(maeValue)) {
-                        mae = Math.abs(maeValue); // MAE should be positive
-                    }
-                }
-
                 const trade = {
                     id: Date.now() + Math.random(),
                     symbol: row.symbol,
@@ -8424,10 +8400,7 @@
                     status: 'closed',
                     result: resultStatus,
                     resultDisplay: resultDisplay,
-                    tradeScreenshots: [],
-                    // MFE/MAE from column mapping or default to 0
-                    mfe: mfe, // Maximum Favorable Excursion (as %)
-                    mae: mae  // Maximum Adverse Excursion (as %)
+                    tradeScreenshots: []
                 };
 
                 // Log the trade being imported
