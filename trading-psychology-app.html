@@ -1656,8 +1656,8 @@
         /* Dashboard Grid Layout */
         .dashboard-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 18px;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
             margin-bottom: 20px;
         }
 
@@ -1846,11 +1846,18 @@
                 <div id="currentPositions"></div>
             </div>
 
+            <!-- Market Levels & Analysis -->
+            <div class="section" id="marketLevelsSection">
+                <h2>📈 Market Levels & Analysis</h2>
+                <div id="marketLevelsDisplay" style="color: #8b949e; font-style: italic;">
+                    No market prep data available. Complete Market Prep to see key levels here.
+                </div>
+            </div>
+
             <div class="section">
                 <h2>Today's Actions</h2>
                 <button class="btn btn-success" onclick="switchTab('trade-entry')">Trade Calculator</button>
                 <button class="btn btn-secondary" onclick="switchTab('end-of-day')">End of Day Review</button>
-                <button class="btn btn-primary" onclick="switchTab('post-market')">Evening Post-Market Review</button>
             </div>
         </div>
 
@@ -2160,6 +2167,44 @@
                             <option value="long">Long</option>
                             <option value="short">Short</option>
                         </select>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>ICT/SMT Setup Types <span style="color: #8b949e; font-size: 11px;">(Select all that apply)</span></label>
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; margin-top: 8px;">
+                        <div class="checkbox-group">
+                            <input type="checkbox" id="setup_fvg" value="FVG">
+                            <label for="setup_fvg">FVG (Fair Value Gap)</label>
+                        </div>
+                        <div class="checkbox-group">
+                            <input type="checkbox" id="setup_orderblock" value="Order Block">
+                            <label for="setup_orderblock">Order Block</label>
+                        </div>
+                        <div class="checkbox-group">
+                            <input type="checkbox" id="setup_breaker" value="Breaker Block">
+                            <label for="setup_breaker">Breaker Block</label>
+                        </div>
+                        <div class="checkbox-group">
+                            <input type="checkbox" id="setup_liquidity" value="Liquidity Grab">
+                            <label for="setup_liquidity">Liquidity Grab</label>
+                        </div>
+                        <div class="checkbox-group">
+                            <input type="checkbox" id="setup_smt" value="SMT Divergence">
+                            <label for="setup_smt">SMT Divergence</label>
+                        </div>
+                        <div class="checkbox-group">
+                            <input type="checkbox" id="setup_timeframe" value="Timeframe Confluence">
+                            <label for="setup_timeframe">Timeframe Confluence</label>
+                        </div>
+                        <div class="checkbox-group">
+                            <input type="checkbox" id="setup_premium" value="Premium/Discount">
+                            <label for="setup_premium">Premium/Discount</label>
+                        </div>
+                        <div class="checkbox-group">
+                            <input type="checkbox" id="setup_killzone" value="Kill Zone">
+                            <label for="setup_killzone">Kill Zone</label>
+                        </div>
                     </div>
                 </div>
 
@@ -2684,6 +2729,14 @@
                         <div style="font-size: 24px; font-weight: 700; margin-bottom: 5px;" id="shortWinRate">0%</div>
                         <p style="color: #8b949e; font-size: 13px;" id="shortStats">0 trades</p>
                     </div>
+                </div>
+            </div>
+
+            <!-- Setup Type Performance -->
+            <div class="section">
+                <h2>ICT/SMT Setup Performance</h2>
+                <div id="setupPerformance" style="color: #8b949e; font-style: italic;">
+                    No setup data available yet. Setup tracking was recently added.
                 </div>
             </div>
 
@@ -4313,6 +4366,16 @@
             const isEditing = window.editingTradeId;
             let trade;
 
+            // Capture setup types
+            const setupTypes = [];
+            const setupIds = ['setup_fvg', 'setup_orderblock', 'setup_breaker', 'setup_liquidity', 'setup_smt', 'setup_timeframe', 'setup_premium', 'setup_killzone'];
+            setupIds.forEach(id => {
+                const checkbox = document.getElementById(id);
+                if (checkbox && checkbox.checked) {
+                    setupTypes.push(checkbox.value);
+                }
+            });
+
             if (isEditing) {
                 // Update existing trade
                 trade = currentSession.trades.find(t => t.id === window.editingTradeId);
@@ -4320,6 +4383,7 @@
                     trade.symbol = document.getElementById('tradeSymbol').value;
                     trade.entryTime = document.getElementById('tradeEntryTime').value;
                     trade.direction = document.getElementById('tradeDirection').value;
+                    trade.setupTypes = setupTypes;
                     trade.thesis = document.getElementById('tradeThesis').value;
                     trade.positionSize = document.getElementById('tradePositionSize').value;
                     trade.entryPrice = document.getElementById('tradeEntryPrice').value;
@@ -4348,6 +4412,7 @@
                     symbol: document.getElementById('tradeSymbol').value,
                     entryTime: document.getElementById('tradeEntryTime').value,
                     direction: document.getElementById('tradeDirection').value,
+                    setupTypes: setupTypes,
                     thesis: document.getElementById('tradeThesis').value,
                     positionSize: document.getElementById('tradePositionSize').value,
                     entryPrice: document.getElementById('tradeEntryPrice').value,
@@ -4382,6 +4447,12 @@
                 if (!el.readOnly) el.value = '';
             });
             checkboxes.forEach(id => document.getElementById(id).checked = false);
+
+            // Clear setup type checkboxes
+            setupIds.forEach(id => {
+                const checkbox = document.getElementById(id);
+                if (checkbox) checkbox.checked = false;
+            });
 
             switchTab('dashboard');
         }
@@ -5450,6 +5521,47 @@
                 winRate: winRate,
                 totalPnL: totalPnL
             });
+
+            // Update market levels display
+            updateMarketLevels();
+        }
+
+        // Update market levels display on dashboard
+        function updateMarketLevels() {
+            const container = document.getElementById('marketLevelsDisplay');
+            if (!container) return;
+
+            const sundayPreps = JSON.parse(localStorage.getItem('sundayPreps') || '[]');
+            if (sundayPreps.length === 0) {
+                container.innerHTML = '<p style="color: #8b949e; font-style: italic;">No market prep data available. Complete Market Prep to see key levels here.</p>';
+                return;
+            }
+
+            // Get most recent prep
+            const latestPrep = sundayPreps.sort((a, b) => new Date(b.date) - new Date(a.date))[0];
+
+            let html = `
+                <div style="margin-bottom: 15px; padding: 10px; background: rgba(255, 149, 0, 0.1); border-left: 3px solid #ff9500; border-radius: 3px;">
+                    <strong style="color: #ff9500;">Latest Market Prep:</strong> ${new Date(latestPrep.date).toLocaleDateString()}
+                </div>
+                <div class="dashboard-grid" style="grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));">
+                    <div style="padding: 15px; background: rgba(21, 27, 40, 0.5); border-radius: 3px; border-left: 3px solid #10b981;">
+                        <h3 style="font-size: 14px; margin-bottom: 10px; color: #10b981;">📊 Daily Trend</h3>
+                        <p style="color: #c9d1d9; font-size: 13px; text-transform: capitalize;"><strong>${latestPrep.dailyTrend || 'N/A'}</strong></p>
+                        ${latestPrep.dailySupport ? `<p style="color: #8b949e; font-size: 12px; margin-top: 8px;"><strong>Support:</strong> ${latestPrep.dailySupport.substring(0, 60)}${latestPrep.dailySupport.length > 60 ? '...' : ''}</p>` : ''}
+                        ${latestPrep.dailyResistance ? `<p style="color: #8b949e; font-size: 12px; margin-top: 5px;"><strong>Resistance:</strong> ${latestPrep.dailyResistance.substring(0, 60)}${latestPrep.dailyResistance.length > 60 ? '...' : ''}</p>` : ''}
+                    </div>
+                    <div style="padding: 15px; background: rgba(21, 27, 40, 0.5); border-radius: 3px; border-left: 3px solid #2980b9;">
+                        <h3 style="font-size: 14px; margin-bottom: 10px; color: #2980b9;">⏱️ 4-Hour Trend</h3>
+                        <p style="color: #c9d1d9; font-size: 13px; text-transform: capitalize;"><strong>${latestPrep.fourHrTrend || 'N/A'}</strong></p>
+                        ${latestPrep.fourHrSupport ? `<p style="color: #8b949e; font-size: 12px; margin-top: 8px;"><strong>Support:</strong> ${latestPrep.fourHrSupport.substring(0, 60)}${latestPrep.fourHrSupport.length > 60 ? '...' : ''}</p>` : ''}
+                        ${latestPrep.fourHrResistance ? `<p style="color: #8b949e; font-size: 12px; margin-top: 5px;"><strong>Resistance:</strong> ${latestPrep.fourHrResistance.substring(0, 60)}${latestPrep.fourHrResistance.length > 60 ? '...' : ''}</p>` : ''}
+                    </div>
+                </div>
+                <button class="btn btn-primary" onclick="switchTab('sunday-prep')" style="margin-top: 15px; padding: 8px 15px; font-size: 13px;">View Full Market Prep</button>
+            `;
+
+            container.innerHTML = html;
         }
 
         // Update phase progress
@@ -5572,6 +5684,7 @@
             // Performance Breakdown
             updateSymbolPerformance();
             updateDirectionPerformance();
+            updateSetupPerformance();
             updateDayOfWeekPerformance();
             updateWinLossAnalysis();
 
@@ -5582,6 +5695,8 @@
             // Charts
             drawEquityCurve();
             drawPnLDistribution();
+            drawDirectionPerformance();
+            drawDayOfWeekChart();
             drawCalendarHeatmap();
             drawRollingWinRate();
 
@@ -5659,6 +5774,56 @@
 
             document.getElementById('shortWinRate').textContent = `${shortWinRate}%`;
             document.getElementById('shortStats').textContent = `${shortWins}W / ${shortTotal - shortWins}L | ${shortTrades.length} trades | ${shortPnL >= 0 ? '+' : ''}$${shortPnL.toFixed(2)}`;
+        }
+
+        function updateSetupPerformance() {
+            const container = document.getElementById('setupPerformance');
+            if (!container) return;
+
+            // Collect all trades with setup types
+            const tradesWithSetups = allTrades.filter(t => t.setupTypes && t.setupTypes.length > 0 && t.result && t.result !== 'open');
+
+            if (tradesWithSetups.length === 0) {
+                container.innerHTML = '<p style="color: #8b949e; font-style: italic;">No setup data available yet. Setup tracking was recently added.</p>';
+                return;
+            }
+
+            // Calculate stats for each setup type
+            const setupStats = {};
+            tradesWithSetups.forEach(trade => {
+                trade.setupTypes.forEach(setup => {
+                    if (!setupStats[setup]) {
+                        setupStats[setup] = { wins: 0, losses: 0, total: 0, pnl: 0 };
+                    }
+                    setupStats[setup].total++;
+                    setupStats[setup].pnl += (trade.pnl || 0);
+                    if (trade.result === 'win') setupStats[setup].wins++;
+                    if (trade.result === 'loss') setupStats[setup].losses++;
+                });
+            });
+
+            // Sort by total trades (most common setups first)
+            const sortedSetups = Object.entries(setupStats).sort((a, b) => b[1].total - a[1].total);
+
+            let html = '<div class="dashboard-grid" style="grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));">';
+
+            sortedSetups.forEach(([setup, stats]) => {
+                const winRate = stats.total > 0 ? ((stats.wins / stats.total) * 100).toFixed(0) : 0;
+                const pnlColor = stats.pnl >= 0 ? '#10b981' : '#ef4444';
+                const pnlFormatted = stats.pnl >= 0 ? `+$${stats.pnl.toFixed(2)}` : `-$${Math.abs(stats.pnl).toFixed(2)}`;
+
+                html += `
+                    <div style="padding: 15px; background: rgba(21, 27, 40, 0.5); border-radius: 3px; border-left: 3px solid ${pnlColor};">
+                        <h3 style="font-size: 13px; margin-bottom: 8px; color: #ff9500;">${setup}</h3>
+                        <div style="font-size: 22px; font-weight: 700; color: ${pnlColor}; margin-bottom: 5px;">${winRate}%</div>
+                        <p style="color: #8b949e; font-size: 12px;">${stats.wins}W / ${stats.losses}L | ${stats.total} trades</p>
+                        <p style="color: ${pnlColor}; font-size: 13px; font-weight: 600; margin-top: 5px;">${pnlFormatted}</p>
+                    </div>
+                `;
+            });
+
+            html += '</div>';
+            container.innerHTML = html;
         }
 
         function updateDayOfWeekPerformance() {
@@ -5998,6 +6163,144 @@
             ctx.fillText(`$${minPnL.toFixed(0)}`, 50, height - 20);
             ctx.fillText(`$${maxPnL.toFixed(0)}`, width - 30, height - 20);
             ctx.fillText('P/L Distribution', width / 2, height - 5);
+        }
+
+        function drawDirectionPerformance() {
+            const canvas = document.getElementById('directionPerformanceChart');
+            if (!canvas) return;
+
+            const ctx = canvas.getContext('2d');
+            const width = canvas.width;
+            const height = canvas.height;
+
+            ctx.clearRect(0, 0, width, height);
+
+            if (allTrades.length === 0) {
+                ctx.fillStyle = '#8b949e';
+                ctx.font = '14px Arial';
+                ctx.textAlign = 'center';
+                ctx.fillText('No trades to display', width / 2, height / 2);
+                return;
+            }
+
+            const longTrades = allTrades.filter(t => t.direction === 'long');
+            const shortTrades = allTrades.filter(t => t.direction === 'short');
+            const longWins = longTrades.filter(t => t.outcome === 'win').length;
+            const shortWins = shortTrades.filter(t => t.outcome === 'win').length;
+            const longWinRate = longTrades.length > 0 ? (longWins / longTrades.length) * 100 : 0;
+            const shortWinRate = shortTrades.length > 0 ? (shortWins / shortTrades.length) * 100 : 0;
+
+            const barWidth = 80;
+            const spacing = 100;
+            const maxHeight = height - 80;
+
+            // Long bar
+            const longBarHeight = (longWinRate / 100) * maxHeight;
+            const longX = (width / 2) - spacing;
+            ctx.fillStyle = 'rgba(16, 185, 129, 0.7)';
+            ctx.fillRect(longX - barWidth / 2, height - 40 - longBarHeight, barWidth, longBarHeight);
+
+            // Long label
+            ctx.fillStyle = '#c9d1d9';
+            ctx.font = 'bold 14px Arial';
+            ctx.textAlign = 'center';
+            ctx.fillText('LONG', longX, height - 20);
+            ctx.fillText(`${longWinRate.toFixed(1)}%`, longX, height - 50 - longBarHeight);
+            ctx.font = '11px Arial';
+            ctx.fillStyle = '#8b949e';
+            ctx.fillText(`${longTrades.length} trades`, longX, height - 5);
+
+            // Short bar
+            const shortBarHeight = (shortWinRate / 100) * maxHeight;
+            const shortX = (width / 2) + spacing;
+            ctx.fillStyle = 'rgba(239, 68, 68, 0.7)';
+            ctx.fillRect(shortX - barWidth / 2, height - 40 - shortBarHeight, barWidth, shortBarHeight);
+
+            // Short label
+            ctx.fillStyle = '#c9d1d9';
+            ctx.font = 'bold 14px Arial';
+            ctx.textAlign = 'center';
+            ctx.fillText('SHORT', shortX, height - 20);
+            ctx.fillText(`${shortWinRate.toFixed(1)}%`, shortX, height - 50 - shortBarHeight);
+            ctx.font = '11px Arial';
+            ctx.fillStyle = '#8b949e';
+            ctx.fillText(`${shortTrades.length} trades`, shortX, height - 5);
+        }
+
+        function drawDayOfWeekChart() {
+            const canvas = document.getElementById('dayOfWeekChart');
+            if (!canvas) return;
+
+            const ctx = canvas.getContext('2d');
+            const width = canvas.width;
+            const height = canvas.height;
+
+            ctx.clearRect(0, 0, width, height);
+
+            if (allTrades.length === 0) {
+                ctx.fillStyle = '#8b949e';
+                ctx.font = '14px Arial';
+                ctx.textAlign = 'center';
+                ctx.fillText('No trades to display', width / 2, height / 2);
+                return;
+            }
+
+            // Calculate stats by day of week
+            const dayStats = {};
+            const dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+            dayNames.forEach(day => dayStats[day] = { wins: 0, total: 0 });
+
+            allTrades.forEach(trade => {
+                const dateParts = trade.date.split(/[-\/]/);
+                let date;
+                if (dateParts.length === 3) {
+                    if (dateParts[0].length === 4) {
+                        date = new Date(parseInt(dateParts[0]), parseInt(dateParts[1]) - 1, parseInt(dateParts[2]));
+                    } else {
+                        date = new Date(parseInt(dateParts[2]), parseInt(dateParts[0]) - 1, parseInt(dateParts[1]));
+                    }
+                    const dayName = dayNames[date.getDay()];
+                    dayStats[dayName].total++;
+                    if (trade.outcome === 'win') dayStats[dayName].wins++;
+                }
+            });
+
+            // Draw bars
+            const barWidth = (width - 100) / 7;
+            const maxHeight = height - 70;
+            let x = 50;
+
+            dayNames.forEach(day => {
+                const stats = dayStats[day];
+                const winRate = stats.total > 0 ? (stats.wins / stats.total) * 100 : 0;
+                const barHeight = (winRate / 100) * maxHeight;
+                const y = height - 50 - barHeight;
+
+                // Bar
+                const color = winRate >= 50 ? 'rgba(16, 185, 129, 0.7)' : 'rgba(239, 68, 68, 0.7)';
+                ctx.fillStyle = color;
+                ctx.fillRect(x, y, barWidth - 10, barHeight);
+
+                // Win rate label
+                if (stats.total > 0) {
+                    ctx.fillStyle = '#c9d1d9';
+                    ctx.font = '10px Arial';
+                    ctx.textAlign = 'center';
+                    ctx.fillText(`${winRate.toFixed(0)}%`, x + (barWidth - 10) / 2, y - 5);
+                }
+
+                // Day label
+                ctx.fillStyle = '#8b949e';
+                ctx.font = '11px Arial';
+                ctx.textAlign = 'center';
+                ctx.fillText(day, x + (barWidth - 10) / 2, height - 35);
+
+                // Trade count
+                ctx.font = '9px Arial';
+                ctx.fillText(`(${stats.total})`, x + (barWidth - 10) / 2, height - 20);
+
+                x += barWidth;
+            });
         }
 
         function drawCalendarHeatmap() {
