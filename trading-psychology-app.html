@@ -6,7 +6,7 @@
     <title>Bowtie Capital LLC - Professional Trading Analysis</title>
 
     <!-- Favicon -->
-    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect fill='%230a0e27' width='100' height='100'/><path d='M20,80 L35,40 L50,60 L65,30 L80,50' stroke='%23ffffff' stroke-width='4' fill='none'/><circle cx='35' cy='40' r='3' fill='%23ffffff'/><circle cx='50' cy='60' r='3' fill='%232980b9'/><circle cx='65' cy='30' r='3' fill='%23ffffff'/></svg>">
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect fill='%230a0e27' width='100' height='100'/><path d='M20,80 L35,40 L50,60 L65,30 L80,50' stroke='%235dade2' stroke-width='4' fill='none'/><circle cx='35' cy='40' r='3' fill='%235dade2'/><circle cx='50' cy='60' r='3' fill='%232980b9'/><circle cx='65' cy='30' r='3' fill='%235dade2'/></svg>">
 
     <!-- PapaParse CSV Parser -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
@@ -27,7 +27,7 @@
             font-family: 'Barlow', sans-serif;
             background: #0d1117;
             background-image:
-                radial-gradient(circle at 15% 30%, rgba(255, 255, 255, 0.08) 0%, transparent 40%),
+                radial-gradient(circle at 15% 30%, rgba(93, 173, 226, 0.08) 0%, transparent 40%),
                 radial-gradient(circle at 85% 70%, rgba(41, 128, 185, 0.06) 0%, transparent 45%),
                 linear-gradient(180deg, #0d1117 0%, #151b28 100%);
             min-height: 100vh;
@@ -46,7 +46,7 @@
             width: 200%;
             height: 200%;
             background:
-                radial-gradient(circle at 20% 50%, rgba(255, 255, 255, 0.03) 0%, transparent 50%),
+                radial-gradient(circle at 20% 50%, rgba(93, 173, 226, 0.03) 0%, transparent 50%),
                 radial-gradient(circle at 80% 80%, rgba(0, 255, 128, 0.02) 0%, transparent 50%),
                 radial-gradient(circle at 40% 20%, rgba(255, 0, 85, 0.02) 0%, transparent 50%);
             animation: bgFloat 20s ease-in-out infinite;
@@ -66,11 +66,11 @@
             background: rgba(13, 17, 23, 0.85);
             border-radius: 4px;
             box-shadow:
-                0 0 60px rgba(255, 255, 255, 0.15),
+                0 0 60px rgba(93, 173, 226, 0.15),
                 0 8px 32px rgba(0, 0, 0, 0.6),
-                inset 0 1px 1px rgba(255, 255, 255, 0.03);
+                inset 0 1px 1px rgba(93, 173, 226, 0.03);
             overflow: hidden;
-            border: 1px solid rgba(255, 255, 255, 0.2);
+            border: 1px solid rgba(93, 173, 226, 0.2);
             position: relative;
             backdrop-filter: blur(20px);
         }
@@ -84,7 +84,7 @@
             height: 1px;
             background: linear-gradient(90deg,
                 transparent,
-                rgba(255, 255, 255, 0.6),
+                rgba(93, 173, 226, 0.6),
                 transparent
             );
             animation: scanline 6s linear infinite;
@@ -97,10 +97,10 @@
 
         .app-header {
             background: linear-gradient(135deg, rgba(21, 27, 40, 0.95) 0%, rgba(13, 17, 23, 0.95) 100%);
-            color: #ffffff;
+            color: #5dade2;
             padding: 20px 25px;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.3);
-            box-shadow: 0 2px 16px rgba(255, 255, 255, 0.15);
+            border-bottom: 1px solid rgba(93, 173, 226, 0.3);
+            box-shadow: 0 2px 16px rgba(93, 173, 226, 0.15);
             position: relative;
             overflow: hidden;
         }
@@ -114,7 +114,7 @@
             height: 100%;
             background: linear-gradient(90deg,
                 transparent,
-                rgba(255, 255, 255, 0.1),
+                rgba(93, 173, 226, 0.1),
                 transparent
             );
             animation: shine 5s infinite;
@@ -132,7 +132,7 @@
             font-weight: 700;
             text-transform: uppercase;
             letter-spacing: 4px;
-            text-shadow: 0 0 20px rgba(255, 255, 255, 0.4);
+            text-shadow: 0 0 20px rgba(93, 173, 226, 0.4);
             animation: glow 3s ease-in-out infinite alternate;
         }
 
@@ -143,8 +143,8 @@
         }
 
         @keyframes glow {
-            from { text-shadow: 0 0 15px rgba(255, 255, 255, 0.3); }
-            to { text-shadow: 0 0 25px rgba(255, 255, 255, 0.5), 0 0 35px rgba(255, 255, 255, 0.3); }
+            from { text-shadow: 0 0 15px rgba(93, 173, 226, 0.3); }
+            to { text-shadow: 0 0 25px rgba(93, 173, 226, 0.5), 0 0 35px rgba(93, 173, 226, 0.3); }
         }
 
         .app-header .subtitle {
@@ -159,7 +159,7 @@
             display: flex;
             background: rgba(13, 17, 23, 0.8);
             overflow-x: auto;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+            border-bottom: 1px solid rgba(93, 173, 226, 0.15);
         }
 
         .nav-tab {
@@ -185,15 +185,15 @@
             left: 50%;
             width: 0;
             height: 1px;
-            background: #ffffff;
+            background: #5dade2;
             transition: all 0.3s;
             transform: translateX(-50%);
-            box-shadow: 0 0 8px rgba(255, 255, 255, 0.6);
+            box-shadow: 0 0 8px rgba(93, 173, 226, 0.6);
         }
 
         .nav-tab:hover {
-            background: rgba(255, 255, 255, 0.05);
-            color: #ffffff;
+            background: rgba(93, 173, 226, 0.05);
+            color: #5dade2;
         }
 
         .nav-tab:hover::after {
@@ -201,14 +201,14 @@
         }
 
         .nav-tab.active {
-            background: rgba(255, 255, 255, 0.1);
-            color: #ffffff;
-            text-shadow: 0 0 12px rgba(255, 255, 255, 0.4);
+            background: rgba(93, 173, 226, 0.1);
+            color: #5dade2;
+            text-shadow: 0 0 12px rgba(93, 173, 226, 0.4);
         }
 
         .nav-tab.active::after {
             width: 100%;
-            background: #ffffff;
+            background: #5dade2;
         }
 
         .tab-content {
@@ -237,10 +237,10 @@
             padding: 18px;
             background: rgba(21, 27, 40, 0.6);
             border-radius: 3px;
-            border-left: 2px solid #ffffff;
+            border-left: 2px solid #5dade2;
             box-shadow:
                 0 2px 8px rgba(0, 0, 0, 0.4),
-                inset 0 1px 0 rgba(255, 255, 255, 0.02);
+                inset 0 1px 0 rgba(93, 173, 226, 0.02);
             position: relative;
             backdrop-filter: blur(10px);
             transition: all 0.3s ease;
@@ -250,8 +250,8 @@
             border-left-width: 4px;
             box-shadow:
                 0 4px 16px rgba(0, 0, 0, 0.5),
-                0 0 20px rgba(255, 255, 255, 0.05),
-                inset 0 1px 0 rgba(255, 255, 255, 0.04);
+                0 0 20px rgba(93, 173, 226, 0.05),
+                inset 0 1px 0 rgba(93, 173, 226, 0.04);
         }
 
         .section::before {
@@ -263,20 +263,20 @@
             height: 1px;
             background: linear-gradient(90deg,
                 transparent,
-                rgba(255, 255, 255, 0.3),
+                rgba(93, 173, 226, 0.3),
                 transparent
             );
         }
 
         .section h2 {
-            color: #ffffff;
+            color: #5dade2;
             margin-bottom: 15px;
             font-size: 18px;
             font-family: 'Barlow Semi Condensed', sans-serif;
             font-weight: 600;
             text-transform: uppercase;
             letter-spacing: 2px;
-            text-shadow: 0 0 12px rgba(255, 255, 255, 0.3);
+            text-shadow: 0 0 12px rgba(93, 173, 226, 0.3);
         }
 
         .warning-section {
@@ -285,7 +285,7 @@
             border-left-width: 3px;
             box-shadow:
                 0 2px 8px rgba(0, 0, 0, 0.4),
-                inset 0 1px 0 rgba(255, 255, 255, 0.02);
+                inset 0 1px 0 rgba(93, 173, 226, 0.02);
         }
 
         .warning-section h2, .warning-section h3 {
@@ -299,7 +299,7 @@
             border-left-width: 3px;
             box-shadow:
                 0 2px 8px rgba(0, 0, 0, 0.4),
-                inset 0 1px 0 rgba(255, 255, 255, 0.02);
+                inset 0 1px 0 rgba(93, 173, 226, 0.02);
         }
 
         .danger-section h2, .danger-section h3 {
@@ -309,15 +309,15 @@
 
         .success-section {
             background: rgba(21, 27, 40, 0.6);
-            border-left-color: #ffffff;
+            border-left-color: #5dade2;
             border-left-width: 3px;
             box-shadow:
                 0 2px 8px rgba(0, 0, 0, 0.4),
-                inset 0 1px 0 rgba(255, 255, 255, 0.02);
+                inset 0 1px 0 rgba(93, 173, 226, 0.02);
         }
 
         .success-section h2, .success-section h3 {
-            color: #ffffff;
+            color: #5dade2;
             text-shadow: none;
         }
 
@@ -358,8 +358,8 @@
         textarea:focus,
         select:focus {
             outline: none;
-            border-color: #ffffff;
-            box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.15);
+            border-color: #5dade2;
+            box-shadow: 0 0 0 2px rgba(93, 173, 226, 0.15);
             background: rgba(13, 17, 23, 0.8);
         }
 
@@ -441,7 +441,7 @@
             width: 0;
             height: 0;
             border-radius: 50%;
-            background: rgba(255, 255, 255, 0.15);
+            background: rgba(93, 173, 226, 0.15);
             transform: translate(-50%, -50%);
             transition: width 0.5s, height 0.5s;
         }
@@ -460,21 +460,21 @@
         }
 
         .btn-primary {
-            background: rgba(255, 255, 255, 0.2);
-            color: #ffffff;
-            border-color: #ffffff;
-            box-shadow: 0 0 12px rgba(255, 255, 255, 0.2);
+            background: rgba(93, 173, 226, 0.2);
+            color: #5dade2;
+            border-color: #5dade2;
+            box-shadow: 0 0 12px rgba(93, 173, 226, 0.2);
         }
 
         .btn-primary:hover {
-            background: rgba(255, 255, 255, 0.3);
-            box-shadow: 0 0 20px rgba(255, 255, 255, 0.4);
+            background: rgba(93, 173, 226, 0.3);
+            box-shadow: 0 0 20px rgba(93, 173, 226, 0.4);
         }
 
         .btn-success {
             background: rgba(72, 187, 120, 0.2);
-            color: #ffffff;
-            border-color: #ffffff;
+            color: #5dade2;
+            border-color: #5dade2;
             box-shadow: 0 0 12px rgba(72, 187, 120, 0.2);
         }
 
@@ -541,7 +541,7 @@
             margin-bottom: 10px;
             min-width: 300px;
             max-width: 400px;
-            box-shadow: 0 4px 24px rgba(0, 0, 0, 0.4), 0 0 20px rgba(255, 255, 255, 0.2);
+            box-shadow: 0 4px 24px rgba(0, 0, 0, 0.4), 0 0 20px rgba(93, 173, 226, 0.2);
             backdrop-filter: blur(20px);
             opacity: 0;
             transform: translateX(400px);
@@ -573,8 +573,8 @@
         }
 
         .toast-success {
-            border-left-color: #ffffff;
-            color: #ffffff;
+            border-left-color: #5dade2;
+            color: #5dade2;
         }
 
         .toast-error {
@@ -583,8 +583,8 @@
         }
 
         .toast-info {
-            border-left-color: #ffffff;
-            color: #ffffff;
+            border-left-color: #5dade2;
+            color: #5dade2;
         }
 
         .toast-warning {
@@ -632,41 +632,41 @@
 
         .alert-success {
             background: rgba(72, 187, 120, 0.15);
-            color: #ffffff;
-            border-color: #ffffff;
+            color: #5dade2;
+            border-color: #5dade2;
             box-shadow: 0 0 12px rgba(72, 187, 120, 0.2);
         }
 
         .alert-info {
-            background: rgba(255, 255, 255, 0.15);
-            color: #ffffff;
-            border-color: #ffffff;
-            box-shadow: 0 0 12px rgba(255, 255, 255, 0.2);
+            background: rgba(93, 173, 226, 0.15);
+            color: #5dade2;
+            border-color: #5dade2;
+            box-shadow: 0 0 12px rgba(93, 173, 226, 0.2);
         }
 
         .stat-card {
             background: rgba(21, 27, 40, 0.5);
             padding: 18px;
             border-radius: 3px;
-            box-shadow: 0 2px 8px rgba(255, 255, 255, 0.15);
+            box-shadow: 0 2px 8px rgba(93, 173, 226, 0.15);
             text-align: center;
-            border: 1px solid rgba(255, 255, 255, 0.2);
+            border: 1px solid rgba(93, 173, 226, 0.2);
             transition: all 0.3s;
         }
 
         .stat-card:hover {
             transform: translateY(-3px);
-            box-shadow: 0 4px 16px rgba(255, 255, 255, 0.25);
-            border-color: #ffffff;
+            box-shadow: 0 4px 16px rgba(93, 173, 226, 0.25);
+            border-color: #5dade2;
         }
 
         .stat-card h3 {
             font-size: 32px;
-            color: #ffffff;
+            color: #5dade2;
             margin-bottom: 6px;
             font-family: 'Barlow Semi Condensed', sans-serif;
             font-weight: 600;
-            text-shadow: 0 0 12px rgba(255, 255, 255, 0.3);
+            text-shadow: 0 0 12px rgba(93, 173, 226, 0.3);
         }
 
         .stat-card p {
@@ -693,7 +693,7 @@
         }
 
         .trade-card.win {
-            border-left: 5px solid #ffffff;
+            border-left: 5px solid #5dade2;
             box-shadow: 0 0 15px rgba(0, 255, 128, 0.3);
         }
 
@@ -740,8 +740,8 @@
         }
 
         .status-indicator.green {
-            background: #ffffff;
-            box-shadow: 0 0 15px #ffffff;
+            background: #5dade2;
+            box-shadow: 0 0 15px #5dade2;
         }
 
         .status-indicator.red {
@@ -757,18 +757,18 @@
         .timer-display {
             font-size: 40px;
             font-weight: 600;
-            color: #ffffff;
+            color: #5dade2;
             text-align: center;
             padding: 20px;
             background: rgba(21, 27, 40, 0.6);
             border-radius: 3px;
             margin: 15px 0;
             font-family: 'Barlow Semi Condensed', sans-serif;
-            border: 1px solid rgba(255, 255, 255, 0.3);
+            border: 1px solid rgba(93, 173, 226, 0.3);
             box-shadow:
-                0 2px 12px rgba(255, 255, 255, 0.2),
-                inset 0 1px 0 rgba(255, 255, 255, 0.02);
-            text-shadow: 0 0 16px rgba(255, 255, 255, 0.4);
+                0 2px 12px rgba(93, 173, 226, 0.2),
+                inset 0 1px 0 rgba(93, 173, 226, 0.02);
+            text-shadow: 0 0 16px rgba(93, 173, 226, 0.4);
         }
 
         .progress-bar {
@@ -778,13 +778,13 @@
             border-radius: 3px;
             overflow: hidden;
             margin: 12px 0;
-            border: 1px solid rgba(255, 255, 255, 0.2);
+            border: 1px solid rgba(93, 173, 226, 0.2);
             box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.4);
         }
 
         .progress-fill {
             height: 100%;
-            background: linear-gradient(90deg, #ffffff, #2980b9);
+            background: linear-gradient(90deg, #5dade2, #2980b9);
             transition: width 0.5s;
             display: flex;
             align-items: center;
@@ -793,7 +793,7 @@
             font-weight: 600;
             font-size: 12px;
             text-shadow: none;
-            box-shadow: 0 0 12px rgba(255, 255, 255, 0.4);
+            box-shadow: 0 0 12px rgba(93, 173, 226, 0.4);
             animation: shimmer 3s infinite;
         }
 
@@ -937,38 +937,38 @@
         }
 
         ::-webkit-scrollbar-thumb {
-            background: rgba(255, 255, 255, 0.4);
+            background: rgba(93, 173, 226, 0.4);
             border-radius: 3px;
         }
 
         ::-webkit-scrollbar-thumb:hover {
-            background: rgba(255, 255, 255, 0.6);
+            background: rgba(93, 173, 226, 0.6);
         }
 
         /* Screenshot Upload Styles */
         .screenshot-upload-section {
             margin-top: 15px;
             padding: 15px;
-            background: rgba(255, 255, 255, 0.03);
-            border: 1px dashed rgba(255, 255, 255, 0.3);
+            background: rgba(93, 173, 226, 0.03);
+            border: 1px dashed rgba(93, 173, 226, 0.3);
             border-radius: 3px;
             transition: all 0.3s;
         }
 
         .screenshot-upload-section:hover {
-            border-color: #ffffff;
-            background: rgba(255, 255, 255, 0.06);
-            box-shadow: 0 0 12px rgba(255, 255, 255, 0.15);
+            border-color: #5dade2;
+            background: rgba(93, 173, 226, 0.06);
+            box-shadow: 0 0 12px rgba(93, 173, 226, 0.15);
         }
 
         .screenshot-upload-section h3 {
-            color: #ffffff;
+            color: #5dade2;
             font-family: 'Barlow Semi Condensed', sans-serif;
             font-size: 14px;
             margin-bottom: 12px;
             text-transform: uppercase;
             letter-spacing: 1.5px;
-            text-shadow: 0 0 8px rgba(255, 255, 255, 0.3);
+            text-shadow: 0 0 8px rgba(93, 173, 226, 0.3);
         }
 
         .file-input-wrapper {
@@ -986,13 +986,13 @@
         .file-input-label {
             display: block;
             padding: 12px;
-            background: rgba(255, 255, 255, 0.15);
-            color: #ffffff;
+            background: rgba(93, 173, 226, 0.15);
+            color: #5dade2;
             text-align: center;
             border-radius: 3px;
             cursor: pointer;
             transition: all 0.3s;
-            border: 1px solid rgba(255, 255, 255, 0.4);
+            border: 1px solid rgba(93, 173, 226, 0.4);
             font-weight: 500;
             font-size: 13px;
             text-transform: uppercase;
@@ -1000,8 +1000,8 @@
         }
 
         .file-input-label:hover {
-            background: rgba(255, 255, 255, 0.25);
-            box-shadow: 0 0 16px rgba(255, 255, 255, 0.3);
+            background: rgba(93, 173, 226, 0.25);
+            box-shadow: 0 0 16px rgba(93, 173, 226, 0.3);
         }
 
         .file-input-label::before {
@@ -1021,15 +1021,15 @@
             position: relative;
             border-radius: 3px;
             overflow: hidden;
-            border: 1px solid rgba(255, 255, 255, 0.3);
+            border: 1px solid rgba(93, 173, 226, 0.3);
             transition: all 0.3s;
             cursor: pointer;
             background: rgba(13, 17, 23, 0.8);
         }
 
         .screenshot-thumbnail:hover {
-            border-color: #ffffff;
-            box-shadow: 0 0 16px rgba(255, 255, 255, 0.4);
+            border-color: #5dade2;
+            box-shadow: 0 0 16px rgba(93, 173, 226, 0.4);
             transform: scale(1.03);
         }
 
@@ -1074,7 +1074,7 @@
             background: linear-gradient(to top, rgba(0, 0, 0, 0.85), transparent);
             padding: 6px;
             font-size: 10px;
-            color: #ffffff;
+            color: #5dade2;
             text-align: center;
             font-weight: 500;
             text-transform: uppercase;
@@ -1111,9 +1111,9 @@
             max-height: 95vh;
             border-radius: 3px;
             box-shadow:
-                0 0 40px rgba(255, 255, 255, 0.3),
+                0 0 40px rgba(93, 173, 226, 0.3),
                 0 8px 32px rgba(0, 0, 0, 0.8);
-            border: 1px solid rgba(255, 255, 255, 0.4);
+            border: 1px solid rgba(93, 173, 226, 0.4);
         }
 
         .image-viewer-close {
@@ -1152,9 +1152,9 @@
             width: 36px;
             height: 36px;
             border-radius: 50%;
-            border: 1px solid rgba(255, 255, 255, 0.4);
-            background: rgba(255, 255, 255, 0.15);
-            color: #ffffff;
+            border: 1px solid rgba(93, 173, 226, 0.4);
+            background: rgba(93, 173, 226, 0.15);
+            color: #5dade2;
             cursor: pointer;
             transition: all 0.3s;
             display: flex;
@@ -1165,8 +1165,8 @@
         }
 
         .voice-btn:hover {
-            background: rgba(255, 255, 255, 0.25);
-            box-shadow: 0 0 16px rgba(255, 255, 255, 0.3);
+            background: rgba(93, 173, 226, 0.25);
+            box-shadow: 0 0 16px rgba(93, 173, 226, 0.3);
         }
 
         .voice-btn.recording {
@@ -1183,8 +1183,8 @@
 
         .voice-btn.processing {
             background: rgba(72, 187, 120, 0.25);
-            border-color: #ffffff;
-            color: #ffffff;
+            border-color: #5dade2;
+            color: #5dade2;
             animation: spin 1s linear infinite;
         }
 
@@ -1237,14 +1237,14 @@
         }
 
         input:checked + .toggle-slider {
-            background-color: rgba(255, 255, 255, 0.3);
-            border-color: #ffffff;
+            background-color: rgba(93, 173, 226, 0.3);
+            border-color: #5dade2;
         }
 
         input:checked + .toggle-slider:before {
             transform: translateX(26px);
-            background-color: #ffffff;
-            box-shadow: 0 0 12px rgba(255, 255, 255, 0.5);
+            background-color: #5dade2;
+            box-shadow: 0 0 12px rgba(93, 173, 226, 0.5);
         }
 
         /* ====== CSV Upload Styles ====== */
@@ -1253,11 +1253,11 @@
         }
 
         .csv-dropzone {
-            border: 3px dashed rgba(255, 255, 255, 0.4);
+            border: 3px dashed rgba(93, 173, 226, 0.4);
             border-radius: 12px;
             padding: 40px 20px;
             text-align: center;
-            background: rgba(255, 255, 255, 0.03);
+            background: rgba(93, 173, 226, 0.03);
             transition: all 0.3s ease;
             cursor: pointer;
             position: relative;
@@ -1265,10 +1265,10 @@
 
         .csv-dropzone:hover,
         .csv-dropzone.dragover {
-            border-color: #ffffff;
-            background: rgba(255, 255, 255, 0.08);
+            border-color: #5dade2;
+            background: rgba(93, 173, 226, 0.08);
             transform: translateY(-2px);
-            box-shadow: 0 4px 20px rgba(255, 255, 255, 0.15);
+            box-shadow: 0 4px 20px rgba(93, 173, 226, 0.15);
         }
 
         .csv-dropzone-icon {
@@ -1296,7 +1296,7 @@
             display: inline-block;
             margin-top: 15px;
             padding: 12px 30px;
-            background: linear-gradient(135deg, #ffffff, #2980b9);
+            background: linear-gradient(135deg, #5dade2, #2980b9);
             color: white;
             border: none;
             border-radius: 8px;
@@ -1304,12 +1304,12 @@
             font-weight: 600;
             cursor: pointer;
             transition: all 0.3s ease;
-            box-shadow: 0 4px 15px rgba(255, 255, 255, 0.3);
+            box-shadow: 0 4px 15px rgba(93, 173, 226, 0.3);
         }
 
         .csv-upload-btn:hover {
             transform: translateY(-2px);
-            box-shadow: 0 6px 25px rgba(255, 255, 255, 0.5);
+            box-shadow: 0 6px 25px rgba(93, 173, 226, 0.5);
         }
 
         .csv-progress-container {
@@ -1328,10 +1328,10 @@
 
         .csv-progress-fill {
             height: 100%;
-            background: linear-gradient(90deg, #ffffff, #2980b9);
+            background: linear-gradient(90deg, #5dade2, #2980b9);
             width: 0%;
             transition: width 0.3s ease;
-            box-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+            box-shadow: 0 0 10px rgba(93, 173, 226, 0.5);
         }
 
         .csv-progress-text {
@@ -1348,7 +1348,7 @@
             background: rgba(21, 27, 40, 0.8);
             padding: 30px;
             border-radius: 12px;
-            border: 2px solid rgba(255, 255, 255, 0.3);
+            border: 2px solid rgba(93, 173, 226, 0.3);
             max-height: 80vh;
             overflow-y: auto;
         }
@@ -1356,7 +1356,7 @@
         .csv-mapping-header {
             font-size: 24px;
             font-family: 'Orbitron', sans-serif;
-            color: #ffffff;
+            color: #5dade2;
             margin-bottom: 25px;
             text-align: center;
             text-transform: uppercase;
@@ -1371,7 +1371,7 @@
             padding: 15px;
             background: rgba(139, 148, 158, 0.1);
             border-radius: 8px;
-            border-left: 3px solid #ffffff;
+            border-left: 3px solid #5dade2;
         }
 
         .csv-mapping-label {
@@ -1380,7 +1380,7 @@
         }
 
         .csv-mapping-arrow {
-            color: #ffffff;
+            color: #5dade2;
             font-size: 20px;
         }
 
@@ -1397,14 +1397,14 @@
 
         .csv-mapping-select:focus {
             outline: none;
-            border-color: #ffffff;
-            box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.2);
+            border-color: #5dade2;
+            box-shadow: 0 0 0 2px rgba(93, 173, 226, 0.2);
         }
 
         .csv-mapping-actions {
             margin-top: 40px;
             padding-top: 30px;
-            border-top: 2px solid rgba(255, 255, 255, 0.2);
+            border-top: 2px solid rgba(93, 173, 226, 0.2);
             display: flex;
             justify-content: center;
             gap: 20px;
@@ -1432,7 +1432,7 @@
         .csv-preview-header {
             font-size: 24px;
             font-family: 'Orbitron', sans-serif;
-            color: #ffffff;
+            color: #5dade2;
             margin-bottom: 20px;
             text-align: center;
             text-transform: uppercase;
@@ -1448,12 +1448,12 @@
         }
 
         .csv-preview-table th {
-            background: rgba(255, 255, 255, 0.15);
-            color: #ffffff;
+            background: rgba(93, 173, 226, 0.15);
+            color: #5dade2;
             padding: 12px 8px;
             text-align: left;
             font-weight: 600;
-            border-bottom: 2px solid rgba(255, 255, 255, 0.3);
+            border-bottom: 2px solid rgba(93, 173, 226, 0.3);
         }
 
         .csv-preview-table td {
@@ -1463,14 +1463,14 @@
         }
 
         .csv-preview-table tr:hover {
-            background: rgba(255, 255, 255, 0.05);
+            background: rgba(93, 173, 226, 0.05);
         }
 
         .csv-preview-stats {
             margin-top: 15px;
             padding: 15px;
             background: rgba(0, 255, 128, 0.1);
-            border-left: 3px solid #ffffff;
+            border-left: 3px solid #5dade2;
             border-radius: 6px;
             color: #c9d1d9;
         }
@@ -1516,7 +1516,7 @@
         }
 
         .csv-btn-primary {
-            background: linear-gradient(135deg, #ffffff, #ffffff);
+            background: linear-gradient(135deg, #5dade2, #5dade2);
             color: #0d1117;
             box-shadow: 0 4px 15px rgba(0, 255, 128, 0.3);
         }
@@ -1559,7 +1559,7 @@
 
         .csv-status-success {
             background: rgba(0, 255, 128, 0.2);
-            color: #ffffff;
+            color: #5dade2;
         }
 
         .csv-status-error {
@@ -1610,7 +1610,7 @@
             background: rgba(13, 17, 23, 0.6);
             padding: 15px;
             border-radius: 3px;
-            border: 1px solid rgba(255, 255, 255, 0.2);
+            border: 1px solid rgba(93, 173, 226, 0.2);
         }
 
         .chart-row {
@@ -1638,7 +1638,7 @@
         .counter-box {
             width: 24px;
             height: 24px;
-            border: 2px solid #ffffff;
+            border: 2px solid #5dade2;
             border-radius: 3px;
             display: flex;
             align-items: center;
@@ -1656,8 +1656,8 @@
 
         .counter-box.available {
             background: transparent;
-            border-color: #ffffff;
-            color: #ffffff;
+            border-color: #5dade2;
+            color: #5dade2;
         }
 
         /* Dashboard Grid Layout */
@@ -1676,7 +1676,7 @@
         }
 
         .data-value.positive {
-            color: #ffffff;
+            color: #5dade2;
         }
 
         .data-value.negative {
@@ -1684,7 +1684,7 @@
         }
 
         .data-value.neutral {
-            color: #ffffff;
+            color: #3498db;
         }
 
         /* Protocols Modal Button */
@@ -1712,15 +1712,15 @@
 
         /* Checklist Section Headers */
         .checklist-section-header {
-            background: rgba(255, 255, 255, 0.1);
+            background: rgba(93, 173, 226, 0.1);
             padding: 12px 15px;
             margin: 15px -18px 10px -18px;
-            border-left: 3px solid #ffffff;
+            border-left: 3px solid #5dade2;
             font-weight: 600;
             font-size: 14px;
             text-transform: uppercase;
             letter-spacing: 1px;
-            color: #ffffff;
+            color: #5dade2;
             cursor: pointer;
             user-select: none;
             display: flex;
@@ -1729,7 +1729,7 @@
         }
 
         .checklist-section-header:hover {
-            background: rgba(255, 255, 255, 0.15);
+            background: rgba(93, 173, 226, 0.15);
         }
 
         .checklist-section-content {
@@ -1803,11 +1803,11 @@
                 </div>
 
                 <div class="dashboard-grid" style="margin-top: 20px;">
-                    <div style="padding: 15px; background: rgba(21, 27, 40, 0.5); border-radius: 3px; border-left: 3px solid #ffffff;">
+                    <div style="padding: 15px; background: rgba(21, 27, 40, 0.5); border-radius: 3px; border-left: 3px solid #5dade2;">
                         <p style="color: #8b949e; font-size: 12px; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px;">Trades This Week</p>
                         <div class="data-value neutral" id="tradesThisWeek">0</div>
                     </div>
-                    <div style="padding: 15px; background: rgba(21, 27, 40, 0.5); border-radius: 3px; border-left: 3px solid #ffffff;">
+                    <div style="padding: 15px; background: rgba(21, 27, 40, 0.5); border-radius: 3px; border-left: 3px solid #5dade2;">
                         <p style="color: #8b949e; font-size: 12px; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px;">Rules Adherence</p>
                         <div class="data-value positive" id="rulesAdherence">0%</div>
                     </div>
@@ -1834,16 +1834,16 @@
                     <div class="protocol-counter">
                         <div class="counter-box available" id="trade1">1</div>
                         <div class="counter-box available" id="trade2">2</div>
-                        <span style="margin-left: 10px; font-weight: 600; color: #ffffff;" id="tradesRemaining">2 Available</span>
+                        <span style="margin-left: 10px; font-weight: 600; color: #5dade2;" id="tradesRemaining">2 Available</span>
                     </div>
                 </div>
                 <div class="protocol-status">
                     <span style="font-weight: 500;">Position Sizing</span>
-                    <span style="font-weight: 600; color: #ffffff;">Micro (0.25x)</span>
+                    <span style="font-weight: 600; color: #5dade2;">Micro (0.25x)</span>
                 </div>
                 <div class="protocol-status">
                     <span style="font-weight: 500;">Recovery Protocol</span>
-                    <span style="font-weight: 600; color: #ffffff;">Phase 1 Active</span>
+                    <span style="font-weight: 600; color: #5dade2;">Phase 1 Active</span>
                 </div>
             </div>
 
@@ -2058,7 +2058,7 @@
                 <div class="checklist-section-header" onclick="toggleChecklistSection('timeframe')">
                     <span><span style="color: #2980b9;">⚠️ CRITICAL:</span> Timeframe Alignment (5 items)</span>
                     <span style="display: flex; gap: 10px; align-items: center;">
-                        <a href="#" onclick="event.stopPropagation(); event.preventDefault(); selectAllChecklist('timeframe');" style="color: #ffffff; font-size: 12px; text-decoration: none;">Select All</a>
+                        <a href="#" onclick="event.stopPropagation(); event.preventDefault(); selectAllChecklist('timeframe');" style="color: #5dade2; font-size: 12px; text-decoration: none;">Select All</a>
                         <span class="collapse-icon" id="timeframe-icon">▼</span>
                     </span>
                 </div>
@@ -2089,7 +2089,7 @@
                 <div class="checklist-section-header" onclick="toggleChecklistSection('technical')" style="margin-top: 10px;">
                     <span><span style="color: #ffc107;">⚡</span> Technical Confirmation (5 items)</span>
                     <span style="display: flex; gap: 10px; align-items: center;">
-                        <a href="#" onclick="event.stopPropagation(); event.preventDefault(); selectAllChecklist('technical');" style="color: #ffffff; font-size: 12px; text-decoration: none;">Select All</a>
+                        <a href="#" onclick="event.stopPropagation(); event.preventDefault(); selectAllChecklist('technical');" style="color: #5dade2; font-size: 12px; text-decoration: none;">Select All</a>
                         <span class="collapse-icon" id="technical-icon">▼</span>
                     </span>
                 </div>
@@ -2118,9 +2118,9 @@
 
                 <!-- Section 3: Risk Management -->
                 <div class="checklist-section-header" onclick="toggleChecklistSection('risk')" style="margin-top: 10px;">
-                    <span><span style="color: #ffffff;">✓</span> Risk Management & Logistics (7 items)</span>
+                    <span><span style="color: #5dade2;">✓</span> Risk Management & Logistics (7 items)</span>
                     <span style="display: flex; gap: 10px; align-items: center;">
-                        <a href="#" onclick="event.stopPropagation(); event.preventDefault(); selectAllChecklist('risk');" style="color: #ffffff; font-size: 12px; text-decoration: none;">Select All</a>
+                        <a href="#" onclick="event.stopPropagation(); event.preventDefault(); selectAllChecklist('risk');" style="color: #5dade2; font-size: 12px; text-decoration: none;">Select All</a>
                         <span class="collapse-icon" id="risk-icon">▼</span>
                     </span>
                 </div>
@@ -2594,15 +2594,15 @@
                 </div>
 
                 <div class="dashboard-grid">
-                    <div style="padding: 15px; background: rgba(21, 27, 40, 0.5); border-radius: 3px; border-left: 3px solid #ffffff;">
+                    <div style="padding: 15px; background: rgba(21, 27, 40, 0.5); border-radius: 3px; border-left: 3px solid #5dade2;">
                         <p style="color: #8b949e; font-size: 12px; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px;">Total Trades</p>
                         <div class="data-value neutral" id="totalTrades">0</div>
                     </div>
-                    <div style="padding: 15px; background: rgba(21, 27, 40, 0.5); border-radius: 3px; border-left: 3px solid #ffffff;">
+                    <div style="padding: 15px; background: rgba(21, 27, 40, 0.5); border-radius: 3px; border-left: 3px solid #5dade2;">
                         <p style="color: #8b949e; font-size: 12px; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px;">Win Rate</p>
                         <div class="data-value positive" id="overallWinRate">0%</div>
                     </div>
-                    <div style="padding: 15px; background: rgba(21, 27, 40, 0.5); border-radius: 3px; border-left: 3px solid #ffffff;">
+                    <div style="padding: 15px; background: rgba(21, 27, 40, 0.5); border-radius: 3px; border-left: 3px solid #5dade2;">
                         <p style="color: #8b949e; font-size: 12px; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px;">Total P/L</p>
                         <div class="data-value" id="totalPnL">$0.00</div>
                     </div>
@@ -2628,7 +2628,7 @@
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
                     <h2 style="margin: 0;">📅 Trading Calendar</h2>
                     <div style="display: flex; gap: 10px; align-items: center;">
-                        <button onclick="changeCalendarMonth(-1)" style="padding: 5px 15px; background: rgba(255, 255, 255, 0.2); color: #ffffff; border: 1px solid #ffffff; border-radius: 3px; cursor: pointer; font-weight: bold;">◀ Prev</button>
+                        <button onclick="changeCalendarMonth(-1)" style="padding: 5px 15px; background: rgba(93, 173, 226, 0.2); color: #5dade2; border: 1px solid #5dade2; border-radius: 3px; cursor: pointer; font-weight: bold;">◀ Prev</button>
                         <select id="calendarMonth" onchange="drawCalendarHeatmap()" style="padding: 5px 10px; background: rgba(21, 27, 40, 0.8); color: #c9d1d9; border: 1px solid #30363d; border-radius: 3px; cursor: pointer;">
                             <option value="0">January</option>
                             <option value="1">February</option>
@@ -2644,11 +2644,11 @@
                             <option value="11">December</option>
                         </select>
                         <input id="calendarYear" type="number" placeholder="Year" onchange="drawCalendarHeatmap()" style="width: 80px; padding: 5px 10px; background: rgba(21, 27, 40, 0.8); color: #c9d1d9; border: 1px solid #30363d; border-radius: 3px;">
-                        <button onclick="changeCalendarMonth(1)" style="padding: 5px 15px; background: rgba(255, 255, 255, 0.2); color: #ffffff; border: 1px solid #ffffff; border-radius: 3px; cursor: pointer; font-weight: bold;">Next ▶</button>
+                        <button onclick="changeCalendarMonth(1)" style="padding: 5px 15px; background: rgba(93, 173, 226, 0.2); color: #5dade2; border: 1px solid #5dade2; border-radius: 3px; cursor: pointer; font-weight: bold;">Next ▶</button>
                     </div>
                 </div>
                 <p style="color: #8b949e; font-size: 13px; margin-bottom: 15px;">Visual heatmap of your daily P/L - green for profits, red for losses. Click on any day to see trade details.</p>
-                <div id="calendarHeatmap" style="padding: 20px; background: rgba(13, 17, 23, 0.6); border-radius: 6px; border: 1px solid rgba(255, 255, 255, 0.2);"></div>
+                <div id="calendarHeatmap" style="padding: 20px; background: rgba(13, 17, 23, 0.6); border-radius: 6px; border: 1px solid rgba(93, 173, 226, 0.2);"></div>
             </div>
 
             <!-- Win/Loss Analysis -->
@@ -2666,7 +2666,7 @@
                 </div>
 
                 <div class="dashboard-grid" style="margin-top: 20px;">
-                    <div style="padding: 15px; background: rgba(21, 27, 40, 0.5); border-radius: 3px; border-left: 3px solid #ffffff;">
+                    <div style="padding: 15px; background: rgba(21, 27, 40, 0.5); border-radius: 3px; border-left: 3px solid #5dade2;">
                         <p style="color: #8b949e; font-size: 12px; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px;">Average Win</p>
                         <div class="data-value positive" id="avgWinSize">$0.00</div>
                     </div>
@@ -2674,7 +2674,7 @@
                         <p style="color: #8b949e; font-size: 12px; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px;">Average Loss</p>
                         <div class="data-value negative" id="avgLossSize">$0.00</div>
                     </div>
-                    <div style="padding: 15px; background: rgba(21, 27, 40, 0.5); border-radius: 3px; border-left: 3px solid #ffffff;">
+                    <div style="padding: 15px; background: rgba(21, 27, 40, 0.5); border-radius: 3px; border-left: 3px solid #5dade2;">
                         <p style="color: #8b949e; font-size: 12px; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px;">Expectancy</p>
                         <div class="data-value neutral" id="expectancy">$0.00</div>
                         <p style="color: #8b949e; font-size: 10px; margin-top: 4px;">per trade</p>
@@ -2762,7 +2762,7 @@
             <div class="section danger-section">
                 <h2>Risk Analysis</h2>
                 <div class="dashboard-grid">
-                    <div style="padding: 15px; background: rgba(21, 27, 40, 0.5); border-radius: 3px; border-left: 3px solid #ffffff;">
+                    <div style="padding: 15px; background: rgba(21, 27, 40, 0.5); border-radius: 3px; border-left: 3px solid #5dade2;">
                         <p style="color: #8b949e; font-size: 12px; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px;">Largest Win</p>
                         <div class="data-value positive" id="largestWin">$0.00</div>
                         <p style="color: #8b949e; font-size: 10px; margin-top: 4px;" id="largestWinDate"></p>
@@ -2772,7 +2772,7 @@
                         <div class="data-value negative" id="largestLoss">$0.00</div>
                         <p style="color: #8b949e; font-size: 10px; margin-top: 4px;" id="largestLossDate"></p>
                     </div>
-                    <div style="padding: 15px; background: rgba(21, 27, 40, 0.5); border-radius: 3px; border-left: 3px solid #ffffff;">
+                    <div style="padding: 15px; background: rgba(21, 27, 40, 0.5); border-radius: 3px; border-left: 3px solid #5dade2;">
                         <p style="color: #8b949e; font-size: 12px; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px;">Max Drawdown</p>
                         <div class="data-value neutral" id="maxDrawdown">0%</div>
                         <p style="color: #8b949e; font-size: 10px; margin-top: 4px;">worst peak-to-trough</p>
@@ -2819,12 +2819,12 @@
             <div class="section">
                 <h2>Winning & Losing Streaks</h2>
                 <div class="dashboard-grid">
-                    <div style="padding: 15px; background: rgba(21, 27, 40, 0.5); border-radius: 3px; border-left: 3px solid #ffffff;">
+                    <div style="padding: 15px; background: rgba(21, 27, 40, 0.5); border-radius: 3px; border-left: 3px solid #5dade2;">
                         <p style="color: #8b949e; font-size: 12px; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px;">Current Streak</p>
                         <div class="data-value neutral" id="currentStreak">0</div>
                         <p style="color: #8b949e; font-size: 10px; margin-top: 4px;" id="currentStreakLabel">No trades yet</p>
                     </div>
-                    <div style="padding: 15px; background: rgba(21, 27, 40, 0.5); border-radius: 3px; border-left: 3px solid #ffffff;">
+                    <div style="padding: 15px; background: rgba(21, 27, 40, 0.5); border-radius: 3px; border-left: 3px solid #5dade2;">
                         <p style="color: #8b949e; font-size: 12px; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px;">Longest Win Streak</p>
                         <div class="data-value positive" id="longestWinStreak">0</div>
                     </div>
@@ -2832,7 +2832,7 @@
                         <p style="color: #8b949e; font-size: 12px; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px;">Longest Loss Streak</p>
                         <div class="data-value negative" id="longestLossStreak">0</div>
                     </div>
-                    <div style="padding: 15px; background: rgba(21, 27, 40, 0.5); border-radius: 3px; border-left: 3px solid #ffffff;">
+                    <div style="padding: 15px; background: rgba(21, 27, 40, 0.5); border-radius: 3px; border-left: 3px solid #5dade2;">
                         <p style="color: #8b949e; font-size: 12px; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px;">Win/Loss Ratio</p>
                         <div class="data-value neutral" id="winLossRatio">0.00</div>
                     </div>
@@ -2857,7 +2857,7 @@
             <div class="section">
                 <h2>Hold Duration Analysis</h2>
                 <div class="dashboard-grid">
-                    <div style="padding: 15px; background: rgba(21, 27, 40, 0.5); border-radius: 3px; border-left: 3px solid #ffffff;">
+                    <div style="padding: 15px; background: rgba(21, 27, 40, 0.5); border-radius: 3px; border-left: 3px solid #5dade2;">
                         <p style="color: #8b949e; font-size: 12px; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px;">Avg Hold (Winners)</p>
                         <div class="data-value positive" id="avgHoldWinner">0 min</div>
                     </div>
@@ -2865,7 +2865,7 @@
                         <p style="color: #8b949e; font-size: 12px; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px;">Avg Hold (Losers)</p>
                         <div class="data-value negative" id="avgHoldLoser">0 min</div>
                     </div>
-                    <div style="padding: 15px; background: rgba(21, 27, 40, 0.5); border-radius: 3px; border-left: 3px solid #ffffff;">
+                    <div style="padding: 15px; background: rgba(21, 27, 40, 0.5); border-radius: 3px; border-left: 3px solid #5dade2;">
                         <p style="color: #8b949e; font-size: 12px; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px;">Optimal Hold Time</p>
                         <div class="data-value neutral" id="optimalHoldTime">0 min</div>
                     </div>
@@ -2899,7 +2899,7 @@
                 <p style="margin-bottom: 20px; color: #8b949e;">Configure the app to match your trading schedule and preferences.</p>
 
                 <div class="section">
-                    <h3 style="color: #ffffff; font-size: 16px; margin-bottom: 15px;">Trading Schedule</h3>
+                    <h3 style="color: #5dade2; font-size: 16px; margin-bottom: 15px;">Trading Schedule</h3>
 
                 </div>
 
@@ -2911,7 +2911,7 @@
                 </div>
 
                 <div class="section">
-                    <h3 style="color: #ffffff; font-size: 16px; margin-bottom: 15px;">🎤 Voice Input</h3>
+                    <h3 style="color: #5dade2; font-size: 16px; margin-bottom: 15px;">🎤 Voice Input</h3>
                     <p style="font-size: 13px; color: #8b949e; line-height: 1.6;">
                         Voice recording is available on all text fields. Click the 🎤 microphone icon to start speaking your analysis while looking at charts. Works best in Chrome and Edge browsers.
                     </p>
@@ -2944,13 +2944,13 @@
                     <!-- Clear Options -->
                     <div style="display: grid; gap: 15px;">
                         <!-- Clear Last Import -->
-                        <div style="background: rgba(255, 153, 0, 0.1); border-left: 3px solid #ffffff; padding: 15px; border-radius: 6px;">
+                        <div style="background: rgba(255, 153, 0, 0.1); border-left: 3px solid #5dade2; padding: 15px; border-radius: 6px;">
                             <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
                                 <div>
-                                    <h4 style="margin: 0 0 5px 0; color: #ffffff;">Clear Last Import</h4>
+                                    <h4 style="margin: 0 0 5px 0; color: #5dade2;">Clear Last Import</h4>
                                     <p style="margin: 0; font-size: 13px; color: #8b949e;">Remove only the most recently imported trades</p>
                                 </div>
-                                <button class="btn btn-warning" onclick="clearLastImportFromSettings()" style="background: #ffffff;">
+                                <button class="btn btn-warning" onclick="clearLastImportFromSettings()" style="background: #5dade2;">
                                     🗑️ Clear Last Import
                                 </button>
                             </div>
@@ -3051,7 +3051,7 @@
 
                 <div class="warning-section" style="margin-bottom: 20px;">
                     <h3 style="margin-bottom: 15px; color: #ffc107;">Trading Recovery Protocol - Phase 1 (CURRENTLY IN EFFECT)</h3>
-                    <h4 style="color: #ffffff; margin-top: 15px;">Position Sizing Rules</h4>
+                    <h4 style="color: #5dade2; margin-top: 15px;">Position Sizing Rules</h4>
                     <ul style="line-height: 2; margin-left: 20px;">
                         <li>Start with 0.25 of normal size (micro positions)</li>
                         <li>Must achieve 3 consecutive profitable trades before any size increase</li>
@@ -3059,7 +3059,7 @@
                         <li>Reset to micro size after ANY two consecutive losses</li>
                     </ul>
 
-                    <h4 style="color: #ffffff; margin-top: 15px;">Daily Trading Limits</h4>
+                    <h4 style="color: #5dade2; margin-top: 15px;">Daily Trading Limits</h4>
                     <ul style="line-height: 2; margin-left: 20px;">
                         <li>Maximum 2 trades per day</li>
                         <li>Minimum 45-minute gap between trades</li>
@@ -3069,7 +3069,7 @@
                 </div>
 
                 <div class="success-section" style="margin-bottom: 20px;">
-                    <h3 style="margin-bottom: 15px; color: #ffffff;">Advancement Criteria - Phase 2 Requirements</h3>
+                    <h3 style="margin-bottom: 15px; color: #5dade2;">Advancement Criteria - Phase 2 Requirements</h3>
                     <ul style="line-height: 2; margin-left: 20px;">
                         <li>3 consecutive profitable weeks</li>
                         <li>Consistent rules adherence above 90%</li>
@@ -3079,7 +3079,7 @@
                 </div>
 
                 <div class="section" style="background: rgba(21, 27, 40, 0.6); margin-bottom: 0;">
-                    <h3 style="margin-bottom: 15px; color: #ffffff;">Circuit Breakers - Immediate Trading Stop</h3>
+                    <h3 style="margin-bottom: 15px; color: #5dade2;">Circuit Breakers - Immediate Trading Stop</h3>
                     <h4 style="color: #8b949e; margin-top: 15px;">Daily Circuit Breakers:</h4>
                     <ul style="line-height: 2; margin-left: 20px;">
                         <li>Two consecutive losses</li>
@@ -4062,7 +4062,7 @@
                         labels: ['Wins', 'Losses'],
                         datasets: [{
                             data: [wins, losses],
-                            backgroundColor: ['#ffffff', '#2980b9']
+                            backgroundColor: ['#5dade2', '#2980b9']
                         }]
                     },
                     options: {
@@ -4091,8 +4091,8 @@
                         datasets: [{
                             label: 'P/L',
                             data: data,
-                            borderColor: '#ffffff',
-                            backgroundColor: 'rgba(255, 255, 255, 0.1)',
+                            borderColor: '#5dade2',
+                            backgroundColor: 'rgba(93, 173, 226, 0.1)',
                             fill: true
                         }]
                     },
@@ -4157,7 +4157,7 @@
                 if (remaining === 0) {
                     textEl.style.color = '#2980b9';
                 } else {
-                    textEl.style.color = '#ffffff';
+                    textEl.style.color = '#5dade2';
                 }
             }
         }
@@ -4211,7 +4211,7 @@
                     if (timers[timerName].remaining <= 0) {
                         clearInterval(timers[timerName].interval);
                         document.getElementById(displayId).textContent = 'Timer Complete! ✓';
-                        document.getElementById(displayId).style.color = '#ffffff';
+                        document.getElementById(displayId).style.color = '#5dade2';
                     }
                 }, 1000)
             };
@@ -4839,24 +4839,24 @@
             const content = document.createElement('div');
             content.style.cssText = `
                 background: rgba(21, 27, 40, 0.95);
-                border: 2px solid #ffffff;
+                border: 2px solid #5dade2;
                 border-radius: 8px;
                 padding: 30px;
                 max-width: 600px;
                 width: 90%;
                 max-height: 80vh;
                 overflow-y: auto;
-                box-shadow: 0 0 40px rgba(255, 255, 255, 0.3);
+                box-shadow: 0 0 40px rgba(93, 173, 226, 0.3);
             `;
 
             content.innerHTML = `
-                <h2 style="color: #ffffff; margin-bottom: 20px; font-family: 'Orbitron', sans-serif;">🛑 Emergency Exit Protocol</h2>
+                <h2 style="color: #5dade2; margin-bottom: 20px; font-family: 'Orbitron', sans-serif;">🛑 Emergency Exit Protocol</h2>
                 <div id="emergencyExitContent">
                     <div id="breathingExercise" style="display: block;">
                         <p style="margin-bottom: 20px; line-height: 1.6;">First, let's take a moment to breathe and center yourself. This will help you think more clearly.</p>
                         <div style="text-align: center; margin: 40px 0;">
-                            <div id="breathingCircle" style="width: 200px; height: 200px; border-radius: 50%; background: rgba(255, 255, 255, 0.2); border: 3px solid #ffffff; margin: 0 auto; display: flex; align-items: center; justify-content: center; font-size: 24px; font-weight: bold; transition: all 4s ease-in-out;"></div>
-                            <div id="breathingInstruction" style="margin-top: 20px; font-size: 18px; color: #ffffff;"></div>
+                            <div id="breathingCircle" style="width: 200px; height: 200px; border-radius: 50%; background: rgba(93, 173, 226, 0.2); border: 3px solid #5dade2; margin: 0 auto; display: flex; align-items: center; justify-content: center; font-size: 24px; font-weight: bold; transition: all 4s ease-in-out;"></div>
+                            <div id="breathingInstruction" style="margin-top: 20px; font-size: 18px; color: #5dade2;"></div>
                         </div>
                         <div style="text-align: center; margin-top: 30px;">
                             <button id="skipBreathing" class="btn btn-secondary" style="margin-right: 10px;">Skip (Not Recommended)</button>
@@ -4868,22 +4868,22 @@
                         <p style="margin-bottom: 20px; line-height: 1.6;">Now let's reflect on what happened. This will help you recognize patterns and improve your trading.</p>
 
                         <div style="margin-bottom: 20px;">
-                            <label style="display: block; font-weight: 500; margin-bottom: 8px; color: #ffffff;">What physical sensations did you feel?</label>
+                            <label style="display: block; font-weight: 500; margin-bottom: 8px; color: #5dade2;">What physical sensations did you feel?</label>
                             <textarea id="physicalSensations" style="width: 100%; min-height: 80px; background: rgba(13, 17, 23, 0.6); border: 1px solid rgba(139, 148, 158, 0.3); border-radius: 4px; padding: 10px; color: #c9d1d9; font-family: 'Barlow', sans-serif;" placeholder="E.g., tight chest, racing heart, sweaty palms, tension in shoulders..."></textarea>
                         </div>
 
                         <div style="margin-bottom: 20px;">
-                            <label style="display: block; font-weight: 500; margin-bottom: 8px; color: #ffffff;">Where in your body did you feel it?</label>
+                            <label style="display: block; font-weight: 500; margin-bottom: 8px; color: #5dade2;">Where in your body did you feel it?</label>
                             <input type="text" id="bodyLocation" style="width: 100%; background: rgba(13, 17, 23, 0.6); border: 1px solid rgba(139, 148, 158, 0.3); border-radius: 4px; padding: 10px; color: #c9d1d9;" placeholder="E.g., chest, stomach, neck, hands...">
                         </div>
 
                         <div style="margin-bottom: 20px;">
-                            <label style="display: block; font-weight: 500; margin-bottom: 8px; color: #ffffff;">What thought triggered the discomfort?</label>
+                            <label style="display: block; font-weight: 500; margin-bottom: 8px; color: #5dade2;">What thought triggered the discomfort?</label>
                             <textarea id="triggerThought" style="width: 100%; min-height: 80px; background: rgba(13, 17, 23, 0.6); border: 1px solid rgba(139, 148, 158, 0.3); border-radius: 4px; padding: 10px; color: #c9d1d9; font-family: 'Barlow', sans-serif;" placeholder="E.g., 'I'm going to lose everything', 'I should have entered earlier', 'This is moving against me'..."></textarea>
                         </div>
 
                         <div style="margin-bottom: 20px;">
-                            <label style="display: block; font-weight: 500; margin-bottom: 8px; color: #ffffff;">What was happening in the trade?</label>
+                            <label style="display: block; font-weight: 500; margin-bottom: 8px; color: #5dade2;">What was happening in the trade?</label>
                             <textarea id="tradeContext" style="width: 100%; min-height: 80px; background: rgba(13, 17, 23, 0.6); border: 1px solid rgba(139, 148, 158, 0.3); border-radius: 4px; padding: 10px; color: #c9d1d9; font-family: 'Barlow', sans-serif;" placeholder="E.g., price action, market conditions, time of day..."></textarea>
                         </div>
 
@@ -4902,8 +4902,8 @@
                         <h3 style="color: #10b981; margin-bottom: 20px;">Emergency Exit Complete</h3>
                         <p style="margin-bottom: 20px; line-height: 1.6;">You made the right decision. Trading requires as much courage to exit as it does to enter.</p>
 
-                        <div style="margin: 30px 0; padding: 20px; background: rgba(255, 255, 255, 0.1); border-radius: 8px;">
-                            <div style="font-size: 48px; font-weight: bold; color: #ffffff;" id="cooldownTimer">15:00</div>
+                        <div style="margin: 30px 0; padding: 20px; background: rgba(93, 173, 226, 0.1); border-radius: 8px;">
+                            <div style="font-size: 48px; font-weight: bold; color: #5dade2;" id="cooldownTimer">15:00</div>
                             <div style="margin-top: 10px; color: #8b949e;">Mandatory cooldown period</div>
                             <div style="margin-top: 15px; font-size: 13px; line-height: 1.6;">
                                 Use this time to:<br>
@@ -4969,7 +4969,7 @@
                 const phase = phases[breathingPhase];
                 instruction.textContent = phase.text;
                 circle.style.transform = `scale(${phase.scale})`;
-                circle.style.background = `rgba(255, 255, 255, ${phase.scale === 1.5 ? 0.4 : 0.2})`;
+                circle.style.background = `rgba(93, 173, 226, ${phase.scale === 1.5 ? 0.4 : 0.2})`;
 
                 totalTime = phase.duration;
                 const phaseInterval = setInterval(() => {
@@ -5682,8 +5682,8 @@
             const latestPrep = sundayPreps.sort((a, b) => new Date(b.date) - new Date(a.date))[0];
 
             let html = `
-                <div style="margin-bottom: 15px; padding: 10px; background: rgba(255, 255, 255, 0.1); border-left: 3px solid #ffffff; border-radius: 3px;">
-                    <strong style="color: #ffffff;">Latest Market Prep:</strong> ${new Date(latestPrep.date).toLocaleDateString()}
+                <div style="margin-bottom: 15px; padding: 10px; background: rgba(93, 173, 226, 0.1); border-left: 3px solid #5dade2; border-radius: 3px;">
+                    <strong style="color: #5dade2;">Latest Market Prep:</strong> ${new Date(latestPrep.date).toLocaleDateString()}
                 </div>
                 <div class="dashboard-grid" style="grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));">
                     <div style="padding: 15px; background: rgba(21, 27, 40, 0.5); border-radius: 3px; border-left: 3px solid #10b981;">
@@ -6174,7 +6174,7 @@
             // Draw zero line
             if (minEquity < 0 && maxEquity > 0) {
                 const zeroY = 20 + ((height - 40) * (1 - ((0 - minEquity) / (maxEquity - minEquity))));
-                ctx.strokeStyle = 'rgba(255, 255, 255, 0.3)';
+                ctx.strokeStyle = 'rgba(93, 173, 226, 0.3)';
                 ctx.setLineDash([5, 5]);
                 ctx.beginPath();
                 ctx.moveTo(50, zeroY);
@@ -6573,7 +6573,7 @@
             }
 
             // Draw rolling win rate line
-            ctx.strokeStyle = '#ffffff';
+            ctx.strokeStyle = '#5dade2';
             ctx.lineWidth = 2;
             ctx.beginPath();
 
@@ -6592,7 +6592,7 @@
 
             // Draw 50% line
             const fiftyY = 20 + ((height - 40) * 0.5);
-            ctx.strokeStyle = 'rgba(255, 255, 255, 0.3)';
+            ctx.strokeStyle = 'rgba(93, 173, 226, 0.3)';
             ctx.setLineDash([5, 5]);
             ctx.beginPath();
             ctx.moveTo(50, fiftyY);
@@ -6674,10 +6674,10 @@
 
             // Add summary stats
             html += `
-                <div style="margin-top: 20px; padding: 15px; background: rgba(255, 255, 255, 0.1); border-radius: 8px; border-left: 3px solid #ffffff;">
+                <div style="margin-top: 20px; padding: 15px; background: rgba(93, 173, 226, 0.1); border-radius: 8px; border-left: 3px solid #5dade2;">
                     <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 15px; text-align: center;">
                         <div>
-                            <div style="font-size: 20px; font-weight: bold; color: #ffffff;">${openTrades.length}</div>
+                            <div style="font-size: 20px; font-weight: bold; color: #5dade2;">${openTrades.length}</div>
                             <div style="font-size: 11px; color: #8b949e;">Open Positions</div>
                         </div>
                         <div>
@@ -7003,7 +7003,7 @@
             });
 
                 html += '</tbody></table></div>';
-                html += '<div style="margin-top: 15px; padding: 10px; background: rgba(255, 255, 255, 0.1); border-radius: 4px; font-size: 12px;">';
+                html += '<div style="margin-top: 15px; padding: 10px; background: rgba(93, 173, 226, 0.1); border-radius: 4px; font-size: 12px;">';
                 html += '<strong>💡 Correlation Guide:</strong> High correlation (>80%, red) means symbols perform similarly. Avoid over-concentration in correlated symbols.';
                 html += '</div>';
 
@@ -7202,7 +7202,7 @@
             } else {
                 // Create table format similar to CSV preview
                 let tableHTML = `
-                    <table style="width: 100%; border-collapse: collapse; background: rgba(255, 255, 255, 0.05); border-radius: 8px; overflow: hidden;">
+                    <table style="width: 100%; border-collapse: collapse; background: rgba(93, 173, 226, 0.05); border-radius: 8px; overflow: hidden;">
                         <thead>
                             <tr style="background: rgba(255, 0, 85, 0.1); border-bottom: 2px solid #2980b9;">
                                 <th style="padding: 12px; text-align: left; font-weight: 600;">Symbol</th>
@@ -7221,8 +7221,8 @@
                     const resultColor = trade.result === 'win' ? '#10b981' : trade.result === 'loss' ? '#ef4444' : '#6c757d';
                     const dirColor = trade.direction === 'short' ? '#fbbf24' : '#3b82f6';
                     tableHTML += `
-                        <tr style="border-bottom: 1px solid rgba(255, 255, 255, 0.1); transition: background 0.2s;"
-                            onmouseover="this.style.background='rgba(255, 255, 255, 0.05)'"
+                        <tr style="border-bottom: 1px solid rgba(93, 173, 226, 0.1); transition: background 0.2s;"
+                            onmouseover="this.style.background='rgba(93, 173, 226, 0.05)'"
                             onmouseout="this.style.background='transparent'">
                             <td style="padding: 12px; font-weight: 600; cursor: pointer;" onclick="viewTradeDetail(${trade.id})">${trade.symbol}</td>
                             <td style="padding: 12px; color: ${dirColor}; font-weight: 600; cursor: pointer;" onclick="viewTradeDetail(${trade.id})">${trade.direction?.toUpperCase() || 'LONG'}</td>
