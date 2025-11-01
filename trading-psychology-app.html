@@ -5973,7 +5973,7 @@
             document.getElementById('rulesAdherence').textContent = avgAdherence + '%';
 
             // Update Weekly P/L Progress Bar
-            const weeklyPL = weekTrades.reduce((sum, t) => sum + parseFloat(t.profitLoss || 0), 0);
+            const weeklyPL = weekTrades.reduce((sum, t) => sum + parseFloat(t.pnl || 0), 0);
 
             // Get dynamic goal settings from localStorage (defaults: 500 goal, -500 max loss)
             const goalSettings = JSON.parse(localStorage.getItem('goalSettings') || '{"profitGoal": 500, "maxLoss": 500}');
