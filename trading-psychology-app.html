@@ -5769,8 +5769,13 @@
 
             // Refresh all displays
             updateDashboard();
+            updateStatistics();
             updateAnalytics();
             updateHistory();
+
+            // Reinitialize charts to ensure proper rendering
+            initDashboardCharts();
+            initPerformanceCharts();
 
             showToast('success', 'Account Switched', `Now viewing: ${newAccount}`, 3000);
         }
