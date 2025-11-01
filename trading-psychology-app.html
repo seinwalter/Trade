@@ -233,14 +233,12 @@
         }
 
         .section {
-            margin-bottom: 18px;
-            padding: 18px;
-            background: rgba(21, 27, 40, 0.6);
+            margin-bottom: 28px;
+            padding: 24px;
+            background: rgba(21, 27, 40, 0.4);
             border-radius: 3px;
             border-left: 2px solid #5dade2;
-            box-shadow:
-                0 2px 8px rgba(0, 0, 0, 0.4),
-                inset 0 1px 0 rgba(93, 173, 226, 0.02);
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
             position: relative;
             backdrop-filter: blur(10px);
             transition: all 0.3s ease;
@@ -270,7 +268,7 @@
 
         .section h2 {
             color: #5dade2;
-            margin-bottom: 15px;
+            margin-bottom: 20px;
             font-size: 18px;
             font-family: 'Barlow Semi Condensed', sans-serif;
             font-weight: 600;
@@ -280,45 +278,54 @@
         }
 
         .warning-section {
-            background: rgba(21, 27, 40, 0.6);
+            background: rgba(21, 27, 40, 0.3);
             border-left-color: #ffc107;
             border-left-width: 3px;
-            box-shadow:
-                0 2px 8px rgba(0, 0, 0, 0.4),
-                inset 0 1px 0 rgba(93, 173, 226, 0.02);
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
         }
 
         .warning-section h2, .warning-section h3 {
-            color: #ffc107;
+            color: #c9d1d9;
             text-shadow: none;
+        }
+
+        .warning-section .data-value,
+        .warning-section strong {
+            color: #ffc107;
         }
 
         .danger-section {
-            background: rgba(21, 27, 40, 0.6);
+            background: rgba(21, 27, 40, 0.3);
             border-left-color: #2980b9;
             border-left-width: 3px;
-            box-shadow:
-                0 2px 8px rgba(0, 0, 0, 0.4),
-                inset 0 1px 0 rgba(93, 173, 226, 0.02);
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
         }
 
         .danger-section h2, .danger-section h3 {
-            color: #2980b9;
+            color: #c9d1d9;
             text-shadow: none;
+        }
+
+        .danger-section .data-value,
+        .danger-section strong {
+            color: #2980b9;
         }
 
         .success-section {
-            background: rgba(21, 27, 40, 0.6);
+            background: rgba(21, 27, 40, 0.3);
             border-left-color: #5dade2;
             border-left-width: 3px;
-            box-shadow:
-                0 2px 8px rgba(0, 0, 0, 0.4),
-                inset 0 1px 0 rgba(93, 173, 226, 0.02);
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
         }
 
         .success-section h2, .success-section h3 {
-            color: #5dade2;
+            color: #c9d1d9;
             text-shadow: none;
+        }
+
+        .success-section .data-value,
+        .success-section strong {
+            color: #5dade2;
         }
 
         .form-group {
@@ -1743,7 +1750,7 @@
 
     <div class="app-container">
         <div class="app-header">
-            <h1>Trade Analytics Pro</h1>
+            <h1>Bowtie Capital LLC</h1>
             <div class="subtitle">Professional Trading Analysis & Performance Tracking</div>
         </div>
 
@@ -1762,7 +1769,7 @@
             <div id="circuitBreakerAlert"></div>
 
             <!-- Start Trading Day (only shown when pre-market is disabled) -->
-            <div id="quickStartSession" class="section" style="display: none;">
+            <div id="quickStartSession" class="section">
                 <h2>Start Trading Day</h2>
                 <p style="margin-bottom: 15px; color: #8b949e;">Complete your mental state check to begin trading. (Using Sunday levels)</p>
 
