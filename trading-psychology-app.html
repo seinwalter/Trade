@@ -3100,9 +3100,12 @@
                 </div>
 
                 <div class="section danger-section">
-                    <h3 style="color: #2980b9; font-size: 18px; margin-bottom: 15px;">🗑️ Data Management</h3>
+                    <h3 style="color: #2980b9; font-size: 18px; margin-bottom: 10px;">🗑️ Data Management</h3>
+                    <p style="font-size: 14px; color: #00FF55; font-weight: bold; margin-bottom: 10px;">
+                        📁 Managing: <span id="settingsCurrentAccount" style="color: #00FF55;">Default Account</span>
+                    </p>
                     <p style="font-size: 13px; color: #8b949e; line-height: 1.6; margin-bottom: 20px;">
-                        Manage your trading data. All delete operations are permanent and cannot be undone. Always export a backup before clearing data.
+                        All delete operations below affect ONLY the current account shown above. Operations are permanent and cannot be undone. Always export a backup before clearing data.
                     </p>
 
                     <!-- Data Stats -->
@@ -3158,7 +3161,7 @@
                                     <h4 style="margin: 0 0 5px 0; color: #2980b9;">Clear All Sessions</h4>
                                     <p style="margin: 0; font-size: 13px; color: #8b949e;">Delete all trading sessions but keep trades</p>
                                 </div>
-                                <button class="btn btn-danger" onclick="clearAllSessions()" style="background: #2980b9;">
+                                <button class="btn btn-danger" onclick="clearAllSessions()" style="background: #2980b9; color: #ffffff; font-weight: bold; font-size: 14px;">
                                     🗑️ Clear All Sessions
                                 </button>
                             </div>
@@ -8330,7 +8333,7 @@
                 return;
             }
 
-            if (!confirm(`⚠️ WARNING: This will delete ALL ${sessionCount} trading sessions!\n\nTrades will be kept but removed from sessions.\n\nThis cannot be undone. Are you sure?`)) {
+            if (!confirm(`⚠️ WARNING: This will delete ALL ${sessionCount} trading sessions from account "${currentAccountName}"!\n\nTrades will be kept but removed from sessions.\n\nThis cannot be undone. Are you sure?`)) {
                 return;
             }
 
@@ -8340,8 +8343,8 @@
             allSessions = [];
             currentSession = null;
 
-            saveData();
-            showToast('success', 'Sessions Cleared', `Deleted all ${sessionCount} sessions. Trades preserved.`, 4000);
+            saveCurrentAccountData();
+            showToast('success', 'Sessions Cleared', `Deleted all ${sessionCount} sessions from ${currentAccountName}. Trades preserved.`, 4000);
 
             // Update displays
             updateDashboard();
@@ -8352,6 +8355,12 @@
             document.getElementById('settingsTradeCount').textContent = allTrades.length;
             document.getElementById('settingsSessionCount').textContent = allSessions.length;
             document.getElementById('settingsLastImportCount').textContent = lastImportedTradeIds.length;
+
+            // Update current account name display
+            const accountNameElement = document.getElementById('settingsCurrentAccount');
+            if (accountNameElement) {
+                accountNameElement.textContent = currentAccountName;
+            }
         }
 
         // Filter history
@@ -9425,7 +9434,7 @@
                 return;
             }
 
-            if (!confirm(`Are you sure you want to delete the last ${lastImportedTradeIds.length} imported trades? This cannot be undone.`)) {
+            if (!confirm(`Are you sure you want to delete the last ${lastImportedTradeIds.length} imported trades from account "${currentAccountName}"? This cannot be undone.`)) {
                 return;
             }
 
@@ -9474,12 +9483,12 @@
                 return;
             }
 
-            if (!confirm(`⚠️ WARNING: This will delete ALL ${totalTrades} trades from ALL sessions!\n\nThis action cannot be undone. Are you absolutely sure?`)) {
+            if (!confirm(`⚠️ WARNING: This will delete ALL ${totalTrades} trades from account "${currentAccountName}"!\n\nThis action cannot be undone. Are you absolutely sure?`)) {
                 return;
             }
 
             // Double confirmation for safety
-            if (!confirm(`Last chance! Delete ${totalTrades} trades permanently?`)) {
+            if (!confirm(`Last chance! Delete ${totalTrades} trades from "${currentAccountName}" permanently?`)) {
                 return;
             }
 
