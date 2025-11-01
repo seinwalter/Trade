@@ -1809,6 +1809,27 @@
                     </div>
                 </div>
 
+                <!-- Weekly P/L Progress Bar -->
+                <div style="margin-top: 20px; padding: 20px; background: rgba(21, 27, 40, 0.5); border-radius: 3px; border-left: 3px solid #5dade2;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                        <p style="color: #8b949e; font-size: 12px; text-transform: uppercase; letter-spacing: 1px;">Weekly P/L Progress</p>
+                        <div style="display: flex; gap: 20px; font-size: 13px;">
+                            <span style="color: #8b949e;">Max Loss: <span style="color: #2980b9; font-weight: 600;" id="weeklyMaxLoss">-$500</span></span>
+                            <span style="color: #8b949e;">Current: <span style="font-weight: 600;" id="weeklyCurrentPL">$0</span></span>
+                            <span style="color: #8b949e;">Goal: <span style="color: #5dade2; font-weight: 600;" id="weeklyGoal">+$500</span></span>
+                        </div>
+                    </div>
+                    <div style="position: relative; height: 12px; background: rgba(13, 17, 23, 0.6); border-radius: 6px; overflow: hidden;">
+                        <div style="position: absolute; left: 50%; width: 2px; height: 100%; background: #8b949e; z-index: 1;"></div>
+                        <div id="weeklyProgressBar" style="position: absolute; left: 50%; height: 100%; background: linear-gradient(90deg, #5dade2, #2980b9); border-radius: 6px; transition: all 0.5s ease; width: 0%;"></div>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; margin-top: 8px; font-size: 11px; color: #6b7280;">
+                        <span>Loss Limit</span>
+                        <span>Break Even</span>
+                        <span>Weekly Goal</span>
+                    </div>
+                </div>
+
                 <div class="dashboard-grid" style="margin-top: 20px;">
                     <div style="padding: 15px; background: rgba(21, 27, 40, 0.5); border-radius: 3px; border-left: 3px solid #5dade2;">
                         <p style="color: #8b949e; font-size: 12px; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px;">Trades This Week</p>
@@ -5594,6 +5615,37 @@
                 ? (weekSessions.reduce((sum, s) => sum + parseInt(s.rulesAdherence), 0) / weekSessions.length).toFixed(0)
                 : 0;
             document.getElementById('rulesAdherence').textContent = avgAdherence + '%';
+
+            // Update Weekly P/L Progress Bar
+            const weeklyPL = weekTrades.reduce((sum, t) => sum + parseFloat(t.profitLoss || 0), 0);
+            const weeklyMaxLoss = -500; // Configurable max loss limit
+            const weeklyGoal = 500; // Configurable weekly profit goal
+
+            document.getElementById('weeklyCurrentPL').textContent = '$' + weeklyPL.toFixed(2);
+            document.getElementById('weeklyCurrentPL').style.color = weeklyPL >= 0 ? '#5dade2' : '#2980b9';
+
+            // Calculate progress bar width and position
+            // Bar is centered at 50% (break even)
+            // Moves left (negative) or right (positive)
+            let progressPercent = 0;
+            if (weeklyPL >= 0) {
+                // Positive P/L - move right toward goal
+                progressPercent = Math.min((weeklyPL / weeklyGoal) * 50, 50); // Max 50% to the right
+            } else {
+                // Negative P/L - move left toward max loss
+                progressPercent = Math.max((weeklyPL / weeklyMaxLoss) * 50, -50); // Max 50% to the left
+            }
+
+            const progressBar = document.getElementById('weeklyProgressBar');
+            if (progressPercent >= 0) {
+                progressBar.style.left = '50%';
+                progressBar.style.width = progressPercent + '%';
+                progressBar.style.background = 'linear-gradient(90deg, #5dade2, #2980b9)';
+            } else {
+                progressBar.style.left = (50 + progressPercent) + '%';
+                progressBar.style.width = (-progressPercent) + '%';
+                progressBar.style.background = 'linear-gradient(90deg, #2980b9, #5dade2)';
+            }
 
             // Circuit breaker alert
             const alertDiv = document.getElementById('circuitBreakerAlert');
