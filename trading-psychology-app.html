@@ -891,6 +891,10 @@
                 grid-template-columns: 1fr;
             }
 
+            .dashboard-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
             .app-header h1 {
                 font-size: 24px;
             }
@@ -902,6 +906,20 @@
 
             .timer-display {
                 font-size: 36px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .chart-row {
+                flex-direction: column;
+            }
+
+            .section {
+                padding: 16px;
             }
         }
 
@@ -2945,6 +2963,32 @@
                     </p>
                 </div>
 
+                <div class="section success-section">
+                    <h3 style="font-size: 16px; margin-bottom: 15px;">🎯 Trading Goals</h3>
+                    <p style="font-size: 13px; color: #8b949e; line-height: 1.6; margin-bottom: 20px;">
+                        Set your weekly profit targets and risk limits. These values are used in the dashboard's P/L progress bar to give you visual feedback on your weekly performance.
+                    </p>
+
+                    <div class="inline-group">
+                        <div class="form-group">
+                            <label>Weekly Profit Goal ($)</label>
+                            <input type="number" id="weeklyProfitGoal" min="0" step="50" placeholder="500">
+                        </div>
+                        <div class="form-group">
+                            <label>Weekly Max Loss ($)</label>
+                            <input type="number" id="weeklyMaxLoss" min="0" step="50" placeholder="500">
+                        </div>
+                    </div>
+
+                    <button class="btn btn-success" onclick="saveGoalSettings()">💾 Save Goal Settings</button>
+
+                    <div style="margin-top: 15px; padding: 12px; background: rgba(93, 173, 226, 0.1); border-left: 3px solid #5dade2; border-radius: 3px;">
+                        <p style="font-size: 12px; color: #8b949e; margin: 0;">
+                            <strong style="color: #5dade2;">Note:</strong> Max Loss should be entered as a positive number (e.g., 500 for -$500 max loss). Default values are $500 profit goal and $500 max loss.
+                        </p>
+                    </div>
+                </div>
+
                 <div class="section danger-section">
                     <h3 style="color: #2980b9; font-size: 18px; margin-bottom: 15px;">🗑️ Data Management</h3>
                     <p style="font-size: 13px; color: #8b949e; line-height: 1.6; margin-bottom: 20px;">
@@ -4032,7 +4076,10 @@
             }
             if (tabName === 'history') loadHistory();
             if (tabName === 'trade-entry') checkPostMarketInfo();
-            if (tabName === 'settings') updateSettingsDataCounts();
+            if (tabName === 'settings') {
+                loadGoalSettings();
+                updateSettingsDataCounts();
+            }
         }
 
         // Protocols Modal Functions
@@ -4084,66 +4131,99 @@
                 const wins = trades.filter(t => t.result === 'win').length;
                 const losses = trades.filter(t => t.result === 'loss').length;
 
-                new Chart(winRateCtx, {
-                    type: 'doughnut',
-                    data: {
-                        labels: ['Wins', 'Losses'],
-                        datasets: [{
-                            data: [wins, losses],
-                            backgroundColor: ['#5dade2', '#2980b9']
-                        }]
-                    },
-                    options: {
-                        responsive: true,
-                        maintainAspectRatio: false,
-                        plugins: {
-                            legend: {
-                                labels: { color: '#c9d1d9' }
+                if (trades.length === 0) {
+                    // Show empty state message
+                    const ctx = winRateCtx.getContext('2d');
+                    winRateCtx.width = winRateCtx.offsetWidth;
+                    winRateCtx.height = winRateCtx.offsetHeight;
+                    ctx.clearRect(0, 0, winRateCtx.width, winRateCtx.height);
+                    ctx.fillStyle = '#8b949e';
+                    ctx.font = '14px Barlow';
+                    ctx.textAlign = 'center';
+                    ctx.textBaseline = 'middle';
+                    ctx.fillText('No trades this week', winRateCtx.width / 2, winRateCtx.height / 2 - 10);
+                    ctx.font = '12px Barlow';
+                    ctx.fillStyle = '#6b7280';
+                    ctx.fillText('Start trading to see your win rate', winRateCtx.width / 2, winRateCtx.height / 2 + 10);
+                } else {
+                    new Chart(winRateCtx, {
+                        type: 'doughnut',
+                        data: {
+                            labels: ['Wins', 'Losses'],
+                            datasets: [{
+                                data: [wins, losses],
+                                backgroundColor: ['#5dade2', '#2980b9']
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            plugins: {
+                                legend: {
+                                    labels: { color: '#c9d1d9' }
+                                }
                             }
                         }
-                    }
-                });
+                    });
+                }
             }
 
             // Weekly P/L Chart
             const plCtx = document.getElementById('weeklyPLChart');
             if (plCtx) {
                 const trades = getTradesThisWeek();
-                const labels = trades.map((t, i) => `T${i + 1}`);
-                const data = trades.map(t => t.pnl || 0);
 
-                new Chart(plCtx, {
-                    type: 'line',
-                    data: {
-                        labels: labels,
-                        datasets: [{
-                            label: 'P/L',
-                            data: data,
-                            borderColor: '#5dade2',
-                            backgroundColor: 'rgba(93, 173, 226, 0.1)',
-                            fill: true
-                        }]
-                    },
-                    options: {
-                        responsive: true,
-                        maintainAspectRatio: false,
-                        scales: {
-                            y: {
-                                ticks: { color: '#c9d1d9' },
-                                grid: { color: 'rgba(139, 148, 158, 0.1)' }
-                            },
-                            x: {
-                                ticks: { color: '#c9d1d9' },
-                                grid: { color: 'rgba(139, 148, 158, 0.1)' }
-                            }
+                if (trades.length === 0) {
+                    // Show empty state message
+                    const ctx = plCtx.getContext('2d');
+                    plCtx.width = plCtx.offsetWidth;
+                    plCtx.height = plCtx.offsetHeight;
+                    ctx.clearRect(0, 0, plCtx.width, plCtx.height);
+                    ctx.fillStyle = '#8b949e';
+                    ctx.font = '14px Barlow';
+                    ctx.textAlign = 'center';
+                    ctx.textBaseline = 'middle';
+                    ctx.fillText('No trades this week', plCtx.width / 2, plCtx.height / 2 - 10);
+                    ctx.font = '12px Barlow';
+                    ctx.fillStyle = '#6b7280';
+                    ctx.fillText('Complete a trade to see your P/L trend', plCtx.width / 2, plCtx.height / 2 + 10);
+                } else {
+                    const labels = trades.map((t, i) => `T${i + 1}`);
+                    const data = trades.map(t => t.pnl || 0);
+
+                    new Chart(plCtx, {
+                        type: 'line',
+                        data: {
+                            labels: labels,
+                            datasets: [{
+                                label: 'P/L',
+                                data: data,
+                                borderColor: '#5dade2',
+                                backgroundColor: 'rgba(93, 173, 226, 0.1)',
+                                fill: true
+                            }]
                         },
-                        plugins: {
-                            legend: {
-                                labels: { color: '#c9d1d9' }
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            scales: {
+                                y: {
+                                    ticks: { color: '#c9d1d9' },
+                                    grid: { color: 'rgba(139, 148, 158, 0.1)' }
+                                },
+                                x: {
+                                    ticks: { color: '#c9d1d9' },
+                                    grid: { color: 'rgba(139, 148, 158, 0.1)' }
+                                }
+                            },
+                            plugins: {
+                                legend: {
+                                    labels: { color: '#c9d1d9' }
+                                }
                             }
                         }
-                    }
-                });
+                    });
+                }
             }
         }
 
@@ -5618,9 +5698,15 @@
 
             // Update Weekly P/L Progress Bar
             const weeklyPL = weekTrades.reduce((sum, t) => sum + parseFloat(t.profitLoss || 0), 0);
-            const weeklyMaxLoss = -500; // Configurable max loss limit
-            const weeklyGoal = 500; // Configurable weekly profit goal
 
+            // Get dynamic goal settings from localStorage (defaults: 500 goal, -500 max loss)
+            const goalSettings = JSON.parse(localStorage.getItem('goalSettings') || '{"profitGoal": 500, "maxLoss": 500}');
+            const weeklyMaxLoss = -Math.abs(goalSettings.maxLoss); // Ensure negative
+            const weeklyGoal = Math.abs(goalSettings.profitGoal); // Ensure positive
+
+            // Update displayed values
+            document.getElementById('weeklyMaxLoss').textContent = '-$' + Math.abs(weeklyMaxLoss).toFixed(0);
+            document.getElementById('weeklyGoal').textContent = '+$' + weeklyGoal.toFixed(0);
             document.getElementById('weeklyCurrentPL').textContent = '$' + weeklyPL.toFixed(2);
             document.getElementById('weeklyCurrentPL').style.color = weeklyPL >= 0 ? '#5dade2' : '#2980b9';
 
@@ -7911,6 +7997,32 @@
                     setTimeout(() => location.reload(), 3000);
                 }
             }
+        }
+
+        // Goal Settings Functions
+        function saveGoalSettings() {
+            const profitGoal = parseFloat(document.getElementById('weeklyProfitGoal').value) || 500;
+            const maxLoss = parseFloat(document.getElementById('weeklyMaxLoss').value) || 500;
+
+            const goalSettings = {
+                profitGoal: Math.abs(profitGoal),
+                maxLoss: Math.abs(maxLoss)
+            };
+
+            localStorage.setItem('goalSettings', JSON.stringify(goalSettings));
+            showToast('success', 'Settings Saved', `Weekly goal: $${goalSettings.profitGoal.toFixed(0)}, Max loss: -$${goalSettings.maxLoss.toFixed(0)}`, 3000);
+
+            // Refresh dashboard to show new goals
+            if (document.getElementById('dashboard').classList.contains('active')) {
+                updateDashboard();
+            }
+        }
+
+        function loadGoalSettings() {
+            const goalSettings = JSON.parse(localStorage.getItem('goalSettings') || '{"profitGoal": 500, "maxLoss": 500}');
+
+            document.getElementById('weeklyProfitGoal').value = goalSettings.profitGoal;
+            document.getElementById('weeklyMaxLoss').value = goalSettings.maxLoss;
         }
 
         // Clear functions for Settings page
