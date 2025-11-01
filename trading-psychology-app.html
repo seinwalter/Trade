@@ -17,6 +17,13 @@
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Barlow:wght@300;400;500;600;700&family=Barlow+Semi+Condensed:wght@400;500;600;700&family=Orbitron:wght@400;500;600;700;800;900&display=swap');
 
+        :root {
+            --neon-green: #39FF14;
+            --neon-green-soft: #7FFF00;
+            --primary-blue: #5dade2;
+            --dark-blue: #2980b9;
+        }
+
         * {
             margin: 0;
             padding: 0;
@@ -153,6 +160,48 @@
             color: #8b949e;
             font-weight: 400;
             letter-spacing: 1px;
+        }
+
+        .account-selector-container {
+            position: absolute;
+            top: 20px;
+            right: 25px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .account-selector-label {
+            font-size: 12px;
+            color: #8b949e;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: 500;
+        }
+
+        .account-selector {
+            padding: 8px 12px;
+            background: rgba(93, 173, 226, 0.1);
+            border: 1px solid rgba(93, 173, 226, 0.3);
+            border-radius: 4px;
+            color: #5dade2;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            min-width: 180px;
+        }
+
+        .account-selector:hover {
+            background: rgba(93, 173, 226, 0.2);
+            border-color: #5dade2;
+            box-shadow: 0 0 12px rgba(93, 173, 226, 0.3);
+        }
+
+        .account-selector:focus {
+            outline: none;
+            border-color: #5dade2;
+            box-shadow: 0 0 15px rgba(93, 173, 226, 0.4);
         }
 
         .nav-tabs {
@@ -1770,6 +1819,12 @@
         <div class="app-header">
             <h1>Bowtie Capital LLC</h1>
             <div class="subtitle">Professional Trading Analysis & Performance Tracking</div>
+            <div class="account-selector-container">
+                <span class="account-selector-label">Account:</span>
+                <select id="accountSelector" class="account-selector" onchange="switchAccount()">
+                    <option value="Default Account">Default Account</option>
+                </select>
+            </div>
         </div>
 
         <div class="nav-tabs">
@@ -2543,6 +2598,19 @@
                         <!-- Error Container -->
                         <div class="csv-error-container" id="csvErrorContainer"></div>
 
+                        <!-- Account Selector for Import -->
+                        <div style="margin-top: 20px; padding: 15px; background: rgba(93, 173, 226, 0.1); border-radius: 6px; border-left: 3px solid #5dade2;">
+                            <label style="display: block; margin-bottom: 8px; color: #5dade2; font-weight: 600; font-size: 13px;">
+                                Import trades to account:
+                            </label>
+                            <select id="csvImportAccountSelector" class="account-selector" style="width: 100%;">
+                                <!-- Will be populated dynamically -->
+                            </select>
+                            <p style="margin-top: 8px; font-size: 11px; color: #8b949e;">
+                                Select which account these trades should be imported to. Each account maintains separate trade history and analytics.
+                            </p>
+                        </div>
+
                         <div class="csv-btn-group" style="margin-top: 20px;">
                             <button class="csv-btn csv-btn-primary" onclick="confirmCSVImport()">
                                 ✓ Confirm & Import All Trades
@@ -2806,9 +2874,9 @@
                             <div style="font-size: 12px; color: #8b949e; margin-bottom: 5px;">Median Outcome (50th %)</div>
                             <div style="font-size: 18px; font-weight: bold; color: #58a6ff;" id="monteCarloMedian">$0.00</div>
                         </div>
-                        <div style="text-align: center; padding: 10px; background: rgba(88, 166, 255, 0.1); border-radius: 3px;">
+                        <div style="text-align: center; padding: 10px; background: rgba(57, 255, 20, 0.05); border-radius: 3px;">
                             <div style="font-size: 12px; color: #8b949e; margin-bottom: 5px;">Probability of Profit</div>
-                            <div style="font-size: 18px; font-weight: bold; color: #10b981;" id="monteCarloProbProfit">0%</div>
+                            <div style="font-size: 18px; font-weight: bold; color: var(--neon-green); text-shadow: 0 0 10px rgba(57, 255, 20, 0.3);" id="monteCarloProbProfit">0%</div>
                         </div>
                     </div>
                 </div>
@@ -2824,9 +2892,9 @@
             <div class="section danger-section">
                 <h2>Risk Analysis</h2>
                 <div class="dashboard-grid">
-                    <div style="padding: 15px; background: rgba(21, 27, 40, 0.5); border-radius: 3px; border-left: 3px solid #5dade2;">
+                    <div style="padding: 15px; background: rgba(21, 27, 40, 0.5); border-radius: 3px; border-left: 3px solid var(--neon-green);">
                         <p style="color: #8b949e; font-size: 12px; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px;">Largest Win</p>
-                        <div class="data-value positive" id="largestWin">$0.00</div>
+                        <div class="data-value" style="color: var(--neon-green); font-size: 24px; font-weight: 700; text-shadow: 0 0 10px rgba(57, 255, 20, 0.3);" id="largestWin">$0.00</div>
                         <p style="color: #8b949e; font-size: 10px; margin-top: 4px;" id="largestWinDate"></p>
                     </div>
                     <div style="padding: 15px; background: rgba(21, 27, 40, 0.5); border-radius: 3px; border-left: 3px solid #2980b9;">
@@ -2886,9 +2954,9 @@
                         <div class="data-value neutral" id="currentStreak">0</div>
                         <p style="color: #8b949e; font-size: 10px; margin-top: 4px;" id="currentStreakLabel">No trades yet</p>
                     </div>
-                    <div style="padding: 15px; background: rgba(21, 27, 40, 0.5); border-radius: 3px; border-left: 3px solid #5dade2;">
+                    <div style="padding: 15px; background: rgba(21, 27, 40, 0.5); border-radius: 3px; border-left: 3px solid var(--neon-green);">
                         <p style="color: #8b949e; font-size: 12px; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px;">Longest Win Streak</p>
-                        <div class="data-value positive" id="longestWinStreak">0</div>
+                        <div class="data-value" style="color: var(--neon-green); font-size: 24px; font-weight: 700; text-shadow: 0 0 10px rgba(57, 255, 20, 0.3);" id="longestWinStreak">0</div>
                     </div>
                     <div style="padding: 15px; background: rgba(21, 27, 40, 0.5); border-radius: 3px; border-left: 3px solid #2980b9;">
                         <p style="color: #8b949e; font-size: 12px; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px;">Longest Loss Streak</p>
@@ -3002,6 +3070,32 @@
                         <p style="font-size: 12px; color: #8b949e; margin: 0;">
                             <strong style="color: #5dade2;">Note:</strong> Max Loss should be entered as a positive number (e.g., 500 for -$500 max loss). Default values are $500 profit goal and $500 max loss.
                         </p>
+                    </div>
+                </div>
+
+                <div class="section success-section">
+                    <h3 style="font-size: 16px; margin-bottom: 15px;">📂 Account Management</h3>
+                    <p style="font-size: 13px; color: #8b949e; line-height: 1.6; margin-bottom: 20px;">
+                        Create and manage multiple trading accounts. Each account maintains separate trades, sessions, and analytics. Perfect for tracking different strategies, account types, or trading phases.
+                    </p>
+
+                    <!-- Current Accounts List -->
+                    <div style="background: rgba(139, 148, 158, 0.1); padding: 15px; border-radius: 8px; margin-bottom: 20px;">
+                        <h4 style="color: #5dade2; margin-bottom: 10px; font-size: 14px;">Your Accounts:</h4>
+                        <div id="accountsList" style="display: flex; flex-direction: column; gap: 8px;"></div>
+                    </div>
+
+                    <!-- Create New Account -->
+                    <div style="background: rgba(93, 173, 226, 0.1); padding: 15px; border-radius: 8px; border-left: 3px solid #5dade2;">
+                        <h4 style="color: #5dade2; margin-bottom: 10px; font-size: 14px;">Create New Account:</h4>
+                        <div class="inline-group" style="margin-bottom: 0;">
+                            <div class="form-group" style="flex: 1;">
+                                <input type="text" id="newAccountName" placeholder="e.g., Futures Account, Prop Firm Challenge" style="width: 100%;">
+                            </div>
+                            <button class="btn btn-success" onclick="createNewAccount()" style="white-space: nowrap;">
+                                ➕ Create Account
+                            </button>
+                        </div>
                     </div>
                 </div>
 
@@ -3186,10 +3280,15 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 
     <script>
-        // Global state
+        // Multi-Account Global State
+        let accountsData = {};
+        let currentAccountName = 'Default Account';
+
+        // Legacy references (will point to current account data)
         let currentSession = null;
         let allSessions = [];
         let allTrades = [];
+
         let timers = {};
         let screenshots = {
             sundayDaily: [],
@@ -5597,21 +5696,182 @@
             `;
         }
 
-        // Load/Save data
-        function loadData() {
-            const sessions = localStorage.getItem('tradingSessions');
-            const trades = localStorage.getItem('tradingTrades');
-            const current = localStorage.getItem('currentSession');
+        // Multi-Account Management Functions
+        function initializeAccounts() {
+            const savedAccounts = localStorage.getItem('accountsData');
+            const savedActiveAccount = localStorage.getItem('activeAccount');
 
-            if (sessions) allSessions = JSON.parse(sessions);
-            if (trades) allTrades = JSON.parse(trades);
-            if (current) currentSession = JSON.parse(current);
+            if (savedAccounts) {
+                accountsData = JSON.parse(savedAccounts);
+            } else {
+                // Migrate old single-account data if it exists
+                const oldSessions = localStorage.getItem('tradingSessions');
+                const oldTrades = localStorage.getItem('tradingTrades');
+
+                accountsData = {
+                    'Default Account': {
+                        trades: oldTrades ? JSON.parse(oldTrades) : [],
+                        sessions: oldSessions ? JSON.parse(oldSessions) : []
+                    }
+                };
+            }
+
+            currentAccountName = savedActiveAccount || 'Default Account';
+
+            // Ensure current account exists
+            if (!accountsData[currentAccountName]) {
+                accountsData[currentAccountName] = { trades: [], sessions: [] };
+            }
+
+            loadCurrentAccountData();
+            updateAccountSelector();
+        }
+
+        function loadCurrentAccountData() {
+            const account = accountsData[currentAccountName] || { trades: [], sessions: [] };
+            allTrades = account.trades || [];
+            allSessions = account.sessions || [];
+
+            // Load current session for this account
+            const sessionKey = `currentSession_${currentAccountName}`;
+            const saved = localStorage.getItem(sessionKey);
+            currentSession = saved ? JSON.parse(saved) : null;
+        }
+
+        function saveCurrentAccountData() {
+            if (!accountsData[currentAccountName]) {
+                accountsData[currentAccountName] = { trades: [], sessions: [] };
+            }
+
+            accountsData[currentAccountName].trades = allTrades;
+            accountsData[currentAccountName].sessions = allSessions;
+
+            localStorage.setItem('accountsData', JSON.stringify(accountsData));
+            localStorage.setItem('activeAccount', currentAccountName);
+
+            // Save current session for this account
+            const sessionKey = `currentSession_${currentAccountName}`;
+            localStorage.setItem(sessionKey, JSON.stringify(currentSession));
+        }
+
+        function switchAccount() {
+            const selector = document.getElementById('accountSelector');
+            const newAccount = selector.value;
+
+            if (newAccount === currentAccountName) return;
+
+            // Save current account data before switching
+            saveCurrentAccountData();
+
+            // Switch to new account
+            currentAccountName = newAccount;
+            loadCurrentAccountData();
+
+            // Refresh all displays
+            updateDashboard();
+            updateAnalytics();
+            updateHistory();
+
+            showToast('success', 'Account Switched', `Now viewing: ${newAccount}`, 3000);
+        }
+
+        function updateAccountSelector() {
+            const selector = document.getElementById('accountSelector');
+            selector.innerHTML = '';
+
+            Object.keys(accountsData).sort().forEach(accountName => {
+                const option = document.createElement('option');
+                option.value = accountName;
+                option.textContent = accountName;
+                if (accountName === currentAccountName) {
+                    option.selected = true;
+                }
+                selector.appendChild(option);
+            });
+
+            // Also update accounts list in settings
+            updateAccountsList();
+        }
+
+        function updateAccountsList() {
+            const listDiv = document.getElementById('accountsList');
+            if (!listDiv) return;
+
+            listDiv.innerHTML = '';
+            Object.keys(accountsData).sort().forEach(accountName => {
+                const accountDiv = document.createElement('div');
+                accountDiv.style.cssText = 'display: flex; justify-content: space-between; align-items: center; padding: 10px; background: rgba(93, 173, 226, 0.05); border-radius: 4px; border-left: 3px solid ' + (accountName === currentAccountName ? '#5dade2' : 'transparent') + ';';
+
+                const nameSpan = document.createElement('span');
+                nameSpan.textContent = accountName + (accountName === currentAccountName ? ' (Active)' : '');
+                nameSpan.style.cssText = 'color: ' + (accountName === currentAccountName ? '#5dade2' : '#c9d1d9') + '; font-weight: ' + (accountName === currentAccountName ? '600' : '400') + ';';
+
+                const actionsDiv = document.createElement('div');
+                actionsDiv.style.cssText = 'display: flex; gap: 8px;';
+
+                if (accountName !== currentAccountName && Object.keys(accountsData).length > 1) {
+                    const deleteBtn = document.createElement('button');
+                    deleteBtn.textContent = '🗑️ Delete';
+                    deleteBtn.onclick = () => deleteAccount(accountName);
+                    deleteBtn.style.cssText = 'padding: 4px 8px; background: rgba(239, 68, 68, 0.2); border: 1px solid #ef4444; color: #ef4444; border-radius: 3px; cursor: pointer; font-size: 11px;';
+                    actionsDiv.appendChild(deleteBtn);
+                }
+
+                accountDiv.appendChild(nameSpan);
+                accountDiv.appendChild(actionsDiv);
+                listDiv.appendChild(accountDiv);
+            });
+        }
+
+        function createNewAccount() {
+            const input = document.getElementById('newAccountName');
+            const accountName = input.value.trim();
+
+            if (!accountName) {
+                showToast('error', 'Invalid Name', 'Please enter an account name', 3000);
+                return;
+            }
+
+            if (accountsData[accountName]) {
+                showToast('error', 'Account Exists', 'An account with this name already exists', 3000);
+                return;
+            }
+
+            accountsData[accountName] = { trades: [], sessions: [] };
+            saveCurrentAccountData();
+            updateAccountSelector();
+
+            input.value = '';
+            showToast('success', 'Account Created', `Created account: ${accountName}`, 3000);
+        }
+
+        function deleteAccount(accountName) {
+            if (accountName === currentAccountName) {
+                showToast('error', 'Cannot Delete', 'Cannot delete the active account. Switch to another account first.', 4000);
+                return;
+            }
+
+            const trades = accountsData[accountName]?.trades?.length || 0;
+            const sessions = accountsData[accountName]?.sessions?.length || 0;
+
+            if (!confirm(`Are you sure you want to delete "${accountName}"?\n\nThis account has ${trades} trades and ${sessions} sessions.\n\n⚠️ ALL DATA WILL BE PERMANENTLY LOST!`)) {
+                return;
+            }
+
+            delete accountsData[accountName];
+            saveCurrentAccountData();
+            updateAccountSelector();
+
+            showToast('success', 'Account Deleted', `Deleted account: ${accountName}`, 3000);
+        }
+
+        // Legacy compatibility functions
+        function loadData() {
+            initializeAccounts();
         }
 
         function saveData() {
-            localStorage.setItem('tradingSessions', JSON.stringify(allSessions));
-            localStorage.setItem('tradingTrades', JSON.stringify(allTrades));
-            localStorage.setItem('currentSession', JSON.stringify(currentSession));
+            saveCurrentAccountData();
         }
 
         // Initialize today
@@ -8884,13 +9144,77 @@
                 errorContainer.style.display = 'none';
             }
 
+            // Populate CSV import account selector
+            const csvAccountSelector = document.getElementById('csvImportAccountSelector');
+            if (csvAccountSelector) {
+                csvAccountSelector.innerHTML = '';
+                Object.keys(accountsData).sort().forEach(accountName => {
+                    const option = document.createElement('option');
+                    option.value = accountName;
+                    option.textContent = accountName;
+                    if (accountName === currentAccountName) {
+                        option.selected = true;
+                    }
+                    csvAccountSelector.appendChild(option);
+                });
+            }
+
             showToast('success', 'Preview Ready', `${csvData.validated.length} valid trades ready to import`, 4000);
         }
 
-        function confirmCSVImport() {
+        function confirmCSVImport(skipDuplicates = null) {
             if (csvData.validated.length === 0) {
                 showToast('error', 'No Valid Trades', 'There are no valid trades to import', 4000);
                 return;
+            }
+
+            // Get selected import account
+            const csvAccountSelector = document.getElementById('csvImportAccountSelector');
+            const selectedAccount = csvAccountSelector ? csvAccountSelector.value : currentAccountName;
+
+            // Switch to selected account if different
+            if (selectedAccount !== currentAccountName) {
+                saveCurrentAccountData();
+                currentAccountName = selectedAccount;
+                loadCurrentAccountData();
+            }
+
+            // Duplicate Detection Logic
+            if (skipDuplicates === null) {
+                const existingTradesSet = new Set();
+                allTrades.forEach(trade => {
+                    const key = `${trade.symbol}|${trade.date}|${trade.entryPrice}|${trade.exitPrice}`;
+                    existingTradesSet.add(key);
+                });
+
+                const duplicates = [];
+                const nonDuplicates = [];
+
+                csvData.validated.forEach(row => {
+                    const tradeDate = row.date || new Date().toISOString().split('T')[0];
+                    const key = `${row.symbol}|${tradeDate}|${row.entryPrice}|${row.exitPrice}`;
+
+                    if (existingTradesSet.has(key)) {
+                        duplicates.push(row);
+                    } else {
+                        nonDuplicates.push(row);
+                    }
+                });
+
+                if (duplicates.length > 0) {
+                    const message = `Duplicate Trades Detected\n\nWe found ${duplicates.length} trade(s) in this file that may already exist in your account.\n\nWhat would you like to do?`;
+
+                    if (confirm(message + '\n\nClick OK to Skip Duplicates & Import Only New Trades\nClick Cancel to go back')) {
+                        csvData.validated = nonDuplicates;
+                        if (csvData.validated.length === 0) {
+                            showToast('info', 'All Duplicates', 'All trades in this file already exist. Nothing to import.', 4000);
+                            return;
+                        }
+                        showToast('info', 'Skipping Duplicates', `Importing ${csvData.validated.length} new trades, skipping ${duplicates.length} duplicates`, 4000);
+                    } else {
+                        return; // User cancelled
+                    }
+                }
             }
 
             // Import all valid historical trades
