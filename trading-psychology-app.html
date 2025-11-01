@@ -7361,18 +7361,20 @@
             if (filteredTrades.length === 0) {
                 tradeHistoryDiv.innerHTML = '<p>No trades found for the selected filter.</p>';
             } else {
-                // Create table format similar to CSV preview
+                // Create compact table format similar to CSV preview
                 let tableHTML = `
-                    <table style="width: 100%; border-collapse: collapse; background: rgba(93, 173, 226, 0.05); border-radius: 8px; overflow: hidden;">
+                    <table style="width: 100%; border-collapse: collapse; background: rgba(33, 38, 45, 0.6); border-radius: 8px; overflow: hidden; font-size: 13px;">
                         <thead>
-                            <tr style="background: rgba(255, 0, 85, 0.1); border-bottom: 2px solid #2980b9;">
-                                <th style="padding: 12px; text-align: left; font-weight: 600;">Symbol</th>
-                                <th style="padding: 12px; text-align: left; font-weight: 600;">Direction</th>
-                                <th style="padding: 12px; text-align: right; font-weight: 600;">Entry</th>
-                                <th style="padding: 12px; text-align: right; font-weight: 600;">Exit</th>
-                                <th style="padding: 12px; text-align: center; font-weight: 600;">Date</th>
-                                <th style="padding: 12px; text-align: right; font-weight: 600;">Result</th>
-                                <th style="padding: 12px; text-align: center; font-weight: 600; width: 100px;">Actions</th>
+                            <tr style="background: rgba(93, 173, 226, 0.15); border-bottom: 2px solid rgba(93, 173, 226, 0.3);">
+                                <th style="padding: 12px 8px; text-align: left; font-weight: 600; color: #5dade2;">Symbol</th>
+                                <th style="padding: 12px 8px; text-align: left; font-weight: 600; color: #5dade2;">Date</th>
+                                <th style="padding: 12px 8px; text-align: left; font-weight: 600; color: #5dade2;">Dir</th>
+                                <th style="padding: 12px 8px; text-align: right; font-weight: 600; color: #5dade2;">Entry</th>
+                                <th style="padding: 12px 8px; text-align: right; font-weight: 600; color: #5dade2;">Exit</th>
+                                <th style="padding: 12px 8px; text-align: right; font-weight: 600; color: #5dade2;">P/L</th>
+                                <th style="padding: 12px 8px; text-align: left; font-weight: 600; color: #5dade2;">Size</th>
+                                <th style="padding: 12px 8px; text-align: left; font-weight: 600; color: #5dade2;">R:R</th>
+                                <th style="padding: 12px 8px; text-align: center; font-weight: 600; color: #5dade2; width: 90px;">Actions</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -7381,25 +7383,28 @@
                 filteredTrades.slice().reverse().forEach(trade => {
                     const resultColor = trade.result === 'win' ? '#10b981' : trade.result === 'loss' ? '#ef4444' : '#6c757d';
                     const dirColor = trade.direction === 'short' ? '#fbbf24' : '#3b82f6';
+                    const pnl = trade.pnl ? (trade.pnl >= 0 ? '+$' + trade.pnl.toFixed(2) : '-$' + Math.abs(trade.pnl).toFixed(2)) : (trade.resultDisplay || '-');
                     tableHTML += `
-                        <tr style="border-bottom: 1px solid rgba(93, 173, 226, 0.1); transition: background 0.2s;"
+                        <tr style="border-bottom: 1px solid rgba(139, 148, 158, 0.2); transition: background 0.2s;"
                             onmouseover="this.style.background='rgba(93, 173, 226, 0.05)'"
                             onmouseout="this.style.background='transparent'">
-                            <td style="padding: 12px; font-weight: 600; cursor: pointer;" onclick="viewTradeDetail(${trade.id})">${trade.symbol}</td>
-                            <td style="padding: 12px; color: ${dirColor}; font-weight: 600; cursor: pointer;" onclick="viewTradeDetail(${trade.id})">${trade.direction?.toUpperCase() || 'LONG'}</td>
-                            <td style="padding: 12px; text-align: right; cursor: pointer;" onclick="viewTradeDetail(${trade.id})">${trade.entryPrice ? '$' + trade.entryPrice.toFixed(2) : '-'}</td>
-                            <td style="padding: 12px; text-align: right; cursor: pointer;" onclick="viewTradeDetail(${trade.id})">${trade.exitPrice ? '$' + trade.exitPrice.toFixed(2) : '-'}</td>
-                            <td style="padding: 12px; text-align: center; cursor: pointer;" onclick="viewTradeDetail(${trade.id})">${trade.date}</td>
-                            <td style="padding: 12px; text-align: right; font-weight: 600; color: ${resultColor}; cursor: pointer;" onclick="viewTradeDetail(${trade.id})">${trade.resultDisplay || trade.result || 'Open'}</td>
-                            <td style="padding: 12px; text-align: center;">
+                            <td style="padding: 10px 8px; font-weight: 600; cursor: pointer; color: #c9d1d9;" onclick="viewTradeDetail(${trade.id})">${trade.symbol}</td>
+                            <td style="padding: 10px 8px; cursor: pointer; color: #c9d1d9;" onclick="viewTradeDetail(${trade.id})">${trade.date}</td>
+                            <td style="padding: 10px 8px; color: ${dirColor}; font-weight: 600; cursor: pointer;" onclick="viewTradeDetail(${trade.id})">${trade.direction?.toUpperCase() || 'LONG'}</td>
+                            <td style="padding: 10px 8px; text-align: right; cursor: pointer; color: #c9d1d9;" onclick="viewTradeDetail(${trade.id})">${trade.entryPrice ? '$' + trade.entryPrice.toFixed(2) : '-'}</td>
+                            <td style="padding: 10px 8px; text-align: right; cursor: pointer; color: #c9d1d9;" onclick="viewTradeDetail(${trade.id})">${trade.exitPrice ? '$' + trade.exitPrice.toFixed(2) : '-'}</td>
+                            <td style="padding: 10px 8px; text-align: right; font-weight: 600; color: ${resultColor}; cursor: pointer;" onclick="viewTradeDetail(${trade.id})">${pnl}</td>
+                            <td style="padding: 10px 8px; cursor: pointer; color: #c9d1d9;" onclick="viewTradeDetail(${trade.id})">${trade.positionSize || '-'}</td>
+                            <td style="padding: 10px 8px; cursor: pointer; color: #c9d1d9;" onclick="viewTradeDetail(${trade.id})">${trade.rrRatio || '-'}</td>
+                            <td style="padding: 10px 8px; text-align: center;">
                                 <button onclick="event.stopPropagation(); editTrade(${trade.id})"
-                                    style="background: rgba(59, 130, 246, 0.2); border: 1px solid #3b82f6; color: #3b82f6; padding: 4px 8px; border-radius: 4px; cursor: pointer; font-size: 12px; margin-right: 4px;"
+                                    style="background: rgba(59, 130, 246, 0.2); border: 1px solid #3b82f6; color: #3b82f6; padding: 3px 6px; border-radius: 3px; cursor: pointer; font-size: 11px; margin-right: 3px;"
                                     onmouseover="this.style.background='rgba(59, 130, 246, 0.3)'"
                                     onmouseout="this.style.background='rgba(59, 130, 246, 0.2)'">Edit</button>
                                 <button onclick="event.stopPropagation(); deleteTrade(${trade.id})"
-                                    style="background: rgba(239, 68, 68, 0.2); border: 1px solid #ef4444; color: #ef4444; padding: 4px 8px; border-radius: 4px; cursor: pointer; font-size: 12px;"
+                                    style="background: rgba(239, 68, 68, 0.2); border: 1px solid #ef4444; color: #ef4444; padding: 3px 6px; border-radius: 3px; cursor: pointer; font-size: 11px;"
                                     onmouseover="this.style.background='rgba(239, 68, 68, 0.3)'"
-                                    onmouseout="this.style.background='rgba(239, 68, 68, 0.2)'">Delete</button>
+                                    onmouseout="this.style.background='rgba(239, 68, 68, 0.2)'">Del</button>
                             </td>
                         </tr>
                     `;
