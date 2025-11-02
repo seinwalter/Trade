@@ -935,6 +935,12 @@
             transform: rotate(90deg);
         }
 
+        @media (max-width: 1400px) {
+            .dashboard-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+
         @media (max-width: 768px) {
             .inline-group {
                 grid-template-columns: 1fr;
@@ -1737,7 +1743,7 @@
         /* Dashboard Grid Layout */
         .dashboard-grid {
             display: grid;
-            grid-template-columns: repeat(3, 1fr);
+            grid-template-columns: repeat(6, 1fr);
             gap: 15px;
             margin-bottom: 20px;
         }
