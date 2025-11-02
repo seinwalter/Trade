@@ -6867,9 +6867,30 @@
             const monthNames = ['January', 'February', 'March', 'April', 'May', 'June',
                               'July', 'August', 'September', 'October', 'November', 'December'];
 
+            // Calculate monthly total P&L
+            let monthlyTotal = 0;
+            let monthlyTradeCount = 0;
+            for (let day = 1; day <= daysInMonth; day++) {
+                const date = new Date(selectedYear, selectedMonth, day);
+                const dateStr = date.toISOString().split('T')[0];
+                const data = tradesByDate[dateStr];
+                if (data) {
+                    monthlyTotal += data.pnl;
+                    monthlyTradeCount += data.count;
+                }
+            }
+
+            const totalColor = monthlyTotal >= 0 ? '#10b981' : '#ef4444';
+            const totalSign = monthlyTotal >= 0 ? '+' : '';
+            const totalDisplay = `${totalSign}$${monthlyTotal.toFixed(2)}`;
+
             let html = `
-                <div style="text-align: center; font-size: 18px; font-weight: bold; margin-bottom: 15px; color: #c9d1d9;">
+                <div style="text-align: center; font-size: 18px; font-weight: bold; margin-bottom: 10px; color: #c9d1d9;">
                     ${monthNames[selectedMonth]} ${selectedYear}
+                </div>
+                <div style="text-align: center; margin-bottom: 15px;">
+                    <span style="font-size: 16px; font-weight: bold; color: ${totalColor};">Monthly Total: ${totalDisplay}</span>
+                    <span style="font-size: 12px; color: #8b949e; margin-left: 10px;">(${monthlyTradeCount} trade${monthlyTradeCount !== 1 ? 's' : ''})</span>
                 </div>
             `;
 
