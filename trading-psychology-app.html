@@ -1,0 +1,3844 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trading Psychology Protocol - Dr. Ellis Hartwin</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Barlow:wght@300;400;500;600;700&family=Barlow+Semi+Condensed:wght@400;500;600;700&display=swap');
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Barlow', sans-serif;
+            background: #0d1117;
+            background-image:
+                radial-gradient(circle at 15% 30%, rgba(255, 149, 0, 0.08) 0%, transparent 40%),
+                radial-gradient(circle at 85% 70%, rgba(41, 128, 185, 0.06) 0%, transparent 45%),
+                linear-gradient(180deg, #0d1117 0%, #151b28 100%);
+            min-height: 100vh;
+            padding: 15px;
+            color: #c9d1d9;
+        }
+
+        .app-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: rgba(13, 17, 23, 0.85);
+            border-radius: 4px;
+            box-shadow:
+                0 0 60px rgba(255, 149, 0, 0.15),
+                0 8px 32px rgba(0, 0, 0, 0.6),
+                inset 0 1px 1px rgba(255, 255, 255, 0.03);
+            overflow: hidden;
+            border: 1px solid rgba(255, 149, 0, 0.2);
+            position: relative;
+            backdrop-filter: blur(20px);
+        }
+
+        .app-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: linear-gradient(90deg,
+                transparent,
+                rgba(255, 149, 0, 0.6),
+                transparent
+            );
+            animation: scanline 6s linear infinite;
+        }
+
+        @keyframes scanline {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+
+        .app-header {
+            background: linear-gradient(135deg, rgba(21, 27, 40, 0.95) 0%, rgba(13, 17, 23, 0.95) 100%);
+            color: #ff9500;
+            padding: 20px 25px;
+            border-bottom: 1px solid rgba(255, 149, 0, 0.3);
+            box-shadow: 0 2px 16px rgba(255, 149, 0, 0.15);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .app-header::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg,
+                transparent,
+                rgba(255, 149, 0, 0.1),
+                transparent
+            );
+            animation: shine 5s infinite;
+        }
+
+        @keyframes shine {
+            0% { left: -100%; }
+            50%, 100% { left: 100%; }
+        }
+
+        .app-header h1 {
+            font-family: 'Barlow Semi Condensed', sans-serif;
+            font-size: 26px;
+            margin-bottom: 5px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 4px;
+            text-shadow: 0 0 20px rgba(255, 149, 0, 0.4);
+            animation: glow 3s ease-in-out infinite alternate;
+        }
+
+        @keyframes glow {
+            from { text-shadow: 0 0 15px rgba(255, 149, 0, 0.3); }
+            to { text-shadow: 0 0 25px rgba(255, 149, 0, 0.5), 0 0 35px rgba(255, 149, 0, 0.3); }
+        }
+
+        .app-header .subtitle {
+            font-size: 13px;
+            opacity: 0.75;
+            color: #8b949e;
+            font-weight: 400;
+            letter-spacing: 1px;
+        }
+
+        .nav-tabs {
+            display: flex;
+            background: rgba(13, 17, 23, 0.8);
+            overflow-x: auto;
+            border-bottom: 1px solid rgba(255, 149, 0, 0.15);
+        }
+
+        .nav-tab {
+            padding: 12px 20px;
+            color: #8b949e;
+            cursor: pointer;
+            border: none;
+            background: transparent;
+            transition: all 0.3s;
+            white-space: nowrap;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            position: relative;
+            font-family: 'Barlow Semi Condensed', sans-serif;
+        }
+
+        .nav-tab::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            width: 0;
+            height: 1px;
+            background: #ff9500;
+            transition: all 0.3s;
+            transform: translateX(-50%);
+            box-shadow: 0 0 8px rgba(255, 149, 0, 0.6);
+        }
+
+        .nav-tab:hover {
+            background: rgba(255, 149, 0, 0.05);
+            color: #ff9500;
+        }
+
+        .nav-tab:hover::after {
+            width: 80%;
+        }
+
+        .nav-tab.active {
+            background: rgba(255, 149, 0, 0.1);
+            color: #ff9500;
+            text-shadow: 0 0 12px rgba(255, 149, 0, 0.4);
+        }
+
+        .nav-tab.active::after {
+            width: 100%;
+            background: #ff9500;
+        }
+
+        .tab-content {
+            display: none;
+            padding: 20px;
+            animation: fadeIn 0.4s, slideUp 0.4s;
+            background: rgba(13, 17, 23, 0.4);
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes slideUp {
+            from { transform: translateY(15px); }
+            to { transform: translateY(0); }
+        }
+
+        .section {
+            margin-bottom: 18px;
+            padding: 18px;
+            background: rgba(21, 27, 40, 0.6);
+            border-radius: 3px;
+            border-left: 2px solid #ff9500;
+            box-shadow:
+                0 2px 8px rgba(0, 0, 0, 0.4),
+                inset 0 1px 0 rgba(255, 255, 255, 0.02);
+            position: relative;
+            backdrop-filter: blur(10px);
+        }
+
+        .section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: linear-gradient(90deg,
+                transparent,
+                rgba(255, 149, 0, 0.3),
+                transparent
+            );
+        }
+
+        .section h2 {
+            color: #ff9500;
+            margin-bottom: 15px;
+            font-size: 18px;
+            font-family: 'Barlow Semi Condensed', sans-serif;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            text-shadow: 0 0 12px rgba(255, 149, 0, 0.3);
+        }
+
+        .warning-section {
+            background: rgba(255, 200, 0, 0.08);
+            border-left-color: #ffc107;
+            box-shadow:
+                0 2px 8px rgba(255, 193, 7, 0.2),
+                inset 0 1px 0 rgba(255, 255, 255, 0.02);
+        }
+
+        .warning-section h2, .warning-section h3 {
+            color: #ffc107;
+            text-shadow: 0 0 8px rgba(255, 193, 7, 0.3);
+        }
+
+        .danger-section {
+            background: rgba(229, 62, 62, 0.08);
+            border-left-color: #e53e3e;
+            box-shadow:
+                0 2px 8px rgba(229, 62, 62, 0.2),
+                inset 0 1px 0 rgba(255, 255, 255, 0.02);
+        }
+
+        .danger-section h2, .danger-section h3 {
+            color: #e53e3e;
+            text-shadow: 0 0 8px rgba(229, 62, 62, 0.3);
+        }
+
+        .success-section {
+            background: rgba(72, 187, 120, 0.08);
+            border-left-color: #48bb78;
+            box-shadow:
+                0 2px 8px rgba(72, 187, 120, 0.2),
+                inset 0 1px 0 rgba(255, 255, 255, 0.02);
+        }
+
+        .success-section h2, .success-section h3 {
+            color: #48bb78;
+            text-shadow: 0 0 8px rgba(72, 187, 120, 0.3);
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+            position: relative;
+        }
+
+        label {
+            display: block;
+            font-weight: 500;
+            margin-bottom: 6px;
+            color: #8b949e;
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        input[type="text"],
+        input[type="number"],
+        input[type="time"],
+        input[type="date"],
+        textarea,
+        select {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid rgba(139, 148, 158, 0.3);
+            border-radius: 3px;
+            font-size: 14px;
+            transition: all 0.3s;
+            background: rgba(13, 17, 23, 0.6);
+            color: #c9d1d9;
+            font-family: 'Barlow', sans-serif;
+            font-weight: 400;
+        }
+
+        input:focus,
+        textarea:focus,
+        select:focus {
+            outline: none;
+            border-color: #ff9500;
+            box-shadow: 0 0 0 2px rgba(255, 149, 0, 0.15);
+            background: rgba(13, 17, 23, 0.8);
+        }
+
+        textarea {
+            min-height: 80px;
+            resize: vertical;
+            font-family: 'Barlow', sans-serif;
+        }
+
+        .inline-group {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+        }
+
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            padding: 12px;
+            background: rgba(10, 15, 35, 0.6);
+            border-radius: 8px;
+            margin-bottom: 10px;
+            border: 1px solid rgba(0, 255, 255, 0.2);
+            transition: all 0.3s;
+        }
+
+        .checkbox-group:hover {
+            background: rgba(0, 255, 255, 0.1);
+            border-color: #00ffff;
+            box-shadow: 0 0 10px rgba(0, 255, 255, 0.3);
+        }
+
+        .checkbox-group input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            margin-right: 12px;
+            cursor: pointer;
+            accent-color: #00ffff;
+        }
+
+        .checkbox-group label {
+            margin: 0;
+            cursor: pointer;
+            font-weight: 500;
+            text-transform: none;
+            font-size: 14px;
+            color: #c0c0c0;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border: 1px solid;
+            border-radius: 3px;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 600;
+            transition: all 0.3s;
+            margin-right: 10px;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-family: 'Barlow Semi Condensed', sans-serif;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.15);
+            transform: translate(-50%, -50%);
+            transition: width 0.5s, height 0.5s;
+        }
+
+        .btn:hover::before {
+            width: 300px;
+            height: 300px;
+        }
+
+        .btn-primary {
+            background: rgba(255, 149, 0, 0.2);
+            color: #ff9500;
+            border-color: #ff9500;
+            box-shadow: 0 0 12px rgba(255, 149, 0, 0.2);
+        }
+
+        .btn-primary:hover {
+            background: rgba(255, 149, 0, 0.3);
+            box-shadow: 0 0 20px rgba(255, 149, 0, 0.4);
+        }
+
+        .btn-success {
+            background: rgba(72, 187, 120, 0.2);
+            color: #48bb78;
+            border-color: #48bb78;
+            box-shadow: 0 0 12px rgba(72, 187, 120, 0.2);
+        }
+
+        .btn-success:hover {
+            background: rgba(72, 187, 120, 0.3);
+            box-shadow: 0 0 20px rgba(72, 187, 120, 0.4);
+        }
+
+        .btn-danger {
+            background: rgba(229, 62, 62, 0.2);
+            color: #e53e3e;
+            border-color: #e53e3e;
+            box-shadow: 0 0 12px rgba(229, 62, 62, 0.2);
+        }
+
+        .btn-danger:hover {
+            background: rgba(229, 62, 62, 0.3);
+            box-shadow: 0 0 20px rgba(229, 62, 62, 0.4);
+        }
+
+        .btn-secondary {
+            background: rgba(139, 148, 158, 0.2);
+            color: #8b949e;
+            border-color: #8b949e;
+            box-shadow: 0 0 12px rgba(139, 148, 158, 0.1);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(139, 148, 158, 0.3);
+            box-shadow: 0 0 20px rgba(139, 148, 158, 0.2);
+        }
+
+        .alert {
+            padding: 14px 18px;
+            border-radius: 3px;
+            margin-bottom: 15px;
+            font-weight: 500;
+            font-size: 13px;
+            border: 1px solid;
+            backdrop-filter: blur(10px);
+        }
+
+        .alert-danger {
+            background: rgba(229, 62, 62, 0.15);
+            color: #e53e3e;
+            border-color: #e53e3e;
+            box-shadow: 0 0 12px rgba(229, 62, 62, 0.2);
+        }
+
+        .alert-warning {
+            background: rgba(255, 193, 7, 0.15);
+            color: #ffc107;
+            border-color: #ffc107;
+            box-shadow: 0 0 12px rgba(255, 193, 7, 0.2);
+        }
+
+        .alert-success {
+            background: rgba(72, 187, 120, 0.15);
+            color: #48bb78;
+            border-color: #48bb78;
+            box-shadow: 0 0 12px rgba(72, 187, 120, 0.2);
+        }
+
+        .alert-info {
+            background: rgba(255, 149, 0, 0.15);
+            color: #ff9500;
+            border-color: #ff9500;
+            box-shadow: 0 0 12px rgba(255, 149, 0, 0.2);
+        }
+
+        .stat-card {
+            background: rgba(21, 27, 40, 0.5);
+            padding: 18px;
+            border-radius: 3px;
+            box-shadow: 0 2px 8px rgba(255, 149, 0, 0.15);
+            text-align: center;
+            border: 1px solid rgba(255, 149, 0, 0.2);
+            transition: all 0.3s;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 4px 16px rgba(255, 149, 0, 0.25);
+            border-color: #ff9500;
+        }
+
+        .stat-card h3 {
+            font-size: 32px;
+            color: #ff9500;
+            margin-bottom: 6px;
+            font-family: 'Barlow Semi Condensed', sans-serif;
+            font-weight: 600;
+            text-shadow: 0 0 12px rgba(255, 149, 0, 0.3);
+        }
+
+        .stat-card p {
+            color: #8b949e;
+            font-size: 12px;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+        }
+
+        .trade-card {
+            background: rgba(20, 25, 50, 0.8);
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 15px;
+            border: 2px solid rgba(0, 255, 255, 0.3);
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+
+        .trade-card:hover {
+            transform: translateX(10px);
+            box-shadow: 0 0 25px rgba(0, 255, 255, 0.4);
+        }
+
+        .trade-card.win {
+            border-left: 5px solid #00ff80;
+            box-shadow: 0 0 15px rgba(0, 255, 128, 0.3);
+        }
+
+        .trade-card.loss {
+            border-left: 5px solid #ff0080;
+            box-shadow: 0 0 15px rgba(255, 0, 128, 0.3);
+        }
+
+        .trade-card.breakeven {
+            border-left: 5px solid #ffaa00;
+            box-shadow: 0 0 15px rgba(255, 170, 0, 0.3);
+        }
+
+        .protocol-status {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 15px;
+            background: rgba(20, 25, 50, 0.6);
+            border-radius: 8px;
+            margin-bottom: 12px;
+            border: 1px solid rgba(0, 255, 255, 0.2);
+            transition: all 0.3s;
+        }
+
+        .protocol-status:hover {
+            background: rgba(0, 255, 255, 0.1);
+            border-color: #00ffff;
+        }
+
+        .status-indicator {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            display: inline-block;
+            margin-right: 10px;
+            box-shadow: 0 0 10px currentColor;
+            animation: blink 2s infinite;
+        }
+
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.3; }
+        }
+
+        .status-indicator.green {
+            background: #00ff80;
+            box-shadow: 0 0 15px #00ff80;
+        }
+
+        .status-indicator.red {
+            background: #ff0080;
+            box-shadow: 0 0 15px #ff0080;
+        }
+
+        .status-indicator.yellow {
+            background: #ffaa00;
+            box-shadow: 0 0 15px #ffaa00;
+        }
+
+        .timer-display {
+            font-size: 40px;
+            font-weight: 600;
+            color: #ff9500;
+            text-align: center;
+            padding: 20px;
+            background: rgba(21, 27, 40, 0.6);
+            border-radius: 3px;
+            margin: 15px 0;
+            font-family: 'Barlow Semi Condensed', sans-serif;
+            border: 1px solid rgba(255, 149, 0, 0.3);
+            box-shadow:
+                0 2px 12px rgba(255, 149, 0, 0.2),
+                inset 0 1px 0 rgba(255, 255, 255, 0.02);
+            text-shadow: 0 0 16px rgba(255, 149, 0, 0.4);
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 24px;
+            background: rgba(21, 27, 40, 0.6);
+            border-radius: 3px;
+            overflow: hidden;
+            margin: 12px 0;
+            border: 1px solid rgba(255, 149, 0, 0.2);
+            box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.4);
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #ff9500, #ffb84d);
+            transition: width 0.5s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: rgba(13, 17, 23, 0.9);
+            font-weight: 600;
+            font-size: 12px;
+            text-shadow: none;
+            box-shadow: 0 0 12px rgba(255, 149, 0, 0.4);
+            animation: shimmer 3s infinite;
+        }
+
+        @keyframes shimmer {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .log-entry {
+            background: rgba(20, 25, 50, 0.6);
+            padding: 18px;
+            border-radius: 8px;
+            margin-bottom: 12px;
+            border-left: 4px solid #00ffff;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: 1px solid rgba(0, 255, 255, 0.2);
+        }
+
+        .log-entry:hover {
+            box-shadow: 0 0 20px rgba(0, 255, 255, 0.4);
+            transform: translateX(10px);
+            background: rgba(0, 255, 255, 0.1);
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.85);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(5px);
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: linear-gradient(135deg, rgba(15, 20, 40, 0.98), rgba(25, 30, 60, 0.98));
+            padding: 35px;
+            border-radius: 15px;
+            max-width: 650px;
+            max-height: 85vh;
+            overflow-y: auto;
+            box-shadow:
+                0 0 50px rgba(0, 255, 255, 0.5),
+                0 0 100px rgba(120, 0, 255, 0.3);
+            border: 2px solid #00ffff;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid rgba(0, 255, 255, 0.3);
+        }
+
+        .modal-header h2 {
+            color: #00ffff;
+            font-family: 'Orbitron', sans-serif;
+            text-shadow: 0 0 10px #00ffff;
+        }
+
+        .modal-close {
+            font-size: 32px;
+            cursor: pointer;
+            color: #ff0080;
+            line-height: 1;
+            transition: all 0.3s;
+        }
+
+        .modal-close:hover {
+            color: #ff00ff;
+            text-shadow: 0 0 15px #ff00ff;
+            transform: rotate(90deg);
+        }
+
+        @media (max-width: 768px) {
+            .inline-group {
+                grid-template-columns: 1fr;
+            }
+
+            .app-header h1 {
+                font-size: 24px;
+            }
+
+            .nav-tab {
+                padding: 12px 15px;
+                font-size: 13px;
+            }
+
+            .timer-display {
+                font-size: 36px;
+            }
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        .circuit-breaker-warning {
+            background: rgba(229, 62, 62, 0.25);
+            color: #e53e3e;
+            padding: 18px;
+            border-radius: 3px;
+            margin: 18px 0;
+            text-align: center;
+            font-size: 16px;
+            font-weight: 600;
+            font-family: 'Barlow Semi Condensed', sans-serif;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            animation: pulse 2s infinite;
+            box-shadow:
+                0 2px 16px rgba(229, 62, 62, 0.4),
+                inset 0 0 20px rgba(229, 62, 62, 0.1);
+            border: 1px solid #e53e3e;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.85; }
+        }
+
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 10px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: rgba(13, 17, 23, 0.8);
+            border-radius: 3px;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: rgba(255, 149, 0, 0.4);
+            border-radius: 3px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(255, 149, 0, 0.6);
+        }
+
+        /* Screenshot Upload Styles */
+        .screenshot-upload-section {
+            margin-top: 15px;
+            padding: 15px;
+            background: rgba(255, 149, 0, 0.03);
+            border: 1px dashed rgba(255, 149, 0, 0.3);
+            border-radius: 3px;
+            transition: all 0.3s;
+        }
+
+        .screenshot-upload-section:hover {
+            border-color: #ff9500;
+            background: rgba(255, 149, 0, 0.06);
+            box-shadow: 0 0 12px rgba(255, 149, 0, 0.15);
+        }
+
+        .screenshot-upload-section h3 {
+            color: #ff9500;
+            font-family: 'Barlow Semi Condensed', sans-serif;
+            font-size: 14px;
+            margin-bottom: 12px;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            text-shadow: 0 0 8px rgba(255, 149, 0, 0.3);
+        }
+
+        .file-input-wrapper {
+            position: relative;
+            overflow: hidden;
+            display: inline-block;
+            width: 100%;
+        }
+
+        .file-input-wrapper input[type=file] {
+            position: absolute;
+            left: -9999px;
+        }
+
+        .file-input-label {
+            display: block;
+            padding: 12px;
+            background: rgba(255, 149, 0, 0.15);
+            color: #ff9500;
+            text-align: center;
+            border-radius: 3px;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: 1px solid rgba(255, 149, 0, 0.4);
+            font-weight: 500;
+            font-size: 13px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .file-input-label:hover {
+            background: rgba(255, 149, 0, 0.25);
+            box-shadow: 0 0 16px rgba(255, 149, 0, 0.3);
+        }
+
+        .file-input-label::before {
+            content: '📸 ';
+            font-size: 20px;
+            margin-right: 8px;
+        }
+
+        .screenshot-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .screenshot-thumbnail {
+            position: relative;
+            border-radius: 3px;
+            overflow: hidden;
+            border: 1px solid rgba(255, 149, 0, 0.3);
+            transition: all 0.3s;
+            cursor: pointer;
+            background: rgba(13, 17, 23, 0.8);
+        }
+
+        .screenshot-thumbnail:hover {
+            border-color: #ff9500;
+            box-shadow: 0 0 16px rgba(255, 149, 0, 0.4);
+            transform: scale(1.03);
+        }
+
+        .screenshot-thumbnail img {
+            width: 100%;
+            height: 150px;
+            object-fit: cover;
+            display: block;
+        }
+
+        .screenshot-thumbnail .delete-btn {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            background: rgba(255, 0, 128, 0.9);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 28px;
+            height: 28px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s;
+            box-shadow: 0 0 10px rgba(255, 0, 128, 0.5);
+        }
+
+        .screenshot-thumbnail .delete-btn:hover {
+            background: #ff0080;
+            box-shadow: 0 0 20px rgba(255, 0, 128, 0.8);
+            transform: scale(1.1);
+        }
+
+        .screenshot-thumbnail .screenshot-label {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(to top, rgba(0, 0, 0, 0.85), transparent);
+            padding: 6px;
+            font-size: 10px;
+            color: #ff9500;
+            text-align: center;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        /* Image Viewer Modal */
+        .image-viewer-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.95);
+            z-index: 2000;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(10px);
+        }
+
+        .image-viewer-modal.active {
+            display: flex;
+        }
+
+        .image-viewer-content {
+            max-width: 95vw;
+            max-height: 95vh;
+            position: relative;
+        }
+
+        .image-viewer-content img {
+            max-width: 100%;
+            max-height: 95vh;
+            border-radius: 3px;
+            box-shadow:
+                0 0 40px rgba(255, 149, 0, 0.3),
+                0 8px 32px rgba(0, 0, 0, 0.8);
+            border: 1px solid rgba(255, 149, 0, 0.4);
+        }
+
+        .image-viewer-close {
+            position: absolute;
+            top: -50px;
+            right: 0;
+            background: rgba(229, 62, 62, 0.8);
+            color: white;
+            border: none;
+            border-radius: 3px;
+            width: 40px;
+            height: 40px;
+            font-size: 24px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s;
+            box-shadow: 0 0 12px rgba(229, 62, 62, 0.4);
+        }
+
+        .image-viewer-close:hover {
+            background: rgba(229, 62, 62, 1);
+            box-shadow: 0 0 20px rgba(229, 62, 62, 0.6);
+        }
+
+        /* Voice Recording Styles */
+        .voice-input-wrapper {
+            position: relative;
+        }
+
+        .voice-btn {
+            position: absolute;
+            right: 8px;
+            top: 32px;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            border: 1px solid rgba(255, 149, 0, 0.4);
+            background: rgba(255, 149, 0, 0.15);
+            color: #ff9500;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            z-index: 10;
+        }
+
+        .voice-btn:hover {
+            background: rgba(255, 149, 0, 0.25);
+            box-shadow: 0 0 16px rgba(255, 149, 0, 0.3);
+        }
+
+        .voice-btn.recording {
+            background: rgba(229, 62, 62, 0.25);
+            border-color: #e53e3e;
+            color: #e53e3e;
+            animation: recordingPulse 1.5s infinite;
+        }
+
+        @keyframes recordingPulse {
+            0%, 100% { box-shadow: 0 0 0 0 rgba(229, 62, 62, 0.7); }
+            50% { box-shadow: 0 0 0 8px rgba(229, 62, 62, 0); }
+        }
+
+        .voice-btn.processing {
+            background: rgba(72, 187, 120, 0.25);
+            border-color: #48bb78;
+            color: #48bb78;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        textarea.voice-enabled {
+            padding-right: 50px;
+        }
+
+        /* Toggle Switch */
+        .toggle-switch {
+            position: relative;
+            display: inline-block;
+            width: 54px;
+            height: 28px;
+        }
+
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .toggle-slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(139, 148, 158, 0.3);
+            transition: .3s;
+            border-radius: 28px;
+            border: 1px solid rgba(139, 148, 158, 0.5);
+        }
+
+        .toggle-slider:before {
+            position: absolute;
+            content: "";
+            height: 20px;
+            width: 20px;
+            left: 4px;
+            bottom: 3px;
+            background-color: #8b949e;
+            transition: .3s;
+            border-radius: 50%;
+        }
+
+        input:checked + .toggle-slider {
+            background-color: rgba(255, 149, 0, 0.3);
+            border-color: #ff9500;
+        }
+
+        input:checked + .toggle-slider:before {
+            transform: translateX(26px);
+            background-color: #ff9500;
+            box-shadow: 0 0 12px rgba(255, 149, 0, 0.5);
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <div class="app-header">
+            <h1>Trading Psychology Protocol</h1>
+            <div class="subtitle">Dr. Ellis Hartwin - Patient: Sean</div>
+        </div>
+
+        <div class="nav-tabs">
+            <button class="nav-tab active" onclick="switchTab('dashboard')">Dashboard</button>
+            <button class="nav-tab" onclick="switchTab('sunday-prep')">Sunday Prep</button>
+            <button class="nav-tab" onclick="switchTab('post-market')">Post-Market Review</button>
+            <button class="nav-tab" onclick="switchTab('trade-entry')">Trade Entry</button>
+            <button class="nav-tab" onclick="switchTab('end-of-day')">End of Day</button>
+            <button class="nav-tab" onclick="switchTab('history')">History</button>
+            <button class="nav-tab" onclick="switchTab('protocols')">Protocols</button>
+            <button class="nav-tab" onclick="switchTab('statistics')">Statistics</button>
+            <button class="nav-tab" onclick="switchTab('settings')">⚙️ Settings</button>
+        </div>
+
+        <!-- Dashboard Tab -->
+        <div id="dashboard" class="tab-content active">
+            <div id="circuitBreakerAlert"></div>
+
+            <!-- Start Trading Day (only shown when pre-market is disabled) -->
+            <div id="quickStartSession" class="section" style="display: none;">
+                <h2>Start Trading Day</h2>
+                <p style="margin-bottom: 15px; color: #8b949e;">Complete your mental state check to begin trading. (Using Sunday levels)</p>
+
+                <div class="inline-group">
+                    <div class="form-group">
+                        <label>Sleep Hours</label>
+                        <input type="number" id="dashboardSleepHours" step="0.5" min="0" max="12" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Emotional State (1-10)</label>
+                        <input type="number" id="dashboardEmotionalState" min="1" max="10" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Stress Level (1-10)</label>
+                        <input type="number" id="dashboardStressLevel" min="1" max="10" required>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Sobriety Status</label>
+                    <select id="dashboardSobrietyStatus" required>
+                        <option value="">Select...</option>
+                        <option value="clear">Confirmed - Clear minded</option>
+                        <option value="concern">Have concerns - Should not trade</option>
+                    </select>
+                </div>
+
+                <div id="dashboardEmotionalWarning" class="alert alert-danger hidden">
+                    <strong>⚠️ TRADING PROHIBITED!</strong> Your emotional state is 7/10 or higher. Do NOT trade today.
+                </div>
+
+                <button class="btn btn-success" onclick="saveQuickStartSession()">✅ Start Trading Day</button>
+            </div>
+
+            <div class="section">
+                <h2>Today's Session Status</h2>
+                <div id="todayStatus"></div>
+            </div>
+
+            <div class="section">
+                <h2>Quick Stats</h2>
+                <div class="inline-group">
+                    <div class="stat-card">
+                        <h3 id="tradesThisWeek">0</h3>
+                        <p>Trades This Week</p>
+                    </div>
+                    <div class="stat-card">
+                        <h3 id="winRateThisWeek">0%</h3>
+                        <p>Win Rate This Week</p>
+                    </div>
+                    <div class="stat-card">
+                        <h3 id="rulesAdherence">0%</h3>
+                        <p>Rules Adherence</p>
+                    </div>
+                    <div class="stat-card">
+                        <h3 id="currentPhase">Phase 1</h3>
+                        <p>Recovery Protocol</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="section">
+                <h2>Active Protocols</h2>
+                <div class="protocol-status">
+                    <span><span class="status-indicator green"></span>Trading Recovery Protocol - Phase 1</span>
+                    <span>Active</span>
+                </div>
+                <div class="protocol-status">
+                    <span><span class="status-indicator green"></span>Maximum 2 Trades Per Day</span>
+                    <span id="tradesRemaining">2 Remaining</span>
+                </div>
+                <div class="protocol-status">
+                    <span><span class="status-indicator green"></span>Micro Position Sizing (0.25x)</span>
+                    <span>Active</span>
+                </div>
+            </div>
+
+            <div class="section">
+                <h2>Today's Actions</h2>
+                <button class="btn btn-success" onclick="switchTab('trade-entry')">Enter Trade</button>
+                <button class="btn btn-secondary" onclick="switchTab('end-of-day')">End of Day Review</button>
+                <button class="btn btn-primary" onclick="switchTab('post-market')">Evening Post-Market Review</button>
+            </div>
+        </div>
+
+        <!-- Sunday Prep Tab -->
+        <div id="sunday-prep" class="tab-content">
+            <div class="alert alert-info">
+                <strong>Sunday Weekly Research:</strong> Take 20 minutes to analyze the 4-hour and Daily timeframes. This prepares you for the week ahead.
+            </div>
+
+            <div class="section">
+                <h2>Weekly Market Research ⏰ (20 minutes minimum)</h2>
+                <div class="timer-display" id="sundayResearchTimer">Timer: 00:00</div>
+                <button class="btn btn-primary" id="startSundayTimer" onclick="startTimer('sundayResearch', 1200)">Start 20-Minute Timer</button>
+
+                <div class="form-group">
+                    <label>Research Date</label>
+                    <input type="date" id="sundayDate" required>
+                </div>
+            </div>
+
+            <div class="section">
+                <h2>Daily Timeframe Analysis</h2>
+                <div class="form-group">
+                    <label>Daily Trend Direction</label>
+                    <select id="sundayDailyTrend" required>
+                        <option value="">Select...</option>
+                        <option value="bullish">Bullish</option>
+                        <option value="bearish">Bearish</option>
+                        <option value="ranging">Ranging</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>Daily Market Structure</label>
+                    <textarea id="sundayDailyStructure" placeholder="Higher highs/lows? Lower highs/lows? Key structural levels?" required></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label>Daily Support Levels</label>
+                    <textarea id="sundayDailySupport" placeholder="List major support levels from Daily chart" required></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label>Daily Resistance Levels</label>
+                    <textarea id="sundayDailyResistance" placeholder="List major resistance levels from Daily chart" required></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label>Daily Order Blocks & FVGs</label>
+                    <textarea id="sundayDailyOrderBlocks" placeholder="Significant order blocks and fair value gaps on Daily" required></textarea>
+                </div>
+
+                <div class="screenshot-upload-section">
+                    <h3>📊 Daily Chart Screenshots</h3>
+                    <div class="file-input-wrapper">
+                        <input type="file" id="sundayDailyScreenshots" accept="image/*" multiple onchange="handleScreenshotUpload(event, 'sundayDaily')">
+                        <label for="sundayDailyScreenshots" class="file-input-label">
+                            Upload Daily Chart Screenshots
+                        </label>
+                    </div>
+                    <div id="sundayDailyScreenshotsGrid" class="screenshot-grid"></div>
+                </div>
+            </div>
+
+            <div class="section">
+                <h2>4-Hour Timeframe Analysis</h2>
+                <div class="form-group">
+                    <label>4hr Trend Direction</label>
+                    <select id="sunday4hrTrend" required>
+                        <option value="">Select...</option>
+                        <option value="bullish">Bullish</option>
+                        <option value="bearish">Bearish</option>
+                        <option value="ranging">Ranging</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>4hr Market Structure</label>
+                    <textarea id="sunday4hrStructure" placeholder="Trend alignment with Daily? Recent breaks of structure?" required></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label>4hr Support Levels</label>
+                    <textarea id="sunday4hrSupport" placeholder="List major support levels from 4hr chart" required></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label>4hr Resistance Levels</label>
+                    <textarea id="sunday4hrResistance" placeholder="List major resistance levels from 4hr chart" required></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label>4hr Order Blocks & FVGs</label>
+                    <textarea id="sunday4hrOrderBlocks" placeholder="Significant order blocks and fair value gaps on 4hr" required></textarea>
+                </div>
+
+                <div class="screenshot-upload-section">
+                    <h3>📈 4-Hour Chart Screenshots</h3>
+                    <div class="file-input-wrapper">
+                        <input type="file" id="sunday4hrScreenshots" accept="image/*" multiple onchange="handleScreenshotUpload(event, 'sunday4hr')">
+                        <label for="sunday4hrScreenshots" class="file-input-label">
+                            Upload 4-Hour Chart Screenshots
+                        </label>
+                    </div>
+                    <div id="sunday4hrScreenshotsGrid" class="screenshot-grid"></div>
+                </div>
+            </div>
+
+            <div class="section">
+                <h2>Weekly Trading Plan</h2>
+                <div class="form-group">
+                    <label>Primary Bias for the Week</label>
+                    <select id="sundayWeeklyBias" required>
+                        <option value="">Select...</option>
+                        <option value="bullish">Bullish - Looking for Longs</option>
+                        <option value="bearish">Bearish - Looking for Shorts</option>
+                        <option value="neutral">Neutral - Watch Both Directions</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>Key Price Targets This Week</label>
+                    <textarea id="sundayPriceTargets" placeholder="Where do you expect price to reach? What are the major levels?" required></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label>Setups to Watch For</label>
+                    <textarea id="sundaySetups" placeholder="What specific setups align with the Daily and 4hr structure?" required></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label>Key Events This Week</label>
+                    <textarea id="sundayKeyEvents" placeholder="Economic news, FOMC, earnings, etc. that might impact markets"></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label>Areas to Avoid</label>
+                    <textarea id="sundayAvoidAreas" placeholder="Price ranges or conditions where you should NOT trade" required></textarea>
+                </div>
+            </div>
+
+            <div class="section success-section">
+                <h2>Weekly Intentions & Goals</h2>
+                <div class="form-group">
+                    <label>Process Goals for This Week</label>
+                    <textarea id="sundayProcessGoals" placeholder="Focus on rules adherence, patience, documentation, etc." required></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label>Maximum Trades for the Week</label>
+                    <input type="number" id="sundayMaxTrades" value="10" min="1" required>
+                </div>
+
+                <div class="form-group">
+                    <label>Maximum Risk for the Week ($)</label>
+                    <input type="number" id="sundayMaxRisk" step="0.01" required>
+                </div>
+
+                <div class="form-group">
+                    <label>What Will Make This Week Successful?</label>
+                    <textarea id="sundaySuccessCriteria" placeholder="Define success beyond P/L - process metrics that matter" required></textarea>
+                </div>
+            </div>
+
+            <button class="btn btn-success" onclick="saveSundayPrep()">Save Sunday Research</button>
+            <button class="btn btn-primary" onclick="exportSundayPrepPDF()">📄 Export Sunday Prep PDF</button>
+            <button class="btn btn-secondary" onclick="viewPastSundayPrep()">View Past Sunday Preps</button>
+        </div>
+
+        <!-- Pre-Market Tab -->
+        <div id="post-market" class="tab-content">
+            <div class="alert alert-info">
+                <strong>Evening Analysis:</strong> Complete this after the trading day ends. Review today's market action and prepare for tomorrow. (Use Monday's review for Tuesday's trading, etc.)
+            </div>
+
+            <div class="section">
+                <h2>Post-Market Reflection ⏰ (15 minutes minimum)</h2>
+                <div class="timer-display" id="mentalCheckTimer">Timer: 00:00</div>
+                <button class="btn btn-primary" id="startMentalCheckTimer" onclick="startTimer('mentalCheck', 900)">Start 15-Minute Timer</button>
+
+                <div class="form-group">
+                    <label>Date</label>
+                    <input type="date" id="sessionDate" required>
+                </div>
+
+                <div class="inline-group">
+                    <div class="form-group">
+                        <label>Sleep Hours</label>
+                        <input type="number" id="sleepHours" step="0.5" min="0" max="12" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Emotional State (1-10)</label>
+                        <input type="number" id="emotionalState" min="1" max="10" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Stress Level (1-10)</label>
+                        <input type="number" id="stressLevel" min="1" max="10" required>
+                    </div>
+                </div>
+
+                <div id="emotionalWarning" class="alert alert-danger hidden">
+                    <strong>⚠️ TRADING PROHIBITED!</strong> Your emotional state is 7/10 or higher. Do NOT trade today.
+                </div>
+
+                <div class="form-group">
+                    <label>Sobriety Status</label>
+                    <select id="sobrietyStatus" required>
+                        <option value="">Select...</option>
+                        <option value="clear">Confirmed - Clear minded</option>
+                        <option value="concern">Have concerns - Should not trade</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>Personal Obligations Today</label>
+                    <textarea id="obligations" placeholder="Any appointments, meetings, or obligations in next 4 hours?"></textarea>
+                </div>
+            </div>
+
+            <div class="section">
+                <h2>Today's Trading Review</h2>
+                <div class="form-group">
+                    <label>What Worked Today</label>
+                    <textarea id="whatWorked" placeholder="Successes from today's session"></textarea>
+                </div>
+                <div class="form-group">
+                    <label>What Didn't Work Today</label>
+                    <textarea id="whatDidntWork" placeholder="Mistakes or areas to improve from today"></textarea>
+                </div>
+            </div>
+
+            <div class="section">
+                <h2>Market Analysis for Tomorrow ⏰ (15 minutes minimum)</h2>
+                <div class="timer-display" id="technicalAnalysisTimer">Timer: 00:00</div>
+                <button class="btn btn-primary" id="startTechnicalTimer" onclick="startTimer('technical', 900)">Start 15-Minute Timer</button>
+
+                <div class="inline-group">
+                    <div class="form-group">
+                        <label>Daily Trend</label>
+                        <select id="dailyTrend" required>
+                            <option value="">Select...</option>
+                            <option value="bullish">Bullish</option>
+                            <option value="bearish">Bearish</option>
+                            <option value="ranging">Ranging</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>4hr Structure</label>
+                        <select id="fourHourStructure" required>
+                            <option value="">Select...</option>
+                            <option value="bullish">Bullish</option>
+                            <option value="bearish">Bearish</option>
+                            <option value="ranging">Ranging</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Key Levels Identified</label>
+                    <textarea id="keyLevels" placeholder="Support and resistance levels, order blocks, FVGs" required></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label>Tomorrow's Trading Plan</label>
+                    <textarea id="tradingPlan" placeholder="What setups to watch tomorrow? What's my bias for tomorrow?" required></textarea>
+                </div>
+
+                <div class="inline-group">
+                    <div class="form-group">
+                        <label>Max Risk Per Trade ($)</label>
+                        <input type="number" id="maxRiskPerTrade" step="0.01" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Max Total Risk Tomorrow ($)</label>
+                        <input type="number" id="maxTotalRisk" step="0.01" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Max Trades Allowed Tomorrow</label>
+                        <input type="number" id="maxTrades" value="2" min="1" max="2" readonly>
+                    </div>
+                </div>
+
+                <div class="screenshot-upload-section">
+                    <h3>📊 Post-Market Chart Analysis Screenshots</h3>
+                    <div class="file-input-wrapper">
+                        <input type="file" id="preMarketScreenshots" accept="image/*" multiple onchange="handleScreenshotUpload(event, 'preMarket')">
+                        <label for="preMarketScreenshots" class="file-input-label">
+                            Upload Chart Analysis Screenshots
+                        </label>
+                    </div>
+                    <div id="preMarketScreenshotsGrid" class="screenshot-grid"></div>
+                </div>
+            </div>
+
+            <button class="btn btn-success" onclick="savePostMarket()">💾 Save Post-Market Review</button>
+            <button class="btn btn-primary" onclick="exportPostMarketPDF()">📄 Export Post-Market PDF</button>
+        </div>
+
+        <!-- Trade Entry Tab -->
+        <div id="trade-entry" class="tab-content">
+            <div id="postMarketCheck" class="alert alert-info hidden">
+                <strong>💡 Tip:</strong> For better results, complete yesterday's Post-Market Review for today's trading plan. (Or use Sunday levels if no review available)
+            </div>
+
+            <div id="circuitBreakerBlock" class="hidden">
+                <div class="circuit-breaker-warning">
+                    ⛔ CIRCUIT BREAKER ACTIVE - NO TRADING ALLOWED ⛔
+                </div>
+            </div>
+
+            <div class="section">
+                <h2>Pre-Trade Checklist - ALL MUST BE CHECKED</h2>
+
+                <div class="danger-section">
+                    <h3 style="margin-bottom: 15px;">Timeframe Alignment (ALL must align)</h3>
+                    <div class="checkbox-group">
+                        <input type="checkbox" id="check_daily">
+                        <label for="check_daily">Daily trend confirmed and written down</label>
+                    </div>
+                    <div class="checkbox-group">
+                        <input type="checkbox" id="check_4hr">
+                        <label for="check_4hr">4-hour structure aligned with Daily</label>
+                    </div>
+                    <div class="checkbox-group">
+                        <input type="checkbox" id="check_15min">
+                        <label for="check_15min">15-minute confirmation present</label>
+                    </div>
+                    <div class="checkbox-group">
+                        <input type="checkbox" id="check_1min">
+                        <label for="check_1min">1-minute entry setup clear and valid</label>
+                    </div>
+                    <div class="checkbox-group">
+                        <input type="checkbox" id="check_refresh">
+                        <label for="check_refresh">All three timeframes refreshed before entry</label>
+                    </div>
+                </div>
+
+                <div class="warning-section" style="margin-top: 15px;">
+                    <h3 style="margin-bottom: 15px;">Technical Confirmation</h3>
+                    <div class="checkbox-group">
+                        <input type="checkbox" id="check_choch">
+                        <label for="check_choch">CHoCH (Change of Character) validated</label>
+                    </div>
+                    <div class="checkbox-group">
+                        <input type="checkbox" id="check_orderblock">
+                        <label for="check_orderblock">Order block identified at entry point</label>
+                    </div>
+                    <div class="checkbox-group">
+                        <input type="checkbox" id="check_structural">
+                        <label for="check_structural">Entry at validated structural level (not mid-range)</label>
+                    </div>
+                    <div class="checkbox-group">
+                        <input type="checkbox" id="check_invalidation">
+                        <label for="check_invalidation">Clear invalidation level identified</label>
+                    </div>
+                    <div class="checkbox-group">
+                        <input type="checkbox" id="check_rr">
+                        <label for="check_rr">Minimum 2:1 reward/risk ratio confirmed</label>
+                    </div>
+                </div>
+
+                <div class="success-section" style="margin-top: 15px;">
+                    <h3 style="margin-bottom: 15px;">Risk Management & Logistics</h3>
+                    <div class="checkbox-group">
+                        <input type="checkbox" id="check_position">
+                        <label for="check_position">Position size calculated and verified (0.25x normal)</label>
+                    </div>
+                    <div class="checkbox-group">
+                        <input type="checkbox" id="check_stop">
+                        <label for="check_stop">Stop loss level identified and marked</label>
+                    </div>
+                    <div class="checkbox-group">
+                        <input type="checkbox" id="check_target">
+                        <label for="check_target">Target level(s) identified and marked</label>
+                    </div>
+                    <div class="checkbox-group">
+                        <input type="checkbox" id="check_notime">
+                        <label for="check_notime">No time constraints for next hour minimum</label>
+                    </div>
+                    <div class="checkbox-group">
+                        <input type="checkbox" id="check_notfirst15">
+                        <label for="check_notfirst15">Not trading first 15 minutes of session</label>
+                    </div>
+                    <div class="checkbox-group">
+                        <input type="checkbox" id="check_before230">
+                        <label for="check_before230">Not past 2:30 PM Central time</label>
+                    </div>
+                    <div class="checkbox-group">
+                        <input type="checkbox" id="check_waiting">
+                        <label for="check_waiting">Minimum 30-45 minute waiting period observed</label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="section">
+                <h2>Trade Details</h2>
+                <div class="inline-group">
+                    <div class="form-group">
+                        <label>Symbol</label>
+                        <input type="text" id="tradeSymbol" placeholder="MNQH5, MESH5, etc" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Entry Time</label>
+                        <input type="time" id="tradeEntryTime" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Direction</label>
+                        <select id="tradeDirection" required>
+                            <option value="">Select...</option>
+                            <option value="long">Long</option>
+                            <option value="short">Short</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Trade Thesis (Why am I entering?)</label>
+                    <textarea id="tradeThesis" placeholder="Setup, structure, confluence, why this trade aligns with my plan" required></textarea>
+                </div>
+
+                <div class="inline-group">
+                    <div class="form-group">
+                        <label>Position Size</label>
+                        <input type="number" id="tradePositionSize" step="0.01" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Entry Price</label>
+                        <input type="number" id="tradeEntryPrice" step="0.01" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Stop Loss</label>
+                        <input type="number" id="tradeStopLoss" step="0.01" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Target</label>
+                        <input type="number" id="tradeTarget" step="0.01" required>
+                    </div>
+                </div>
+
+                <div class="inline-group">
+                    <div class="form-group">
+                        <label>Risk Amount ($)</label>
+                        <input type="number" id="tradeRiskAmount" step="0.01" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Reward Amount ($)</label>
+                        <input type="number" id="tradeRewardAmount" step="0.01" required>
+                    </div>
+                    <div class="form-group">
+                        <label>R:R Ratio</label>
+                        <input type="text" id="tradeRRRatio" readonly>
+                    </div>
+                </div>
+
+                <div class="screenshot-upload-section">
+                    <h3>📸 Trade Setup Screenshots</h3>
+                    <div class="file-input-wrapper">
+                        <input type="file" id="tradeScreenshots" accept="image/*" multiple onchange="handleScreenshotUpload(event, 'trade')">
+                        <label for="tradeScreenshots" class="file-input-label">
+                            Upload Trade Setup Screenshots
+                        </label>
+                    </div>
+                    <div id="tradeScreenshotsGrid" class="screenshot-grid"></div>
+                </div>
+            </div>
+
+            <button class="btn btn-success" onclick="submitTrade()">Submit Trade Entry</button>
+            <button class="btn btn-danger" onclick="emergencyExit()">Emergency Exit (Felt Uncomfortable)</button>
+        </div>
+
+        <!-- End of Day Tab -->
+        <div id="end-of-day" class="tab-content">
+            <div class="section">
+                <h2>Today's Trades Summary</h2>
+                <div id="todayTradesSummary"></div>
+            </div>
+
+            <div class="section">
+                <h2>Circuit Breaker Check</h2>
+                <div class="form-group">
+                    <label>Did any circuit breaker trigger today?</label>
+                    <select id="circuitBreakerTriggered">
+                        <option value="">Select...</option>
+                        <option value="no">No breakers triggered</option>
+                        <option value="consecutive">Two consecutive losses</option>
+                        <option value="three">Three total trades (or 2 during recovery)</option>
+                        <option value="daily-limit">Daily loss limit hit</option>
+                        <option value="emotional">Emotional state above 7/10</option>
+                        <option value="rules">Broke trading rules</option>
+                        <option value="focus">Unable to focus</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>If yes, what happened and what's the plan?</label>
+                    <textarea id="circuitBreakerNotes" placeholder="Response to circuit breaker"></textarea>
+                </div>
+            </div>
+
+            <div class="section">
+                <h2>End of Day Reflection</h2>
+                <div class="inline-group">
+                    <div class="form-group">
+                        <label>Rules Adherence (%)</label>
+                        <input type="number" id="rulesAdherencePercent" min="0" max="100" placeholder="0-100">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Biggest Win Today (trading or psychological)</label>
+                    <textarea id="biggestWin" placeholder="What went really well?"></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label>Biggest Challenge Today</label>
+                    <textarea id="biggestChallenge" placeholder="What was difficult?"></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label>Plan for Tomorrow</label>
+                    <textarea id="planTomorrow" placeholder="What will I do differently? What will I focus on?"></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label>Additional Notes</label>
+                    <textarea id="additionalNotes" placeholder="Any other observations or thoughts"></textarea>
+                </div>
+
+                <div class="screenshot-upload-section">
+                    <h3>📊 End of Day Review Screenshots</h3>
+                    <div class="file-input-wrapper">
+                        <input type="file" id="eodScreenshots" accept="image/*" multiple onchange="handleScreenshotUpload(event, 'eod')">
+                        <label for="eodScreenshots" class="file-input-label">
+                            Upload EOD Analysis Screenshots
+                        </label>
+                    </div>
+                    <div id="eodScreenshotsGrid" class="screenshot-grid"></div>
+                </div>
+            </div>
+
+            <button class="btn btn-success" onclick="saveEndOfDay()">Save End of Day Review</button>
+            <button class="btn btn-primary" onclick="exportEndOfDayPDF()">📄 Export End of Day PDF</button>
+            <button class="btn btn-secondary" onclick="exportCompleteDayPDF()">📋 Export Complete Day Report</button>
+        </div>
+
+        <!-- History Tab -->
+        <div id="history" class="tab-content">
+            <div class="section">
+                <h2>Trading History</h2>
+                <div class="inline-group">
+                    <div class="form-group">
+                        <label>Filter by Date Range</label>
+                        <input type="date" id="filterStartDate">
+                    </div>
+                    <div class="form-group">
+                        <label>To</label>
+                        <input type="date" id="filterEndDate">
+                    </div>
+                    <div class="form-group">
+                        <label style="visibility: hidden;">Filter</label>
+                        <button class="btn btn-primary" onclick="filterHistory()">Apply Filter</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="section">
+                <h2>Trade Log</h2>
+                <div id="tradeHistory"></div>
+            </div>
+
+            <div class="section">
+                <h2>Daily Sessions</h2>
+                <div id="sessionHistory"></div>
+            </div>
+        </div>
+
+        <!-- Protocols Tab -->
+        <div id="protocols" class="tab-content">
+            <div class="section danger-section">
+                <h2>ABSOLUTE HARD RULES - NO EXCEPTIONS EVER</h2>
+                <ol style="line-height: 2; margin-left: 20px;">
+                    <li>No trading first 15 minutes of session opening</li>
+                    <li>No trading without completed pre-trade checklist</li>
+                    <li>No trading past 2:30 PM Central time</li>
+                    <li>No trading on Fridays</li>
+                    <li>No trading on Holidays or Half Days</li>
+                    <li>Maximum 2 trades per day (during recovery phase)</li>
+                    <li>Must wait 30-45 minutes minimum between trades</li>
+                    <li>Exit immediately if uncomfortable after entry</li>
+                    <li>No trading on days with emotional state 7/10 or higher</li>
+                    <li>No trading after any loss until next day (recovery phase)</li>
+                    <li>ALL three timeframes must align - no exceptions</li>
+                    <li>Minimum 2:1 reward/risk ratio on every trade</li>
+                </ol>
+            </div>
+
+            <div class="section warning-section">
+                <h2>Trading Recovery Protocol - Phase 1 (CURRENTLY IN EFFECT)</h2>
+                <h3>Position Sizing Rules</h3>
+                <ul style="line-height: 2; margin-left: 20px;">
+                    <li>Start with 0.25 of normal size (micro positions)</li>
+                    <li>Must achieve 3 consecutive profitable trades before any size increase</li>
+                    <li>Each size increase limited to 25% of previous size</li>
+                    <li>Reset to micro size after ANY two consecutive losses</li>
+                </ul>
+
+                <h3>Daily Trading Limits</h3>
+                <ul style="line-height: 2; margin-left: 20px;">
+                    <li>Maximum 2 trades per day</li>
+                    <li>Minimum 45-minute gap between trades</li>
+                    <li>No trading after any loss until next day</li>
+                    <li>Must achieve profitable week before weekend trading allowed</li>
+                </ul>
+            </div>
+
+            <div class="section success-section">
+                <h2>Advancement Criteria</h2>
+                <h3>Phase 2 Requirements:</h3>
+                <ul style="line-height: 2; margin-left: 20px;">
+                    <li>3 consecutive profitable weeks</li>
+                    <li>Consistent rules adherence above 90%</li>
+                    <li>Can then trade at 50% of normal size</li>
+                    <li>Maximum 3 trades per day allowed</li>
+                </ul>
+            </div>
+
+            <div class="section">
+                <h2>Circuit Breakers - Immediate Trading Stop</h2>
+                <h3>Daily Circuit Breakers:</h3>
+                <ul style="line-height: 2; margin-left: 20px;">
+                    <li>Two consecutive losses</li>
+                    <li>Three total trades for the day (or 2 during recovery protocol)</li>
+                    <li>Daily loss limit of 2R exceeded</li>
+                    <li>Emotional state above 7/10 at any point</li>
+                    <li>Breaking any trading rule</li>
+                    <li>Unable to focus on charts properly</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Statistics Tab -->
+        <div id="statistics" class="tab-content">
+            <div class="section">
+                <h2>Overall Performance Metrics</h2>
+                <div class="inline-group">
+                    <div class="stat-card">
+                        <h3 id="totalTrades">0</h3>
+                        <p>Total Trades</p>
+                    </div>
+                    <div class="stat-card">
+                        <h3 id="overallWinRate">0%</h3>
+                        <p>Win Rate</p>
+                    </div>
+                    <div class="stat-card">
+                        <h3 id="avgRR">0</h3>
+                        <p>Avg R:R</p>
+                    </div>
+                    <div class="stat-card">
+                        <h3 id="profitFactor">0</h3>
+                        <p>Profit Factor</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="section">
+                <h2>Weekly Performance</h2>
+                <div id="weeklyStats"></div>
+            </div>
+
+            <div class="section">
+                <h2>Process Metrics (Most Important)</h2>
+                <div class="inline-group">
+                    <div class="stat-card">
+                        <h3 id="avgRulesAdherence">0%</h3>
+                        <p>Average Rules Adherence</p>
+                    </div>
+                    <div class="stat-card">
+                        <h3 id="avgEmotionalState">0</h3>
+                        <p>Avg Emotional State</p>
+                    </div>
+                    <div class="stat-card">
+                        <h3 id="consecutiveWins">0</h3>
+                        <p>Consecutive Wins</p>
+                    </div>
+                    <div class="stat-card">
+                        <h3 id="emergencyExits">0</h3>
+                        <p>Emergency Exits Used</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="section">
+                <h2>Recovery Protocol Progress</h2>
+                <div class="form-group">
+                    <label>Progress to Phase 2 (Need 3 consecutive profitable weeks)</label>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="phaseProgress" style="width: 0%;">0 / 3 weeks</div>
+                    </div>
+                </div>
+                <div id="phaseProgressDetails"></div>
+            </div>
+
+            <button class="btn btn-primary" onclick="exportAllData()">💾 Export Complete Backup</button>
+            <button class="btn btn-success" onclick="importAllData()">📥 Import Backup</button>
+            <button class="btn btn-danger" onclick="clearAllData()">🗑️ Clear All Data</button>
+        </div>
+
+        <!-- Settings Tab -->
+        <div id="settings" class="tab-content">
+            <div class="section">
+                <h2>⚙️ Application Settings</h2>
+                <p style="margin-bottom: 20px; color: #8b949e;">Configure the app to match your trading schedule and preferences.</p>
+
+                <div class="section">
+                    <h3 style="color: #ff9500; font-size: 16px; margin-bottom: 15px;">Trading Schedule</h3>
+
+                    <div style="background: rgba(21, 27, 40, 0.6); padding: 20px; border-radius: 3px; margin-bottom: 15px;">
+                        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px;">
+                            <div>
+                                <label style="font-size: 14px; color: #c9d1d9; font-weight: 600; margin-bottom: 5px; display: block;">Enable Post-Market Review</label>
+                                <p style="font-size: 12px; color: #8b949e; margin: 0;">Evening analysis for tomorrow's trading</p>
+                            </div>
+                            <label class="toggle-switch">
+                                <input type="checkbox" id="postMarketToggle" onchange="togglePostMarket()" checked>
+                                <span class="toggle-slider"></span>
+                            </label>
+                        </div>
+                        <div class="alert alert-info" style="margin-top: 15px; margin-bottom: 0;">
+                            <strong>Post-Market Review:</strong> Complete this in the evening after trading. Review today's action and analyze charts for tomorrow. Monday's review prepares you for Tuesday, Tuesday's for Wednesday, etc. When disabled, this tab is hidden - just use Sunday levels all week.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section success-section">
+                    <h3 style="font-size: 16px; margin-bottom: 15px;">📊 PDF Export Quality</h3>
+                    <p style="font-size: 13px; color: #8b949e; line-height: 1.6;">
+                        All PDF exports automatically compress chart screenshots to reduce file size. Images are resized to 600px width with 60% JPEG quality, reducing typical file sizes from 40MB to under 1MB while maintaining readability for review with Dr. Hartwin.
+                    </p>
+                </div>
+
+                <div class="section">
+                    <h3 style="color: #ff9500; font-size: 16px; margin-bottom: 15px;">🎤 Voice Input</h3>
+                    <p style="font-size: 13px; color: #8b949e; line-height: 1.6;">
+                        Voice recording is available on all text fields. Click the 🎤 microphone icon to start speaking your analysis while looking at charts. Works best in Chrome and Edge browsers.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal for Trade Details -->
+    <div id="tradeDetailModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Trade Details</h2>
+                <span class="modal-close" onclick="closeModal()">&times;</span>
+            </div>
+            <div id="tradeDetailContent"></div>
+        </div>
+    </div>
+
+    <!-- Modal for Image Viewer -->
+    <div id="imageViewerModal" class="image-viewer-modal" onclick="closeImageViewer()">
+        <div class="image-viewer-content" onclick="event.stopPropagation()">
+            <button class="image-viewer-close" onclick="closeImageViewer()">×</button>
+            <img id="fullSizeImage" src="" alt="Full size screenshot">
+        </div>
+    </div>
+
+    <!-- Include jsPDF library for PDF generation -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+    <script>
+        // Global state
+        let currentSession = null;
+        let allSessions = [];
+        let allTrades = [];
+        let timers = {};
+        let screenshots = {
+            sundayDaily: [],
+            sunday4hr: [],
+            preMarket: [],
+            trade: [],
+            eod: []
+        };
+        let appSettings = {
+            postMarketEnabled: true
+        };
+
+        // Image compression function for PDFs
+        function compressImageForPDF(base64Image, maxWidth = 600, quality = 0.6) {
+            return new Promise((resolve) => {
+                const img = new Image();
+                img.onload = function() {
+                    const canvas = document.createElement('canvas');
+                    let width = img.width;
+                    let height = img.height;
+
+                    // Scale down if too large
+                    if (width > maxWidth) {
+                        height = (height * maxWidth) / width;
+                        width = maxWidth;
+                    }
+
+                    canvas.width = width;
+                    canvas.height = height;
+
+                    const ctx = canvas.getContext('2d');
+                    ctx.drawImage(img, 0, 0, width, height);
+
+                    // Convert to compressed JPEG
+                    const compressedBase64 = canvas.toDataURL('image/jpeg', quality);
+                    resolve(compressedBase64);
+                };
+                img.src = base64Image;
+            });
+        }
+
+        // Settings functions
+        function loadSettings() {
+            const saved = localStorage.getItem('appSettings');
+            if (saved) {
+                appSettings = JSON.parse(saved);
+            }
+            applySettings();
+        }
+
+        function saveSettings() {
+            localStorage.setItem('appSettings', JSON.stringify(appSettings));
+            applySettings();
+        }
+
+        function applySettings() {
+            // Show/hide post-market tab
+            const postMarketTab = document.querySelector('[onclick="switchTab(\'post-market\')"]');
+            if (postMarketTab) {
+                postMarketTab.style.display = appSettings.postMarketEnabled ? '' : 'none';
+            }
+
+            // Quick start is always shown now since post-market is optional
+            const quickStartSection = document.getElementById('quickStartSection');
+            if (quickStartSection) {
+                quickStartSection.style.display = 'none'; // Never show - we start trading immediately with Sunday levels
+            }
+        }
+
+        function togglePostMarket() {
+            appSettings.postMarketEnabled = !appSettings.postMarketEnabled;
+            saveSettings();
+
+            // If we're on post-market tab and it's being disabled, switch to dashboard
+            const activeTab = document.querySelector('.tab-content.active');
+            if (activeTab && activeTab.id === 'post-market' && !appSettings.postMarketEnabled) {
+                switchTab('dashboard');
+            }
+
+            document.getElementById('postMarketToggle').checked = appSettings.postMarketEnabled;
+        }
+
+        // Screenshot handling functions
+        function handleScreenshotUpload(event, category) {
+            const files = event.target.files;
+            if (!files || files.length === 0) return;
+
+            Array.from(files).forEach(file => {
+                if (!file.type.startsWith('image/')) {
+                    alert('Please upload only image files');
+                    return;
+                }
+
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const screenshot = {
+                        id: Date.now() + Math.random(),
+                        data: e.target.result,
+                        filename: file.name,
+                        timestamp: new Date().toISOString()
+                    };
+
+                    screenshots[category].push(screenshot);
+                    saveScreenshots();
+                    displayScreenshots(category);
+                };
+                reader.readAsDataURL(file);
+            });
+
+            event.target.value = ''; // Reset file input
+        }
+
+        function displayScreenshots(category) {
+            const gridId = category + 'ScreenshotsGrid';
+            const grid = document.getElementById(gridId);
+            if (!grid) return;
+
+            grid.innerHTML = screenshots[category].map(screenshot => `
+                <div class="screenshot-thumbnail">
+                    <img src="${screenshot.data}" alt="${screenshot.filename}" onclick="viewFullImage('${screenshot.data}')">
+                    <button class="delete-btn" onclick="deleteScreenshot('${category}', '${screenshot.id}')">×</button>
+                    <div class="screenshot-label">${screenshot.filename.substring(0, 15)}${screenshot.filename.length > 15 ? '...' : ''}</div>
+                </div>
+            `).join('');
+        }
+
+        function deleteScreenshot(category, screenshotId) {
+            if (!confirm('Delete this screenshot?')) return;
+
+            screenshots[category] = screenshots[category].filter(s => s.id != screenshotId);
+            saveScreenshots();
+            displayScreenshots(category);
+        }
+
+        function viewFullImage(imageSrc) {
+            document.getElementById('fullSizeImage').src = imageSrc;
+            document.getElementById('imageViewerModal').classList.add('active');
+        }
+
+        function closeImageViewer() {
+            document.getElementById('imageViewerModal').classList.remove('active');
+        }
+
+        function saveScreenshots() {
+            localStorage.setItem('tradingScreenshots', JSON.stringify(screenshots));
+        }
+
+        function loadScreenshots() {
+            const saved = localStorage.getItem('tradingScreenshots');
+            if (saved) {
+                screenshots = JSON.parse(saved);
+                // Display all screenshots
+                Object.keys(screenshots).forEach(category => {
+                    displayScreenshots(category);
+                });
+            }
+        }
+
+        // PDF Export Functions
+        async function exportSundayPrepPDF() {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+
+            // Header
+            doc.setFillColor(10, 14, 39);
+            doc.rect(0, 0, 210, 40, 'F');
+            doc.setTextColor(0, 255, 255);
+            doc.setFontSize(22);
+            doc.setFont(undefined, 'bold');
+            doc.text('SUNDAY WEEKLY RESEARCH', 105, 15, { align: 'center' });
+            doc.setFontSize(12);
+            doc.setTextColor(255, 0, 255);
+            doc.text('Dr. Ellis Hartwin - Trading Psychology Protocol', 105, 25, { align: 'center' });
+            doc.setTextColor(200, 200, 200);
+            doc.text('Patient: Sean', 105, 32, { align: 'center' });
+
+            let y = 50;
+
+            // Date
+            doc.setTextColor(0, 0, 0);
+            doc.setFontSize(11);
+            doc.setFont(undefined, 'bold');
+            doc.text(`Date: ${document.getElementById('sundayDate').value || 'Not specified'}`, 15, y);
+            y += 10;
+
+            // Daily Timeframe Section
+            doc.setFillColor(0, 255, 255);
+            doc.rect(15, y, 180, 8, 'F');
+            doc.setTextColor(255, 255, 255);
+            doc.setFontSize(13);
+            doc.text('DAILY TIMEFRAME ANALYSIS', 20, y + 6);
+            y += 15;
+
+            doc.setTextColor(0, 0, 0);
+            doc.setFontSize(10);
+            doc.setFont(undefined, 'bold');
+            doc.text('Trend Direction:', 15, y);
+            doc.setFont(undefined, 'normal');
+            doc.text(document.getElementById('sundayDailyTrend').value || 'N/A', 60, y);
+            y += 7;
+
+            doc.setFont(undefined, 'bold');
+            doc.text('Market Structure:', 15, y);
+            doc.setFont(undefined, 'normal');
+            const dailyStructure = doc.splitTextToSize(document.getElementById('sundayDailyStructure').value || 'N/A', 120);
+            doc.text(dailyStructure, 60, y);
+            y += (dailyStructure.length * 5) + 5;
+
+            doc.setFont(undefined, 'bold');
+            doc.text('Support Levels:', 15, y);
+            doc.setFont(undefined, 'normal');
+            const dailySupport = doc.splitTextToSize(document.getElementById('sundayDailySupport').value || 'N/A', 120);
+            doc.text(dailySupport, 60, y);
+            y += (dailySupport.length * 5) + 5;
+
+            doc.setFont(undefined, 'bold');
+            doc.text('Resistance Levels:', 15, y);
+            doc.setFont(undefined, 'normal');
+            const dailyResistance = doc.splitTextToSize(document.getElementById('sundayDailyResistance').value || 'N/A', 120);
+            doc.text(dailyResistance, 60, y);
+            y += (dailyResistance.length * 5) + 5;
+
+            doc.setFont(undefined, 'bold');
+            doc.text('Order Blocks & FVGs:', 15, y);
+            doc.setFont(undefined, 'normal');
+            const dailyOB = doc.splitTextToSize(document.getElementById('sundayDailyOrderBlocks').value || 'N/A', 120);
+            doc.text(dailyOB, 60, y);
+            y += (dailyOB.length * 5) + 10;
+
+            // Add screenshots if available
+            if (screenshots.sundayDaily && screenshots.sundayDaily.length > 0) {
+                if (y > 240) {
+                    doc.addPage();
+                    y = 20;
+                }
+                doc.setFont(undefined, 'bold');
+                doc.text('Daily Chart Screenshots:', 15, y);
+                y += 7;
+                for (const screenshot of screenshots.sundayDaily) {
+                    if (y > 250) {
+                        doc.addPage();
+                        y = 20;
+                    }
+                    try {
+                        const compressed = await compressImageForPDF(screenshot.data);
+                        doc.addImage(compressed, 'JPEG', 15, y, 80, 60);
+                        y += 65;
+                    } catch (e) {
+                        console.error('Error adding image:', e);
+                    }
+                }
+            }
+
+            // 4-Hour Timeframe Section
+            if (y > 200) {
+                doc.addPage();
+                y = 20;
+            }
+
+            doc.setFillColor(0, 255, 255);
+            doc.rect(15, y, 180, 8, 'F');
+            doc.setTextColor(255, 255, 255);
+            doc.setFontSize(13);
+            doc.text('4-HOUR TIMEFRAME ANALYSIS', 20, y + 6);
+            y += 15;
+
+            doc.setTextColor(0, 0, 0);
+            doc.setFontSize(10);
+            doc.setFont(undefined, 'bold');
+            doc.text('Trend Direction:', 15, y);
+            doc.setFont(undefined, 'normal');
+            doc.text(document.getElementById('sunday4hrTrend').value || 'N/A', 60, y);
+            y += 7;
+
+            doc.setFont(undefined, 'bold');
+            doc.text('Market Structure:', 15, y);
+            doc.setFont(undefined, 'normal');
+            const fourHrStructure = doc.splitTextToSize(document.getElementById('sunday4hrStructure').value || 'N/A', 120);
+            doc.text(fourHrStructure, 60, y);
+            y += (fourHrStructure.length * 5) + 5;
+
+            doc.setFont(undefined, 'bold');
+            doc.text('Support Levels:', 15, y);
+            doc.setFont(undefined, 'normal');
+            const fourHrSupport = doc.splitTextToSize(document.getElementById('sunday4hrSupport').value || 'N/A', 120);
+            doc.text(fourHrSupport, 60, y);
+            y += (fourHrSupport.length * 5) + 5;
+
+            doc.setFont(undefined, 'bold');
+            doc.text('Resistance Levels:', 15, y);
+            doc.setFont(undefined, 'normal');
+            const fourHrResistance = doc.splitTextToSize(document.getElementById('sunday4hrResistance').value || 'N/A', 120);
+            doc.text(fourHrResistance, 60, y);
+            y += (fourHrResistance.length * 5) + 5;
+
+            doc.setFont(undefined, 'bold');
+            doc.text('Order Blocks & FVGs:', 15, y);
+            doc.setFont(undefined, 'normal');
+            const fourHrOB = doc.splitTextToSize(document.getElementById('sunday4hrOrderBlocks').value || 'N/A', 120);
+            doc.text(fourHrOB, 60, y);
+            y += (fourHrOB.length * 5) + 10;
+
+            // Add 4hr screenshots
+            if (screenshots.sunday4hr && screenshots.sunday4hr.length > 0) {
+                if (y > 240) {
+                    doc.addPage();
+                    y = 20;
+                }
+                doc.setFont(undefined, 'bold');
+                doc.text('4-Hour Chart Screenshots:', 15, y);
+                y += 7;
+                for (const screenshot of screenshots.sunday4hr) {
+                    if (y > 250) {
+                        doc.addPage();
+                        y = 20;
+                    }
+                    try {
+                        const compressed = await compressImageForPDF(screenshot.data);
+                        doc.addImage(compressed, 'JPEG', 15, y, 80, 60);
+                        y += 65;
+                    } catch (e) {
+                        console.error('Error adding image:', e);
+                    }
+                }
+            }
+
+            // Weekly Plan Section
+            if (y > 200) {
+                doc.addPage();
+                y = 20;
+            }
+
+            doc.setFillColor(0, 255, 128);
+            doc.rect(15, y, 180, 8, 'F');
+            doc.setTextColor(255, 255, 255);
+            doc.setFontSize(13);
+            doc.text('WEEKLY TRADING PLAN', 20, y + 6);
+            y += 15;
+
+            doc.setTextColor(0, 0, 0);
+            doc.setFontSize(10);
+            doc.setFont(undefined, 'bold');
+            doc.text('Weekly Bias:', 15, y);
+            doc.setFont(undefined, 'normal');
+            doc.text(document.getElementById('sundayWeeklyBias').value || 'N/A', 60, y);
+            y += 7;
+
+            doc.setFont(undefined, 'bold');
+            doc.text('Price Targets:', 15, y);
+            doc.setFont(undefined, 'normal');
+            const priceTargets = doc.splitTextToSize(document.getElementById('sundayPriceTargets').value || 'N/A', 120);
+            doc.text(priceTargets, 60, y);
+            y += (priceTargets.length * 5) + 5;
+
+            doc.setFont(undefined, 'bold');
+            doc.text('Setups to Watch:', 15, y);
+            doc.setFont(undefined, 'normal');
+            const setups = doc.splitTextToSize(document.getElementById('sundaySetups').value || 'N/A', 120);
+            doc.text(setups, 60, y);
+            y += (setups.length * 5) + 5;
+
+            doc.setFont(undefined, 'bold');
+            doc.text('Key Events:', 15, y);
+            doc.setFont(undefined, 'normal');
+            const keyEvents = doc.splitTextToSize(document.getElementById('sundayKeyEvents').value || 'N/A', 120);
+            doc.text(keyEvents, 60, y);
+            y += (keyEvents.length * 5) + 5;
+
+            doc.setFont(undefined, 'bold');
+            doc.text('Areas to Avoid:', 15, y);
+            doc.setFont(undefined, 'normal');
+            const avoidAreas = doc.splitTextToSize(document.getElementById('sundayAvoidAreas').value || 'N/A', 120);
+            doc.text(avoidAreas, 60, y);
+            y += (avoidAreas.length * 5) + 10;
+
+            // Goals Section
+            if (y > 220) {
+                doc.addPage();
+                y = 20;
+            }
+
+            doc.setFillColor(255, 0, 128);
+            doc.rect(15, y, 180, 8, 'F');
+            doc.setTextColor(255, 255, 255);
+            doc.setFontSize(13);
+            doc.text('WEEKLY GOALS & INTENTIONS', 20, y + 6);
+            y += 15;
+
+            doc.setTextColor(0, 0, 0);
+            doc.setFontSize(10);
+            doc.setFont(undefined, 'bold');
+            doc.text('Process Goals:', 15, y);
+            doc.setFont(undefined, 'normal');
+            const processGoals = doc.splitTextToSize(document.getElementById('sundayProcessGoals').value || 'N/A', 120);
+            doc.text(processGoals, 60, y);
+            y += (processGoals.length * 5) + 5;
+
+            doc.setFont(undefined, 'bold');
+            doc.text('Max Trades This Week:', 15, y);
+            doc.setFont(undefined, 'normal');
+            doc.text(document.getElementById('sundayMaxTrades').value || 'N/A', 80, y);
+            y += 7;
+
+            doc.setFont(undefined, 'bold');
+            doc.text('Max Risk This Week:', 15, y);
+            doc.setFont(undefined, 'normal');
+            doc.text('$' + (document.getElementById('sundayMaxRisk').value || 'N/A'), 80, y);
+            y += 7;
+
+            doc.setFont(undefined, 'bold');
+            doc.text('Success Criteria:', 15, y);
+            doc.setFont(undefined, 'normal');
+            const successCriteria = doc.splitTextToSize(document.getElementById('sundaySuccessCriteria').value || 'N/A', 120);
+            doc.text(successCriteria, 60, y);
+
+            // Footer
+            doc.addPage();
+            doc.setFontSize(10);
+            doc.setTextColor(100, 100, 100);
+            doc.text('Generated by Trading Psychology Protocol App', 105, 280, { align: 'center' });
+            doc.text('Dr. Ellis Hartwin - Clinical Psychiatrist', 105, 285, { align: 'center' });
+
+            const dateStr = document.getElementById('sundayDate').value || 'sunday';
+            doc.save(`Sunday-Prep-${dateStr}.pdf`);
+        }
+
+        async function exportPostMarketPDF() {
+            const date = document.getElementById('sessionDate').value;
+            if (!date) {
+                alert('Please enter a date for the post-market review.');
+                return;
+            }
+
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+
+            // Header
+            doc.setFillColor(10, 14, 39);
+            doc.rect(0, 0, 210, 40, 'F');
+            doc.setTextColor(0, 255, 255);
+            doc.setFontSize(22);
+            doc.setFont(undefined, 'bold');
+            doc.text('POST-MARKET REVIEW', 105, 15, { align: 'center' });
+            doc.setFontSize(12);
+            doc.setTextColor(255, 0, 255);
+            doc.text('Dr. Ellis Hartwin - Trading Psychology Protocol', 105, 25, { align: 'center' });
+            doc.setTextColor(200, 200, 200);
+            doc.text('Patient: Sean', 105, 32, { align: 'center' });
+
+            let y = 50;
+
+            // Date & Mental State
+            doc.setTextColor(0, 0, 0);
+            doc.setFontSize(11);
+            doc.setFont(undefined, 'bold');
+            doc.text(`Date: ${currentSession.date}`, 15, y);
+            y += 10;
+
+            doc.setFillColor(255, 170, 0);
+            doc.rect(15, y, 180, 8, 'F');
+            doc.setTextColor(255, 255, 255);
+            doc.setFontSize(13);
+            doc.text('MENTAL STATE CHECK', 20, y + 6);
+            y += 15;
+
+            doc.setTextColor(0, 0, 0);
+            doc.setFontSize(10);
+            doc.setFont(undefined, 'bold');
+            doc.text(`Sleep: ${currentSession.sleepHours} hrs`, 15, y);
+            doc.text(`Emotional State: ${currentSession.emotionalState}/10`, 80, y);
+            doc.text(`Stress: ${currentSession.stressLevel}/10`, 145, y);
+            y += 7;
+
+            doc.text('Sobriety:', 15, y);
+            doc.setFont(undefined, 'normal');
+            doc.text(currentSession.sobrietyStatus, 40, y);
+            y += 10;
+
+            if (currentSession.obligations) {
+                doc.setFont(undefined, 'bold');
+                doc.text('Obligations:', 15, y);
+                doc.setFont(undefined, 'normal');
+                const obligations = doc.splitTextToSize(currentSession.obligations, 160);
+                doc.text(obligations, 15, y + 5);
+                y += (obligations.length * 5) + 10;
+            }
+
+            // Previous Day Review
+            doc.setFillColor(0, 255, 128);
+            doc.rect(15, y, 180, 8, 'F');
+            doc.setTextColor(255, 255, 255);
+            doc.setFontSize(13);
+            doc.text('PREVIOUS DAY REVIEW', 20, y + 6);
+            y += 15;
+
+            doc.setTextColor(0, 0, 0);
+            doc.setFontSize(10);
+            if (currentSession.whatWorked) {
+                doc.setFont(undefined, 'bold');
+                doc.text('What Worked:', 15, y);
+                doc.setFont(undefined, 'normal');
+                const worked = doc.splitTextToSize(currentSession.whatWorked, 160);
+                doc.text(worked, 15, y + 5);
+                y += (worked.length * 5) + 10;
+            }
+
+            if (currentSession.whatDidntWork) {
+                doc.setFont(undefined, 'bold');
+                doc.text('What Didn\'t Work:', 15, y);
+                doc.setFont(undefined, 'normal');
+                const didntWork = doc.splitTextToSize(currentSession.whatDidntWork, 160);
+                doc.text(didntWork, 15, y + 5);
+                y += (didntWork.length * 5) + 10;
+            }
+
+            // Technical Analysis
+            if (y > 220) {
+                doc.addPage();
+                y = 20;
+            }
+
+            doc.setFillColor(0, 255, 255);
+            doc.rect(15, y, 180, 8, 'F');
+            doc.setTextColor(255, 255, 255);
+            doc.setFontSize(13);
+            doc.text('TECHNICAL ANALYSIS', 20, y + 6);
+            y += 15;
+
+            doc.setTextColor(0, 0, 0);
+            doc.setFontSize(10);
+            doc.setFont(undefined, 'bold');
+            doc.text('Daily Trend:', 15, y);
+            doc.setFont(undefined, 'normal');
+            doc.text(currentSession.dailyTrend || 'N/A', 60, y);
+            y += 7;
+
+            doc.setFont(undefined, 'bold');
+            doc.text('4hr Structure:', 15, y);
+            doc.setFont(undefined, 'normal');
+            doc.text(currentSession.fourHourStructure || 'N/A', 60, y);
+            y += 10;
+
+            doc.setFont(undefined, 'bold');
+            doc.text('Key Levels:', 15, y);
+            doc.setFont(undefined, 'normal');
+            const keyLevels = doc.splitTextToSize(currentSession.keyLevels || 'N/A', 160);
+            doc.text(keyLevels, 15, y + 5);
+            y += (keyLevels.length * 5) + 10;
+
+            doc.setFont(undefined, 'bold');
+            doc.text('Trading Plan:', 15, y);
+            doc.setFont(undefined, 'normal');
+            const tradingPlan = doc.splitTextToSize(currentSession.tradingPlan || 'N/A', 160);
+            doc.text(tradingPlan, 15, y + 5);
+            y += (tradingPlan.length * 5) + 10;
+
+            // Risk Management
+            doc.setFont(undefined, 'bold');
+            doc.text('Risk Management:', 15, y);
+            y += 7;
+            doc.setFont(undefined, 'normal');
+            doc.text(`Max Risk/Trade: $${currentSession.maxRiskPerTrade}`, 15, y);
+            y += 5;
+            doc.text(`Max Total Risk: $${currentSession.maxTotalRisk}`, 15, y);
+            y += 5;
+            doc.text(`Max Trades: ${currentSession.maxTrades}`, 15, y);
+            y += 10;
+
+            // Add screenshots
+            if (screenshots.preMarket && screenshots.preMarket.length > 0) {
+                if (y > 240) {
+                    doc.addPage();
+                    y = 20;
+                }
+                doc.setFont(undefined, 'bold');
+                doc.text('Pre-Market Chart Screenshots:', 15, y);
+                y += 7;
+                for (const screenshot of screenshots.preMarket) {
+                    if (y > 250) {
+                        doc.addPage();
+                        y = 20;
+                    }
+                    try {
+                        const compressed = await compressImageForPDF(screenshot.data);
+                        doc.addImage(compressed, 'JPEG', 15, y, 80, 60);
+                        y += 65;
+                    } catch (e) {
+                        console.error('Error adding image:', e);
+                    }
+                }
+            }
+
+            doc.save(`Post-Market-Review-${date}.pdf`);
+        }
+
+        async function exportEndOfDayPDF() {
+            if (!currentSession) {
+                alert('No session data available.');
+                return;
+            }
+
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+
+            // Header
+            doc.setFillColor(10, 14, 39);
+            doc.rect(0, 0, 210, 40, 'F');
+            doc.setTextColor(0, 255, 255);
+            doc.setFontSize(22);
+            doc.setFont(undefined, 'bold');
+            doc.text('END OF DAY REVIEW', 105, 15, { align: 'center' });
+            doc.setFontSize(12);
+            doc.setTextColor(255, 0, 255);
+            doc.text('Dr. Ellis Hartwin - Trading Psychology Protocol', 105, 25, { align: 'center' });
+            doc.setTextColor(200, 200, 200);
+            doc.text('Patient: Sean', 105, 32, { align: 'center' });
+
+            let y = 50;
+
+            doc.setTextColor(0, 0, 0);
+            doc.setFontSize(11);
+            doc.setFont(undefined, 'bold');
+            doc.text(`Date: ${currentSession.date}`, 15, y);
+            y += 10;
+
+            // Trading Summary
+            doc.setFillColor(0, 255, 255);
+            doc.rect(15, y, 180, 8, 'F');
+            doc.setTextColor(255, 255, 255);
+            doc.setFontSize(13);
+            doc.text('TRADING SUMMARY', 20, y + 6);
+            y += 15;
+
+            doc.setTextColor(0, 0, 0);
+            doc.setFontSize(10);
+            const trades = currentSession.trades || [];
+            doc.setFont(undefined, 'bold');
+            doc.text(`Total Trades: ${trades.length}`, 15, y);
+            y += 7;
+
+            const wins = trades.filter(t => t.result === 'win').length;
+            const losses = trades.filter(t => t.result === 'loss').length;
+            doc.text(`Wins: ${wins}`, 15, y);
+            y += 5;
+            doc.text(`Losses: ${losses}`, 15, y);
+            y += 10;
+
+            // Circuit Breaker Check
+            const cbValue = document.getElementById('circuitBreakerTriggered').value;
+            if (cbValue && cbValue !== 'no') {
+                doc.setFillColor(255, 0, 128);
+                doc.rect(15, y, 180, 8, 'F');
+                doc.setTextColor(255, 255, 255);
+                doc.text('⚠ CIRCUIT BREAKER TRIGGERED', 20, y + 6);
+                y += 15;
+
+                doc.setTextColor(0, 0, 0);
+                doc.setFont(undefined, 'normal');
+                const cbNotes = doc.splitTextToSize(document.getElementById('circuitBreakerNotes').value || 'N/A', 160);
+                doc.text(cbNotes, 15, y);
+                y += (cbNotes.length * 5) + 10;
+            }
+
+            // Reflection
+            if (y > 220) {
+                doc.addPage();
+                y = 20;
+            }
+
+            doc.setFillColor(0, 255, 128);
+            doc.rect(15, y, 180, 8, 'F');
+            doc.setTextColor(255, 255, 255);
+            doc.setFontSize(13);
+            doc.text('REFLECTION', 20, y + 6);
+            y += 15;
+
+            doc.setTextColor(0, 0, 0);
+            doc.setFontSize(10);
+            doc.setFont(undefined, 'bold');
+            doc.text(`Rules Adherence: ${document.getElementById('rulesAdherencePercent').value || 'N/A'}%`, 15, y);
+            y += 10;
+
+            const biggestWin = document.getElementById('biggestWin').value;
+            if (biggestWin) {
+                doc.setFont(undefined, 'bold');
+                doc.text('Biggest Win:', 15, y);
+                doc.setFont(undefined, 'normal');
+                const winText = doc.splitTextToSize(biggestWin, 160);
+                doc.text(winText, 15, y + 5);
+                y += (winText.length * 5) + 10;
+            }
+
+            const biggestChallenge = document.getElementById('biggestChallenge').value;
+            if (biggestChallenge) {
+                doc.setFont(undefined, 'bold');
+                doc.text('Biggest Challenge:', 15, y);
+                doc.setFont(undefined, 'normal');
+                const challengeText = doc.splitTextToSize(biggestChallenge, 160);
+                doc.text(challengeText, 15, y + 5);
+                y += (challengeText.length * 5) + 10;
+            }
+
+            const planTomorrow = document.getElementById('planTomorrow').value;
+            if (planTomorrow) {
+                doc.setFont(undefined, 'bold');
+                doc.text('Plan for Tomorrow:', 15, y);
+                doc.setFont(undefined, 'normal');
+                const planText = doc.splitTextToSize(planTomorrow, 160);
+                doc.text(planText, 15, y + 5);
+                y += (planText.length * 5) + 10;
+            }
+
+            // Add screenshots
+            if (screenshots.eod && screenshots.eod.length > 0) {
+                if (y > 240) {
+                    doc.addPage();
+                    y = 20;
+                }
+                doc.setFont(undefined, 'bold');
+                doc.text('End of Day Screenshots:', 15, y);
+                y += 7;
+                for (const screenshot of screenshots.eod) {
+                    if (y > 250) {
+                        doc.addPage();
+                        y = 20;
+                    }
+                    try {
+                        const compressed = await compressImageForPDF(screenshot.data);
+                        doc.addImage(compressed, 'JPEG', 15, y, 80, 60);
+                        y += 65;
+                    } catch (e) {
+                        console.error('Error adding image:', e);
+                    }
+                }
+            }
+
+            doc.save(`End-of-Day-${currentSession.date}.pdf`);
+        }
+
+        function exportCompleteDayPDF() {
+            if (!currentSession) {
+                alert('No session data available.');
+                return;
+            }
+
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+
+            // Header
+            doc.setFillColor(10, 14, 39);
+            doc.rect(0, 0, 210, 50, 'F');
+            doc.setTextColor(0, 255, 255);
+            doc.setFontSize(24);
+            doc.setFont(undefined, 'bold');
+            doc.text('COMPLETE DAY REPORT', 105, 18, { align: 'center' });
+            doc.setFontSize(14);
+            doc.setTextColor(255, 0, 255);
+            doc.text('Dr. Ellis Hartwin - Trading Psychology Protocol', 105, 28, { align: 'center' });
+            doc.setTextColor(200, 200, 200);
+            doc.setFontSize(12);
+            doc.text('Patient: Sean', 105, 36, { align: 'center' });
+            doc.text(`Date: ${currentSession.date}`, 105, 43, { align: 'center' });
+
+            let y = 60;
+
+            // Pre-Market Section
+            doc.setFillColor(0, 255, 255);
+            doc.rect(15, y, 180, 8, 'F');
+            doc.setTextColor(255, 255, 255);
+            doc.setFontSize(14);
+            doc.text('PRE-MARKET ANALYSIS', 20, y + 6);
+            y += 15;
+
+            doc.setTextColor(0, 0, 0);
+            doc.setFontSize(10);
+            doc.setFont(undefined, 'bold');
+            doc.text(`Sleep: ${currentSession.sleepHours}hrs | Emotional: ${currentSession.emotionalState}/10 | Stress: ${currentSession.stressLevel}/10`, 15, y);
+            y += 7;
+            doc.text(`Daily: ${currentSession.dailyTrend} | 4hr: ${currentSession.fourHourStructure}`, 15, y);
+            y += 10;
+
+            // Trading Plan
+            doc.setFont(undefined, 'bold');
+            doc.text('Trading Plan:', 15, y);
+            doc.setFont(undefined, 'normal');
+            const plan = doc.splitTextToSize(currentSession.tradingPlan || 'N/A', 160);
+            doc.text(plan, 15, y + 5);
+            y += (plan.length * 5) + 15;
+
+            // Trades Section
+            const trades = currentSession.trades || [];
+            if (trades.length > 0) {
+                doc.setFillColor(255, 170, 0);
+                doc.rect(15, y, 180, 8, 'F');
+                doc.setTextColor(255, 255, 255);
+                doc.setFontSize(14);
+                doc.text('TRADES TAKEN', 20, y + 6);
+                y += 15;
+
+                doc.setTextColor(0, 0, 0);
+                doc.setFontSize(10);
+
+                trades.forEach((trade, idx) => {
+                    if (y > 250) {
+                        doc.addPage();
+                        y = 20;
+                    }
+
+                    doc.setFont(undefined, 'bold');
+                    doc.text(`Trade #${idx + 1}: ${trade.symbol} ${trade.direction?.toUpperCase()}`, 15, y);
+                    y += 6;
+                    doc.setFont(undefined, 'normal');
+                    doc.text(`Entry: ${trade.entryTime} | Size: ${trade.positionSize} | R:R: ${trade.rrRatio}`, 15, y);
+                    y += 5;
+
+                    if (trade.thesis) {
+                        const thesis = doc.splitTextToSize(trade.thesis, 160);
+                        doc.text(thesis, 15, y);
+                        y += (thesis.length * 5) + 8;
+                    }
+                });
+            }
+
+            // End of Day Reflection
+            if (y > 200) {
+                doc.addPage();
+                y = 20;
+            }
+
+            doc.setFillColor(0, 255, 128);
+            doc.rect(15, y, 180, 8, 'F');
+            doc.setTextColor(255, 255, 255);
+            doc.setFontSize(14);
+            doc.text('END OF DAY REFLECTION', 20, y + 6);
+            y += 15;
+
+            doc.setTextColor(0, 0, 0);
+            doc.setFontSize(10);
+            doc.setFont(undefined, 'bold');
+            doc.text(`Rules Adherence: ${document.getElementById('rulesAdherencePercent').value || 'N/A'}%`, 15, y);
+            y += 10;
+
+            const wins = trades.filter(t => t.result === 'win').length;
+            const losses = trades.filter(t => t.result === 'loss').length;
+            doc.text(`Trades: ${trades.length} | Wins: ${wins} | Losses: ${losses}`, 15, y);
+            y += 10;
+
+            const biggestWin = document.getElementById('biggestWin').value;
+            if (biggestWin) {
+                doc.setFont(undefined, 'bold');
+                doc.text('Biggest Win:', 15, y);
+                doc.setFont(undefined, 'normal');
+                const winText = doc.splitTextToSize(biggestWin, 160);
+                doc.text(winText, 15, y + 5);
+                y += (winText.length * 5) + 8;
+            }
+
+            const planTomorrow = document.getElementById('planTomorrow').value;
+            if (planTomorrow) {
+                doc.setFont(undefined, 'bold');
+                doc.text('Plan for Tomorrow:', 15, y);
+                doc.setFont(undefined, 'normal');
+                const planText = doc.splitTextToSize(planTomorrow, 160);
+                doc.text(planText, 15, y + 5);
+                y += (planText.length * 5) + 10;
+            }
+
+            // Footer
+            doc.addPage();
+            doc.setFontSize(10);
+            doc.setTextColor(100, 100, 100);
+            doc.text('Generated by Trading Psychology Protocol App', 105, 280, { align: 'center' });
+            doc.text('Dr. Ellis Hartwin - Clinical Psychiatrist & Trading Psychology Specialist', 105, 285, { align: 'center' });
+
+            doc.save(`Complete-Day-Report-${currentSession.date}.pdf`);
+        }
+
+        function exportTodayPDF() {
+            // Legacy function - calls the complete day PDF
+            exportCompleteDayPDF();
+        }
+
+        // Initialize app
+        document.addEventListener('DOMContentLoaded', function() {
+            loadData();
+            loadScreenshots();
+            loadSettings();
+            initializeToday();
+            updateDashboard();
+            updateStatistics();
+            document.getElementById('sessionDate').valueAsDate = new Date();
+            document.getElementById('sundayDate').valueAsDate = new Date();
+
+            // Add listeners for emotional state warning
+            document.getElementById('emotionalState').addEventListener('input', checkEmotionalState);
+            document.getElementById('dashboardEmotionalState').addEventListener('input', checkDashboardEmotionalState);
+
+            // Add listeners for R:R calculation
+            document.getElementById('tradeRiskAmount').addEventListener('input', calculateRR);
+            document.getElementById('tradeRewardAmount').addEventListener('input', calculateRR);
+        });
+
+        // Tab switching
+        function switchTab(tabName) {
+            const tabs = document.querySelectorAll('.tab-content');
+            const navTabs = document.querySelectorAll('.nav-tab');
+
+            tabs.forEach(tab => tab.classList.remove('active'));
+            navTabs.forEach(tab => tab.classList.remove('active'));
+
+            document.getElementById(tabName).classList.add('active');
+            event.target.classList.add('active');
+
+            if (tabName === 'dashboard') updateDashboard();
+            if (tabName === 'statistics') updateStatistics();
+            if (tabName === 'history') loadHistory();
+            if (tabName === 'trade-entry') checkPostMarketInfo();
+        }
+
+        // Timer functionality
+        function startTimer(timerName, seconds) {
+            if (timers[timerName]) {
+                clearInterval(timers[timerName].interval);
+            }
+
+            let displayId, buttonId;
+            if (timerName === 'mentalCheck') {
+                displayId = 'mentalCheckTimer';
+                buttonId = 'startMentalCheckTimer';
+            } else if (timerName === 'technical') {
+                displayId = 'technicalAnalysisTimer';
+                buttonId = 'startTechnicalTimer';
+            } else if (timerName === 'sundayResearch') {
+                displayId = 'sundayResearchTimer';
+                buttonId = 'startSundayTimer';
+            }
+
+            timers[timerName] = {
+                remaining: seconds,
+                interval: setInterval(() => {
+                    timers[timerName].remaining--;
+                    const mins = Math.floor(timers[timerName].remaining / 60);
+                    const secs = timers[timerName].remaining % 60;
+                    document.getElementById(displayId).textContent =
+                        `Timer: ${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+
+                    if (timers[timerName].remaining <= 0) {
+                        clearInterval(timers[timerName].interval);
+                        document.getElementById(displayId).textContent = 'Timer Complete! ✓';
+                        document.getElementById(displayId).style.color = '#00ff80';
+                    }
+                }, 1000)
+            };
+
+            document.getElementById(buttonId).textContent = 'Timer Running...';
+            document.getElementById(buttonId).disabled = true;
+        }
+
+        // Check emotional state
+        function checkEmotionalState() {
+            const state = parseInt(document.getElementById('emotionalState').value);
+            const warning = document.getElementById('emotionalWarning');
+
+            if (state >= 7) {
+                warning.classList.remove('hidden');
+            } else {
+                warning.classList.add('hidden');
+            }
+        }
+
+        function checkDashboardEmotionalState() {
+            const state = parseInt(document.getElementById('dashboardEmotionalState').value);
+            const warning = document.getElementById('dashboardEmotionalWarning');
+
+            if (state >= 7) {
+                warning.classList.remove('hidden');
+            } else {
+                warning.classList.add('hidden');
+            }
+        }
+
+        // Calculate R:R ratio
+        function calculateRR() {
+            const risk = parseFloat(document.getElementById('tradeRiskAmount').value);
+            const reward = parseFloat(document.getElementById('tradeRewardAmount').value);
+
+            if (risk && reward && risk > 0) {
+                const rr = (reward / risk).toFixed(2);
+                document.getElementById('tradeRRRatio').value = `1:${rr}`;
+            }
+        }
+
+        // Save pre-market analysis
+        // Quick start session (when pre-market is disabled)
+        function saveQuickStartSession() {
+            const emotionalState = parseInt(document.getElementById('dashboardEmotionalState').value);
+
+            if (emotionalState >= 7) {
+                document.getElementById('dashboardEmotionalWarning').classList.remove('hidden');
+                alert('❌ Cannot proceed with trading. Your emotional state is too high. Take the day off.');
+                return;
+            } else {
+                document.getElementById('dashboardEmotionalWarning').classList.add('hidden');
+            }
+
+            const sobriety = document.getElementById('dashboardSobrietyStatus').value;
+            if (sobriety === 'concern') {
+                alert('❌ Cannot proceed with trading. Sobriety concerns noted. Take the day off.');
+                return;
+            }
+
+            // Create session with just mental state (using Sunday levels for trading)
+            currentSession = {
+                date: new Date().toISOString().split('T')[0],
+                sleepHours: document.getElementById('dashboardSleepHours').value,
+                emotionalState: emotionalState,
+                stressLevel: document.getElementById('dashboardStressLevel').value,
+                sobrietyStatus: sobriety,
+                dailyTrend: 'See Sunday Prep',
+                fourHourStructure: 'See Sunday Prep',
+                tradingPlan: 'Using Sunday weekly analysis for trading levels',
+                maxRiskPerTrade: 0.5,
+                maxTotalRisk: 1,
+                maxTrades: 2,
+                trades: [],
+                preMarketComplete: false, // Not required when pre-market disabled
+                usingSundayLevels: true
+            };
+
+            saveData();
+            alert('✅ Trading day started! You can now enter trades using your Sunday levels.');
+            updateDashboard();
+        }
+
+        function savePostMarket() {
+            const emotionalState = parseInt(document.getElementById('emotionalState').value);
+            const sobriety = document.getElementById('sobrietyStatus').value;
+
+            // Store post-market analysis for tomorrow
+            const postMarketData = {
+                date: document.getElementById('sessionDate').value,
+                sleepHours: document.getElementById('sleepHours').value,
+                emotionalState: emotionalState,
+                stressLevel: document.getElementById('stressLevel').value,
+                sobrietyStatus: sobriety,
+                obligations: document.getElementById('obligations').value,
+                whatWorked: document.getElementById('whatWorked').value,
+                whatDidntWork: document.getElementById('whatDidntWork').value,
+                dailyTrend: document.getElementById('dailyTrend').value,
+                fourHourStructure: document.getElementById('fourHourStructure').value,
+                keyLevels: document.getElementById('keyLevels').value,
+                tradingPlan: document.getElementById('tradingPlan').value,
+                maxRiskPerTrade: document.getElementById('maxRiskPerTrade').value,
+                maxTotalRisk: document.getElementById('maxTotalRisk').value,
+                maxTrades: document.getElementById('maxTrades').value,
+                postMarketComplete: true
+            };
+
+            // Save as a post-market review
+            let postMarketReviews = JSON.parse(localStorage.getItem('postMarketReviews') || '[]');
+            const existingIndex = postMarketReviews.findIndex(r => r.date === postMarketData.date);
+            if (existingIndex >= 0) {
+                postMarketReviews[existingIndex] = postMarketData;
+            } else {
+                postMarketReviews.push(postMarketData);
+            }
+            localStorage.setItem('postMarketReviews', JSON.stringify(postMarketReviews));
+
+            // Clear old post-market screenshots (daily reset for new analysis)
+            screenshots.preMarket = []; // Note: preMarket category is used for post-market screenshots
+            saveScreenshots();
+
+            // Clear screenshot display grid
+            displayScreenshots('preMarket');
+
+            alert('✅ Post-market review saved! This analysis will be used for tomorrow\'s trading.\n\nPrevious post-market screenshots have been cleared.');
+            switchTab('dashboard');
+        }
+
+        // Post-market is optional - just show helpful tip if available
+        function checkPostMarketInfo() {
+            // Post-market review is optional, so we just check circuit breakers
+            checkCircuitBreakers();
+        }
+
+        // Check circuit breakers
+        function checkCircuitBreakers() {
+            if (!currentSession) return;
+
+            const trades = currentSession.trades || [];
+            const block = document.getElementById('circuitBreakerBlock');
+
+            // Check if max trades reached
+            if (trades.length >= parseInt(currentSession.maxTrades)) {
+                block.classList.remove('hidden');
+                return;
+            }
+
+            // Check for consecutive losses
+            if (trades.length >= 2) {
+                const lastTwo = trades.slice(-2);
+                if (lastTwo.every(t => t.result === 'loss')) {
+                    block.classList.remove('hidden');
+                    return;
+                }
+            }
+
+            // Check for any loss (during recovery)
+            if (trades.some(t => t.result === 'loss')) {
+                block.classList.remove('hidden');
+                return;
+            }
+
+            block.classList.add('hidden');
+        }
+
+        // Submit trade
+        function submitTrade() {
+            // Just need to have started trading day (quick start or post-market)
+            if (!currentSession) {
+                alert('❌ Please start your trading day first! Complete the "Start Trading Day" section on the Dashboard.');
+                switchTab('dashboard');
+                return;
+            }
+
+            // Check all checkboxes
+            const checkboxes = [
+                'check_daily', 'check_4hr', 'check_15min', 'check_1min', 'check_refresh',
+                'check_choch', 'check_orderblock', 'check_structural', 'check_invalidation', 'check_rr',
+                'check_position', 'check_stop', 'check_target', 'check_notime',
+                'check_notfirst15', 'check_before230', 'check_waiting'
+            ];
+
+            const unchecked = checkboxes.filter(id => !document.getElementById(id).checked);
+
+            if (unchecked.length > 0) {
+                alert(`❌ You cannot enter this trade!\n\nUnchecked items:\n${unchecked.length} requirements not met.\n\nALL boxes must be checked before entering a trade.`);
+                return;
+            }
+
+            // Validate R:R ratio
+            const rr = document.getElementById('tradeRRRatio').value;
+            if (!rr.includes('1:2') && parseFloat(rr.split(':')[1]) < 2) {
+                alert('❌ Reward:Risk ratio must be at least 2:1!');
+                return;
+            }
+
+            const trade = {
+                id: Date.now(),
+                date: currentSession.date,
+                symbol: document.getElementById('tradeSymbol').value,
+                entryTime: document.getElementById('tradeEntryTime').value,
+                direction: document.getElementById('tradeDirection').value,
+                thesis: document.getElementById('tradeThesis').value,
+                positionSize: document.getElementById('tradePositionSize').value,
+                entryPrice: document.getElementById('tradeEntryPrice').value,
+                stopLoss: document.getElementById('tradeStopLoss').value,
+                target: document.getElementById('tradeTarget').value,
+                riskAmount: document.getElementById('tradeRiskAmount').value,
+                rewardAmount: document.getElementById('tradeRewardAmount').value,
+                rrRatio: rr,
+                status: 'open'
+            };
+
+            currentSession.trades.push(trade);
+            allTrades.push(trade);
+            saveData();
+
+            alert('✅ Trade entered successfully!\n\n⏰ 5-Minute Check Reminder:\nIn 5 minutes, check your emotional state.\nIf you feel ANY discomfort, exit immediately.');
+
+            // Clear form
+            document.querySelectorAll('#trade-entry input[type="text"], #trade-entry input[type="number"], #trade-entry textarea, #trade-entry select').forEach(el => {
+                if (!el.readOnly) el.value = '';
+            });
+            checkboxes.forEach(id => document.getElementById(id).checked = false);
+
+            switchTab('dashboard');
+        }
+
+        // Emergency exit
+        function emergencyExit() {
+            if (confirm('Using the Emergency Exit tool.\n\nThis is the RIGHT decision if you feel uncomfortable.\nThis is a STRENGTH, not a weakness.\n\nDocument what made you uncomfortable so you can learn from it.')) {
+                const reason = prompt('What made you feel uncomfortable?\n(This will help you recognize patterns)');
+
+                if (currentSession && currentSession.trades.length > 0) {
+                    const lastTrade = currentSession.trades[currentSession.trades.length - 1];
+                    if (lastTrade.status === 'open') {
+                        lastTrade.emergencyExit = true;
+                        lastTrade.exitReason = reason;
+                        lastTrade.status = 'closed';
+                        lastTrade.result = 'emergency_exit';
+                        saveData();
+                    }
+                }
+
+                alert('✅ Emergency exit recorded.\n\nYou did the right thing.\nWait 30 minutes before considering any new trades.');
+            }
+        }
+
+        // Save end of day
+        function saveEndOfDay() {
+            if (!currentSession) {
+                alert('No active session to save.');
+                return;
+            }
+
+            currentSession.circuitBreakerTriggered = document.getElementById('circuitBreakerTriggered').value;
+            currentSession.circuitBreakerNotes = document.getElementById('circuitBreakerNotes').value;
+            currentSession.rulesAdherence = document.getElementById('rulesAdherencePercent').value;
+            currentSession.biggestWin = document.getElementById('biggestWin').value;
+            currentSession.biggestChallenge = document.getElementById('biggestChallenge').value;
+            currentSession.planTomorrow = document.getElementById('planTomorrow').value;
+            currentSession.additionalNotes = document.getElementById('additionalNotes').value;
+            currentSession.completed = true;
+
+            allSessions.push(currentSession);
+            saveData();
+
+            alert('✅ End of day review saved!\n\nGreat work completing your documentation.\nReview tomorrow\'s plan before starting.');
+
+            currentSession = null;
+            saveData();
+        }
+
+        // Sunday Prep functions
+        function saveSundayPrep() {
+            const sundayPrep = {
+                date: document.getElementById('sundayDate').value,
+                dailyTrend: document.getElementById('sundayDailyTrend').value,
+                dailyStructure: document.getElementById('sundayDailyStructure').value,
+                dailySupport: document.getElementById('sundayDailySupport').value,
+                dailyResistance: document.getElementById('sundayDailyResistance').value,
+                dailyOrderBlocks: document.getElementById('sundayDailyOrderBlocks').value,
+                fourHrTrend: document.getElementById('sunday4hrTrend').value,
+                fourHrStructure: document.getElementById('sunday4hrStructure').value,
+                fourHrSupport: document.getElementById('sunday4hrSupport').value,
+                fourHrResistance: document.getElementById('sunday4hrResistance').value,
+                fourHrOrderBlocks: document.getElementById('sunday4hrOrderBlocks').value,
+                weeklyBias: document.getElementById('sundayWeeklyBias').value,
+                priceTargets: document.getElementById('sundayPriceTargets').value,
+                setups: document.getElementById('sundaySetups').value,
+                keyEvents: document.getElementById('sundayKeyEvents').value,
+                avoidAreas: document.getElementById('sundayAvoidAreas').value,
+                processGoals: document.getElementById('sundayProcessGoals').value,
+                maxTrades: document.getElementById('sundayMaxTrades').value,
+                maxRisk: document.getElementById('sundayMaxRisk').value,
+                successCriteria: document.getElementById('sundaySuccessCriteria').value
+            };
+
+            // Get existing Sunday preps
+            let sundayPreps = JSON.parse(localStorage.getItem('sundayPreps') || '[]');
+
+            // Check if there's already a prep for this date and update it
+            const existingIndex = sundayPreps.findIndex(p => p.date === sundayPrep.date);
+            if (existingIndex >= 0) {
+                sundayPreps[existingIndex] = sundayPrep;
+            } else {
+                sundayPreps.push(sundayPrep);
+            }
+
+            localStorage.setItem('sundayPreps', JSON.stringify(sundayPreps));
+
+            // Clear old Sunday screenshots (weekly reset)
+            screenshots.sundayDaily = [];
+            screenshots.sunday4hr = [];
+            saveScreenshots();
+
+            // Also clear screenshot display grids
+            displayScreenshots('sundayDaily');
+            displayScreenshots('sunday4hr');
+
+            alert('✅ Sunday research saved!\n\nYour weekly plan is ready. Previous week\'s Sunday screenshots have been cleared. Reference this throughout the week.');
+        }
+
+        function viewPastSundayPrep() {
+            const sundayPreps = JSON.parse(localStorage.getItem('sundayPreps') || '[]');
+
+            if (sundayPreps.length === 0) {
+                alert('No past Sunday preps found.');
+                return;
+            }
+
+            const content = document.getElementById('tradeDetailContent');
+            content.innerHTML = `
+                <div class="section">
+                    <h2>Past Sunday Preparations</h2>
+                    ${sundayPreps.slice().reverse().map(prep => `
+                        <div class="log-entry" onclick="loadSundayPrep('${prep.date}')">
+                            <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                                <strong>Week of ${prep.date}</strong>
+                                <span>${prep.weeklyBias}</span>
+                            </div>
+                            <div style="color: #b0b0b0;">
+                                Daily: ${prep.dailyTrend} | 4hr: ${prep.fourHrTrend}
+                            </div>
+                        </div>
+                    `).join('')}
+                </div>
+            `;
+
+            document.getElementById('tradeDetailModal').classList.add('active');
+        }
+
+        function loadSundayPrep(date) {
+            const sundayPreps = JSON.parse(localStorage.getItem('sundayPreps') || '[]');
+            const prep = sundayPreps.find(p => p.date === date);
+
+            if (!prep) return;
+
+            // Fill in all the fields
+            document.getElementById('sundayDate').value = prep.date;
+            document.getElementById('sundayDailyTrend').value = prep.dailyTrend;
+            document.getElementById('sundayDailyStructure').value = prep.dailyStructure;
+            document.getElementById('sundayDailySupport').value = prep.dailySupport;
+            document.getElementById('sundayDailyResistance').value = prep.dailyResistance;
+            document.getElementById('sundayDailyOrderBlocks').value = prep.dailyOrderBlocks;
+            document.getElementById('sunday4hrTrend').value = prep.fourHrTrend;
+            document.getElementById('sunday4hrStructure').value = prep.fourHrStructure;
+            document.getElementById('sunday4hrSupport').value = prep.fourHrSupport;
+            document.getElementById('sunday4hrResistance').value = prep.fourHrResistance;
+            document.getElementById('sunday4hrOrderBlocks').value = prep.fourHrOrderBlocks;
+            document.getElementById('sundayWeeklyBias').value = prep.weeklyBias;
+            document.getElementById('sundayPriceTargets').value = prep.priceTargets;
+            document.getElementById('sundaySetups').value = prep.setups;
+            document.getElementById('sundayKeyEvents').value = prep.keyEvents;
+            document.getElementById('sundayAvoidAreas').value = prep.avoidAreas;
+            document.getElementById('sundayProcessGoals').value = prep.processGoals;
+            document.getElementById('sundayMaxTrades').value = prep.maxTrades;
+            document.getElementById('sundayMaxRisk').value = prep.maxRisk;
+            document.getElementById('sundaySuccessCriteria').value = prep.successCriteria;
+
+            closeModal();
+            switchTab('sunday-prep');
+        }
+
+        // Load/Save data
+        function loadData() {
+            const sessions = localStorage.getItem('tradingSessions');
+            const trades = localStorage.getItem('tradingTrades');
+            const current = localStorage.getItem('currentSession');
+
+            if (sessions) allSessions = JSON.parse(sessions);
+            if (trades) allTrades = JSON.parse(trades);
+            if (current) currentSession = JSON.parse(current);
+        }
+
+        function saveData() {
+            localStorage.setItem('tradingSessions', JSON.stringify(allSessions));
+            localStorage.setItem('tradingTrades', JSON.stringify(allTrades));
+            localStorage.setItem('currentSession', JSON.stringify(currentSession));
+        }
+
+        // Initialize today
+        function initializeToday() {
+            const today = new Date().toISOString().split('T')[0];
+
+            // Check if there's already a session for today
+            const todaySession = allSessions.find(s => s.date === today);
+            if (todaySession && !currentSession) {
+                currentSession = todaySession;
+            }
+        }
+
+        // Update dashboard
+        function updateDashboard() {
+            const today = new Date().toISOString().split('T')[0];
+            const todaySession = currentSession || allSessions.find(s => s.date === today);
+
+            // Today's status
+            const statusDiv = document.getElementById('todayStatus');
+            if (todaySession) {
+                const trades = todaySession.trades || [];
+
+                // Check if there was a post-market review from yesterday
+                const yesterday = new Date();
+                yesterday.setDate(yesterday.getDate() - 1);
+                const yesterdayStr = yesterday.toISOString().split('T')[0];
+                const postMarketReviews = JSON.parse(localStorage.getItem('postMarketReviews') || '[]');
+                const yesterdayReview = postMarketReviews.find(r => r.date === yesterdayStr);
+
+                let statusHTML = `
+                    <div class="protocol-status">
+                        <span><span class="status-indicator ${yesterdayReview ? 'green' : 'yellow'}"></span>Yesterday's Post-Market Review</span>
+                        <span>${yesterdayReview ? 'Available' : 'Using Sunday Levels'}</span>
+                    </div>
+                    <div class="protocol-status">
+                        <span><span class="status-indicator ${trades.length > 0 ? 'green' : 'yellow'}"></span>Trades Today</span>
+                        <span>${trades.length} / ${todaySession.maxTrades || 2}</span>
+                    </div>
+                    <div class="protocol-status">
+                        <span><span class="status-indicator ${todaySession.emotionalState <= 6 ? 'green' : 'red'}"></span>Emotional State</span>
+                        <span>${todaySession.emotionalState}/10</span>
+                    </div>
+                `;
+
+                statusDiv.innerHTML = statusHTML;
+
+                document.getElementById('tradesRemaining').textContent =
+                    `${(todaySession.maxTrades || 2) - trades.length} Remaining`;
+            } else {
+                statusDiv.innerHTML = '<p>No session started today. Complete "Start Trading Day" below to begin trading.</p>';
+            }
+
+            // Weekly stats
+            const weekStart = new Date();
+            weekStart.setDate(weekStart.getDate() - weekStart.getDay());
+            const weekTrades = allTrades.filter(t => new Date(t.date) >= weekStart);
+
+            document.getElementById('tradesThisWeek').textContent = weekTrades.length;
+
+            const wins = weekTrades.filter(t => t.result === 'win').length;
+            const winRate = weekTrades.length > 0 ? ((wins / weekTrades.length) * 100).toFixed(0) : 0;
+            document.getElementById('winRateThisWeek').textContent = winRate + '%';
+
+            const weekSessions = allSessions.filter(s => new Date(s.date) >= weekStart && s.rulesAdherence);
+            const avgAdherence = weekSessions.length > 0
+                ? (weekSessions.reduce((sum, s) => sum + parseInt(s.rulesAdherence), 0) / weekSessions.length).toFixed(0)
+                : 0;
+            document.getElementById('rulesAdherence').textContent = avgAdherence + '%';
+
+            // Circuit breaker alert
+            const alertDiv = document.getElementById('circuitBreakerAlert');
+            if (todaySession) {
+                const trades = todaySession.trades || [];
+                if (trades.length >= parseInt(todaySession.maxTrades || 2)) {
+                    alertDiv.innerHTML = '<div class="circuit-breaker-warning">⛔ MAX TRADES REACHED - NO MORE TRADING TODAY ⛔</div>';
+                } else if (trades.some(t => t.result === 'loss')) {
+                    alertDiv.innerHTML = '<div class="circuit-breaker-warning">⛔ LOSS TAKEN - NO MORE TRADING UNTIL TOMORROW ⛔</div>';
+                } else if (parseInt(todaySession.emotionalState) >= 7) {
+                    alertDiv.innerHTML = '<div class="circuit-breaker-warning">⛔ EMOTIONAL STATE TOO HIGH - NO TRADING TODAY ⛔</div>';
+                } else {
+                    alertDiv.innerHTML = '';
+                }
+            }
+        }
+
+        // Update statistics
+        function updateStatistics() {
+            // Overall stats
+            document.getElementById('totalTrades').textContent = allTrades.length;
+
+            const completedTrades = allTrades.filter(t => t.result);
+            const wins = completedTrades.filter(t => t.result === 'win').length;
+            const losses = completedTrades.filter(t => t.result === 'loss').length;
+
+            const winRate = completedTrades.length > 0 ? ((wins / completedTrades.length) * 100).toFixed(0) : 0;
+            document.getElementById('overallWinRate').textContent = winRate + '%';
+
+            // Average R:R
+            const avgRR = completedTrades.length > 0
+                ? (completedTrades.reduce((sum, t) => {
+                    const rr = t.rrRatio ? parseFloat(t.rrRatio.split(':')[1]) : 0;
+                    return sum + rr;
+                }, 0) / completedTrades.length).toFixed(2)
+                : 0;
+            document.getElementById('avgRR').textContent = avgRR;
+
+            // Profit factor (simplified)
+            const totalWinAmount = wins * 2; // Assuming 2R average
+            const totalLossAmount = losses * 1; // Assuming 1R loss
+            const profitFactor = totalLossAmount > 0 ? (totalWinAmount / totalLossAmount).toFixed(2) : 0;
+            document.getElementById('profitFactor').textContent = profitFactor;
+
+            // Process metrics
+            const sessionsWithAdherence = allSessions.filter(s => s.rulesAdherence);
+            const avgAdherence = sessionsWithAdherence.length > 0
+                ? (sessionsWithAdherence.reduce((sum, s) => sum + parseInt(s.rulesAdherence), 0) / sessionsWithAdherence.length).toFixed(0)
+                : 0;
+            document.getElementById('avgRulesAdherence').textContent = avgAdherence + '%';
+
+            const avgEmotional = allSessions.length > 0
+                ? (allSessions.reduce((sum, s) => sum + parseInt(s.emotionalState || 5), 0) / allSessions.length).toFixed(1)
+                : 0;
+            document.getElementById('avgEmotionalState').textContent = avgEmotional;
+
+            // Consecutive wins
+            let consecutive = 0;
+            let maxConsecutive = 0;
+            for (let i = allTrades.length - 1; i >= 0; i--) {
+                if (allTrades[i].result === 'win') {
+                    consecutive++;
+                    maxConsecutive = Math.max(maxConsecutive, consecutive);
+                } else if (allTrades[i].result === 'loss') {
+                    break;
+                }
+            }
+            document.getElementById('consecutiveWins').textContent = consecutive;
+
+            // Emergency exits
+            const emergencyExitCount = allTrades.filter(t => t.emergencyExit).length;
+            document.getElementById('emergencyExits').textContent = emergencyExitCount;
+
+            // Phase progress
+            updatePhaseProgress();
+        }
+
+        // Update phase progress
+        function updatePhaseProgress() {
+            // Get last 3 weeks
+            const weeks = [];
+            for (let i = 0; i < 3; i++) {
+                const weekEnd = new Date();
+                weekEnd.setDate(weekEnd.getDate() - (i * 7));
+                const weekStart = new Date(weekEnd);
+                weekStart.setDate(weekStart.getDate() - 6);
+
+                const weekTrades = allTrades.filter(t => {
+                    const tradeDate = new Date(t.date);
+                    return tradeDate >= weekStart && tradeDate <= weekEnd && t.result;
+                });
+
+                const wins = weekTrades.filter(t => t.result === 'win').length;
+                const totalPL = wins * 2 - (weekTrades.length - wins);
+
+                weeks.push({
+                    start: weekStart.toLocaleDateString(),
+                    end: weekEnd.toLocaleDateString(),
+                    profitable: totalPL > 0,
+                    pl: totalPL,
+                    trades: weekTrades.length
+                });
+            }
+
+            // Count consecutive profitable weeks from most recent
+            let consecutiveProfitable = 0;
+            for (const week of weeks) {
+                if (week.profitable && week.trades > 0) {
+                    consecutiveProfitable++;
+                } else {
+                    break;
+                }
+            }
+
+            const progress = (consecutiveProfitable / 3) * 100;
+            const progressBar = document.getElementById('phaseProgress');
+            progressBar.style.width = progress + '%';
+            progressBar.textContent = `${consecutiveProfitable} / 3 weeks`;
+
+            // Details
+            const detailsDiv = document.getElementById('phaseProgressDetails');
+            detailsDiv.innerHTML = weeks.map((week, i) => `
+                <div class="protocol-status">
+                    <span><span class="status-indicator ${week.profitable ? 'green' : 'red'}"></span>Week ${3-i}: ${week.start} - ${week.end}</span>
+                    <span>${week.profitable ? 'Profitable' : 'Not Profitable'} (${week.trades} trades, ${week.pl > 0 ? '+' : ''}${week.pl}R)</span>
+                </div>
+            `).join('');
+        }
+
+        // Load history
+        function loadHistory() {
+            // Trade history
+            const tradeHistoryDiv = document.getElementById('tradeHistory');
+            if (allTrades.length === 0) {
+                tradeHistoryDiv.innerHTML = '<p>No trades recorded yet.</p>';
+            } else {
+                tradeHistoryDiv.innerHTML = allTrades.slice().reverse().map(trade => `
+                    <div class="trade-card ${trade.result || ''}" onclick="viewTradeDetail(${trade.id})">
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+                            <strong>${trade.symbol} - ${trade.direction?.toUpperCase()}</strong>
+                            <span>${trade.date} ${trade.entryTime}</span>
+                        </div>
+                        <div>${trade.thesis?.substring(0, 100)}...</div>
+                        <div style="margin-top: 10px;">
+                            <strong>Result:</strong> ${trade.result || 'Open'} |
+                            <strong>R:R:</strong> ${trade.rrRatio || 'N/A'}
+                        </div>
+                    </div>
+                `).join('');
+            }
+
+            // Session history
+            const sessionHistoryDiv = document.getElementById('sessionHistory');
+            if (allSessions.length === 0) {
+                sessionHistoryDiv.innerHTML = '<p>No sessions recorded yet.</p>';
+            } else {
+                sessionHistoryDiv.innerHTML = allSessions.slice().reverse().map(session => `
+                    <div class="log-entry" onclick="viewSessionDetail('${session.date}')">
+                        <div style="display: flex; justify-content: space-between;">
+                            <strong>${session.date}</strong>
+                            <span>${session.trades?.length || 0} trades | Adherence: ${session.rulesAdherence || 'N/A'}%</span>
+                        </div>
+                        <div style="margin-top: 5px; color: #6c757d;">
+                            Emotional State: ${session.emotionalState}/10 | Sleep: ${session.sleepHours}hrs
+                        </div>
+                    </div>
+                `).join('');
+            }
+        }
+
+        // View trade detail
+        function viewTradeDetail(tradeId) {
+            const trade = allTrades.find(t => t.id === tradeId);
+            if (!trade) return;
+
+            const content = document.getElementById('tradeDetailContent');
+            content.innerHTML = `
+                <div class="section">
+                    <h3>${trade.symbol} - ${trade.direction?.toUpperCase()}</h3>
+                    <p><strong>Date:</strong> ${trade.date} ${trade.entryTime}</p>
+                    <p><strong>Thesis:</strong> ${trade.thesis}</p>
+                    <p><strong>Position Size:</strong> ${trade.positionSize}</p>
+                    <p><strong>Entry:</strong> ${trade.entryPrice}</p>
+                    <p><strong>Stop Loss:</strong> ${trade.stopLoss}</p>
+                    <p><strong>Target:</strong> ${trade.target}</p>
+                    <p><strong>Risk:</strong> $${trade.riskAmount}</p>
+                    <p><strong>Reward:</strong> $${trade.rewardAmount}</p>
+                    <p><strong>R:R Ratio:</strong> ${trade.rrRatio}</p>
+                    <p><strong>Result:</strong> ${trade.result || 'Open'}</p>
+                    ${trade.emergencyExit ? `<p><strong>Emergency Exit:</strong> Yes</p><p><strong>Reason:</strong> ${trade.exitReason}</p>` : ''}
+                </div>
+            `;
+
+            document.getElementById('tradeDetailModal').classList.add('active');
+        }
+
+        // Close modal
+        function closeModal() {
+            document.getElementById('tradeDetailModal').classList.remove('active');
+        }
+
+        // Export functions
+        function exportTodayPDF() {
+            window.print();
+        }
+
+        function exportAllData() {
+            const sundayPreps = JSON.parse(localStorage.getItem('sundayPreps') || '[]');
+
+            const data = {
+                sessions: allSessions,
+                trades: allTrades,
+                screenshots: screenshots,
+                sundayPreps: sundayPreps,
+                currentSession: currentSession,
+                exportDate: new Date().toISOString(),
+                version: '1.0'
+            };
+
+            const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `trading-psychology-FULL-BACKUP-${new Date().toISOString().split('T')[0]}.json`;
+            a.click();
+            URL.revokeObjectURL(url);
+
+            alert('✅ Complete backup exported!\n\nThis file contains:\n- All sessions\n- All trades\n- All screenshots\n- All Sunday preps\n- Current session\n\nSave this file to restore your data later.');
+        }
+
+        function importAllData() {
+            const input = document.createElement('input');
+            input.type = 'file';
+            input.accept = '.json';
+
+            input.onchange = function(e) {
+                const file = e.target.files[0];
+                if (!file) return;
+
+                const reader = new FileReader();
+                reader.onload = function(event) {
+                    try {
+                        const data = JSON.parse(event.target.result);
+
+                        if (confirm('⚠️ This will replace ALL current data with the backup.\n\nAre you sure?')) {
+                            // Restore all data
+                            if (data.sessions) allSessions = data.sessions;
+                            if (data.trades) allTrades = data.trades;
+                            if (data.screenshots) screenshots = data.screenshots;
+                            if (data.currentSession) currentSession = data.currentSession;
+
+                            // Save to localStorage
+                            saveData();
+                            saveScreenshots();
+
+                            if (data.sundayPreps) {
+                                localStorage.setItem('sundayPreps', JSON.stringify(data.sundayPreps));
+                            }
+
+                            alert('✅ Data restored successfully!\n\nReloading page...');
+                            location.reload();
+                        }
+                    } catch (error) {
+                        alert('❌ Error importing data: ' + error.message);
+                    }
+                };
+                reader.readAsText(file);
+            };
+
+            input.click();
+        }
+
+        function clearAllData() {
+            if (confirm('⚠️ WARNING: This will permanently delete ALL your trading data.\n\nThis cannot be undone.\n\nAre you absolutely sure?')) {
+                if (confirm('Final confirmation: Delete all data?')) {
+                    localStorage.clear();
+                    allSessions = [];
+                    allTrades = [];
+                    currentSession = null;
+                    alert('All data cleared.');
+                    location.reload();
+                }
+            }
+        }
+
+        // Filter history
+        function filterHistory() {
+            // Implementation for filtering by date range
+            loadHistory();
+        }
+
+        // View session detail
+        function viewSessionDetail(date) {
+            const session = allSessions.find(s => s.date === date);
+            if (!session) return;
+
+            const content = document.getElementById('tradeDetailContent');
+            content.innerHTML = `
+                <div class="section">
+                    <h3>Session: ${session.date}</h3>
+                    <p><strong>Sleep:</strong> ${session.sleepHours} hours</p>
+                    <p><strong>Emotional State:</strong> ${session.emotionalState}/10</p>
+                    <p><strong>Stress Level:</strong> ${session.stressLevel}/10</p>
+                    <p><strong>Daily Trend:</strong> ${session.dailyTrend}</p>
+                    <p><strong>4hr Structure:</strong> ${session.fourHourStructure}</p>
+                    <p><strong>Trading Plan:</strong> ${session.tradingPlan}</p>
+                    <p><strong>Trades:</strong> ${session.trades?.length || 0}</p>
+                    <p><strong>Rules Adherence:</strong> ${session.rulesAdherence || 'N/A'}%</p>
+                    ${session.biggestWin ? `<p><strong>Biggest Win:</strong> ${session.biggestWin}</p>` : ''}
+                    ${session.biggestChallenge ? `<p><strong>Biggest Challenge:</strong> ${session.biggestChallenge}</p>` : ''}
+                    ${session.planTomorrow ? `<p><strong>Plan for Tomorrow:</strong> ${session.planTomorrow}</p>` : ''}
+                </div>
+            `;
+
+            document.getElementById('tradeDetailModal').classList.add('active');
+        }
+
+        // Voice Recording and Transcription
+        let recognition = null;
+        let currentVoiceTarget = null;
+
+        // Initialize Speech Recognition
+        function initVoiceRecognition() {
+            if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+                const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+                recognition = new SpeechRecognition();
+                recognition.continuous = true;
+                recognition.interimResults = true;
+                recognition.lang = 'en-US';
+
+                recognition.onresult = function(event) {
+                    if (!currentVoiceTarget) return;
+
+                    let finalTranscript = '';
+                    let interimTranscript = '';
+
+                    for (let i = event.resultIndex; i < event.results.length; i++) {
+                        const transcript = event.results[i][0].transcript;
+                        if (event.results[i].isFinal) {
+                            finalTranscript += transcript + ' ';
+                        } else {
+                            interimTranscript += transcript;
+                        }
+                    }
+
+                    if (finalTranscript) {
+                        const currentText = currentVoiceTarget.value;
+                        const newText = currentText + (currentText ? ' ' : '') + finalTranscript.trim();
+                        currentVoiceTarget.value = newText;
+                    }
+                };
+
+                recognition.onerror = function(event) {
+                    console.error('Speech recognition error:', event.error);
+                    stopVoiceRecording();
+                    if (event.error !== 'no-speech' && event.error !== 'aborted') {
+                        alert('Voice recognition error: ' + event.error);
+                    }
+                };
+
+                recognition.onend = function() {
+                    if (currentVoiceTarget) {
+                        stopVoiceRecording();
+                    }
+                };
+            } else {
+                console.warn('Speech recognition not supported in this browser');
+            }
+        }
+
+        function toggleVoiceRecording(textareaId, button) {
+            if (!recognition) {
+                alert('Voice recognition is not supported in your browser. Please use Chrome or Edge.');
+                return;
+            }
+
+            const textarea = document.getElementById(textareaId);
+            if (!textarea) return;
+
+            if (button.classList.contains('recording')) {
+                stopVoiceRecording();
+            } else {
+                startVoiceRecording(textarea, button);
+            }
+        }
+
+        function startVoiceRecording(textarea, button) {
+            currentVoiceTarget = textarea;
+            button.classList.add('recording');
+            button.innerHTML = '⏹';
+            button.title = 'Stop recording';
+
+            try {
+                recognition.start();
+            } catch (error) {
+                console.error('Error starting recognition:', error);
+                stopVoiceRecording();
+            }
+        }
+
+        function stopVoiceRecording() {
+            if (recognition) {
+                try {
+                    recognition.stop();
+                } catch (error) {
+                    console.error('Error stopping recognition:', error);
+                }
+            }
+
+            const allVoiceButtons = document.querySelectorAll('.voice-btn.recording');
+            allVoiceButtons.forEach(btn => {
+                btn.classList.remove('recording');
+                btn.innerHTML = '🎤';
+                btn.title = 'Start voice input';
+            });
+
+            currentVoiceTarget = null;
+        }
+
+        // Add voice buttons to all textareas
+        function addVoiceButtons() {
+            const textareas = document.querySelectorAll('textarea');
+            textareas.forEach((textarea, index) => {
+                if (textarea.classList.contains('voice-enabled')) return; // Already has voice button
+
+                // Wrap textarea in voice-input-wrapper
+                const wrapper = document.createElement('div');
+                wrapper.className = 'voice-input-wrapper';
+                textarea.parentNode.insertBefore(wrapper, textarea);
+                wrapper.appendChild(textarea);
+
+                // Add voice button
+                const voiceBtn = document.createElement('button');
+                voiceBtn.className = 'voice-btn';
+                voiceBtn.innerHTML = '🎤';
+                voiceBtn.title = 'Start voice input';
+                voiceBtn.type = 'button';
+
+                const textareaId = textarea.id || 'textarea-' + index;
+                if (!textarea.id) textarea.id = textareaId;
+
+                voiceBtn.onclick = function() {
+                    toggleVoiceRecording(textareaId, voiceBtn);
+                };
+
+                wrapper.appendChild(voiceBtn);
+                textarea.classList.add('voice-enabled');
+            });
+        }
+
+        // Initialize voice features when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            initVoiceRecognition();
+            addVoiceButtons();
+        });
+    </script>
+</body>
+</html>
