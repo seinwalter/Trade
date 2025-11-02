@@ -1737,7 +1737,7 @@
         /* Dashboard Grid Layout */
         .dashboard-grid {
             display: grid;
-            grid-template-columns: repeat(4, 1fr);
+            grid-template-columns: repeat(3, 1fr);
             gap: 15px;
             margin-bottom: 20px;
         }
@@ -2790,7 +2790,17 @@
                         <p style="color: #8b949e; font-size: 12px; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px;">Total P/L</p>
                         <div class="data-value" id="totalPnL">$0.00</div>
                     </div>
+                    <div style="padding: 15px; background: rgba(21, 27, 40, 0.5); border-radius: 3px; border-left: 3px solid var(--neon-green, #39ff14);">
+                        <p style="color: #8b949e; font-size: 12px; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px;">Gross Profit</p>
+                        <div class="data-value positive" id="grossProfit">$0.00</div>
+                        <p style="color: #8b949e; font-size: 10px; margin-top: 4px;">total winnings</p>
+                    </div>
                     <div style="padding: 15px; background: rgba(21, 27, 40, 0.5); border-radius: 3px; border-left: 3px solid #2980b9;">
+                        <p style="color: #8b949e; font-size: 12px; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px;">Gross Loss</p>
+                        <div class="data-value negative" id="grossLoss">$0.00</div>
+                        <p style="color: #8b949e; font-size: 10px; margin-top: 4px;">total losses</p>
+                    </div>
+                    <div style="padding: 15px; background: rgba(21, 27, 40, 0.5); border-radius: 3px; border-left: 3px solid #5dade2;">
                         <p style="color: #8b949e; font-size: 12px; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px;">Profit Factor</p>
                         <div class="data-value neutral" id="profitFactor">0</div>
                     </div>
@@ -6135,6 +6145,20 @@
             const profitFactor = totalLossAmount > 0 ? (totalWinAmount / totalLossAmount).toFixed(2) : (totalWinAmount > 0 ? '∞' : '0.00');
             if (document.getElementById('profitFactor')) {
                 document.getElementById('profitFactor').textContent = profitFactor;
+            }
+
+            // Gross Profit (total winnings)
+            const grossProfitFormatted = `+$${totalWinAmount.toFixed(2)}`;
+            const grossProfitElement = document.getElementById('grossProfit');
+            if (grossProfitElement) {
+                grossProfitElement.textContent = grossProfitFormatted;
+            }
+
+            // Gross Loss (total losses)
+            const grossLossFormatted = totalLossAmount > 0 ? `-$${totalLossAmount.toFixed(2)}` : `$${totalLossAmount.toFixed(2)}`;
+            const grossLossElement = document.getElementById('grossLoss');
+            if (grossLossElement) {
+                grossLossElement.textContent = grossLossFormatted;
             }
 
             console.log('Stats updated:', {
