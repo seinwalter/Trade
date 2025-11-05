@@ -4274,6 +4274,7 @@
             if (tabName === 'history') loadHistory();
             if (tabName === 'trade-entry') checkPostMarketInfo();
             if (tabName === 'end-of-day') loadEndOfDayData();
+            if (tabName === 'sunday-prep') loadCurrentWeekPrep();
             if (tabName === 'settings') {
                 loadGoalSettings();
                 updateSettingsDataCounts();
@@ -5499,6 +5500,84 @@
         }
 
         // Sunday Prep functions
+        function loadCurrentWeekPrep() {
+            // Calculate this week's Sunday date
+            const today = new Date();
+            const dayOfWeek = today.getDay();
+            const thisWeekSunday = new Date(today);
+            thisWeekSunday.setDate(today.getDate() - dayOfWeek);
+            const thisWeekSundayStr = thisWeekSunday.toISOString().split('T')[0];
+
+            // Get existing Sunday preps
+            const sundayPreps = JSON.parse(localStorage.getItem('sundayPreps') || '[]');
+            const weekPrep = sundayPreps.find(p => p.date === thisWeekSundayStr);
+
+            if (weekPrep) {
+                // Load the existing prep
+                loadSundayPrep(thisWeekSundayStr);
+
+                // Lock all form fields
+                lockSundayPrepForm(true);
+
+                // Show notification
+                const message = `This week's Market Prep is locked. It was completed on ${new Date(weekPrep.date).toLocaleDateString()}. You can edit it next week.`;
+                showToast('info', 'Week Locked', message, 5000);
+            } else {
+                // Clear and unlock form for new prep
+                clearSundayPrepForm();
+                lockSundayPrepForm(false);
+
+                // Set date to this Sunday
+                const sundayDateEl = document.getElementById('sundayDate');
+                if (sundayDateEl) sundayDateEl.value = thisWeekSundayStr;
+            }
+        }
+
+        function lockSundayPrepForm(locked) {
+            // Get all input elements in the sunday-prep tab
+            const sundayPrepTab = document.getElementById('sunday-prep');
+            if (!sundayPrepTab) return;
+
+            const inputs = sundayPrepTab.querySelectorAll('input, textarea, select');
+            inputs.forEach(input => {
+                input.disabled = locked;
+                if (locked) {
+                    input.style.opacity = '0.6';
+                    input.style.cursor = 'not-allowed';
+                } else {
+                    input.style.opacity = '1';
+                    input.style.cursor = 'text';
+                }
+            });
+
+            // Also disable/enable the save button
+            const saveBtn = sundayPrepTab.querySelector('.btn-success');
+            if (saveBtn) {
+                saveBtn.disabled = locked;
+                if (locked) {
+                    saveBtn.style.opacity = '0.5';
+                    saveBtn.style.cursor = 'not-allowed';
+                } else {
+                    saveBtn.style.opacity = '1';
+                    saveBtn.style.cursor = 'pointer';
+                }
+            }
+        }
+
+        function clearSundayPrepForm() {
+            const fieldIds = [
+                'sundayDailyTrend', 'sundayDailyStructure', 'sundayDailySupport', 'sundayDailyResistance', 'sundayDailyOrderBlocks',
+                'sunday4hrTrend', 'sunday4hrStructure', 'sunday4hrSupport', 'sunday4hrResistance', 'sunday4hrOrderBlocks',
+                'sundayWeeklyBias', 'sundayPriceTargets', 'sundaySetups', 'sundayKeyEvents', 'sundayAvoidAreas',
+                'sundayProcessGoals', 'sundayMaxTrades', 'sundayMaxRisk', 'sundaySuccessCriteria'
+            ];
+
+            fieldIds.forEach(id => {
+                const el = document.getElementById(id);
+                if (el) el.value = '';
+            });
+        }
+
         function saveSundayPrep() {
             // Validate that date is filled
             const dateValue = document.getElementById('sundayDate').value;
@@ -5509,25 +5588,25 @@
 
             const sundayPrep = {
                 date: dateValue,
-                dailyTrend: document.getElementById('sundayDailyTrend').value,
-                dailyStructure: document.getElementById('sundayDailyStructure').value,
-                dailySupport: document.getElementById('sundayDailySupport').value,
-                dailyResistance: document.getElementById('sundayDailyResistance').value,
-                dailyOrderBlocks: document.getElementById('sundayDailyOrderBlocks').value,
-                fourHrTrend: document.getElementById('sunday4hrTrend').value,
-                fourHrStructure: document.getElementById('sunday4hrStructure').value,
-                fourHrSupport: document.getElementById('sunday4hrSupport').value,
-                fourHrResistance: document.getElementById('sunday4hrResistance').value,
-                fourHrOrderBlocks: document.getElementById('sunday4hrOrderBlocks').value,
-                weeklyBias: document.getElementById('sundayWeeklyBias').value,
-                priceTargets: document.getElementById('sundayPriceTargets').value,
-                setups: document.getElementById('sundaySetups').value,
-                keyEvents: document.getElementById('sundayKeyEvents').value,
-                avoidAreas: document.getElementById('sundayAvoidAreas').value,
-                processGoals: document.getElementById('sundayProcessGoals').value,
-                maxTrades: document.getElementById('sundayMaxTrades').value,
-                maxRisk: document.getElementById('sundayMaxRisk').value,
-                successCriteria: document.getElementById('sundaySuccessCriteria').value,
+                dailyTrend: document.getElementById('sundayDailyTrend')?.value || '',
+                dailyStructure: document.getElementById('sundayDailyStructure')?.value || '',
+                dailySupport: document.getElementById('sundayDailySupport')?.value || '',
+                dailyResistance: document.getElementById('sundayDailyResistance')?.value || '',
+                dailyOrderBlocks: document.getElementById('sundayDailyOrderBlocks')?.value || '',
+                fourHrTrend: document.getElementById('sunday4hrTrend')?.value || '',
+                fourHrStructure: document.getElementById('sunday4hrStructure')?.value || '',
+                fourHrSupport: document.getElementById('sunday4hrSupport')?.value || '',
+                fourHrResistance: document.getElementById('sunday4hrResistance')?.value || '',
+                fourHrOrderBlocks: document.getElementById('sunday4hrOrderBlocks')?.value || '',
+                weeklyBias: document.getElementById('sundayWeeklyBias')?.value || '',
+                priceTargets: document.getElementById('sundayPriceTargets')?.value || '',
+                setups: document.getElementById('sundaySetups')?.value || '',
+                keyEvents: document.getElementById('sundayKeyEvents')?.value || '',
+                avoidAreas: document.getElementById('sundayAvoidAreas')?.value || '',
+                processGoals: document.getElementById('sundayProcessGoals')?.value || '',
+                maxTrades: document.getElementById('sundayMaxTrades')?.value || '',
+                maxRisk: document.getElementById('sundayMaxRisk')?.value || '',
+                successCriteria: document.getElementById('sundaySuccessCriteria')?.value || '',
                 // Archive screenshots with the prep
                 sundayDailyScreenshots: screenshots.sundayDaily ? [...screenshots.sundayDaily] : [],
                 sunday4hrScreenshots: screenshots.sunday4hr ? [...screenshots.sunday4hr] : []
@@ -5558,7 +5637,10 @@
             // Update dashboard to show new weekly plan
             updateDashboard();
 
-            showToast('success', 'Sunday Research Saved', 'Your weekly plan is ready and now visible on the Dashboard. Previous week\'s Sunday screenshots have been cleared.', 5000);
+            // Lock the form after saving (week is now locked)
+            lockSundayPrepForm(true);
+
+            showToast('success', 'Sunday Research Saved', 'Your weekly plan is ready and now visible on the Dashboard. This week\'s prep is now locked until next week.', 5000);
         }
 
         function viewPastSundayPrep() {
