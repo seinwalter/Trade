@@ -6262,16 +6262,32 @@
             document.getElementById('rulesAdherence').textContent = avgAdherence + '%';
 
             // Update Weekly P/L Progress Bar
-            const weeklyPL = weekTrades.reduce((sum, t) => sum + parseFloat(t.pnl || 0), 0);
+            const weeklyPL = weekTrades.reduce((sum, t) => {
+                const pnl = parseFloat(t.pnl || 0);
+                return sum + pnl;
+            }, 0);
 
             // Debug logging for P/L tracking
-            const tradesWithPnL = weekTrades.filter(t => t.pnl !== undefined && t.pnl !== null);
-            console.log('P/L Tracking:', {
-                totalWeekTrades: weekTrades.length,
-                tradesWithPnL: tradesWithPnL.length,
-                weeklyPL: weeklyPL,
-                trades: weekTrades.map(t => ({ symbol: t.symbol, date: t.date, pnl: t.pnl, result: t.result }))
-            });
+            console.log('=== Weekly P/L Debug ===');
+            console.log('Week Start:', weekStart.toISOString());
+            console.log('Total allTrades:', allTrades.length);
+            console.log('Week Trades Found:', weekTrades.length);
+
+            if (weekTrades.length > 0) {
+                console.log('Week Trades Details:');
+                weekTrades.forEach((t, idx) => {
+                    console.log(`  ${idx + 1}. ${t.symbol} | Date: ${t.date} | P/L: ${t.pnl} | Result: ${t.result} | Status: ${t.status}`);
+                });
+                console.log('Weekly P/L Total:', weeklyPL);
+            } else {
+                console.log('No trades found for this week. All trades:');
+                if (allTrades.length > 0) {
+                    allTrades.forEach((t, idx) => {
+                        console.log(`  ${idx + 1}. ${t.symbol} | Date: ${t.date} | P/L: ${t.pnl} | Result: ${t.result}`);
+                    });
+                }
+            }
+            console.log('======================');
 
             // Get dynamic goal settings from localStorage (defaults: 500 goal, -500 max loss)
             const goalSettings = JSON.parse(localStorage.getItem('goalSettings') || '{"profitGoal": 500, "maxLoss": 500}');
