@@ -6234,8 +6234,10 @@
 
                 statusDiv.innerHTML = statusHTML;
 
-                document.getElementById('tradesRemaining').textContent =
-                    `${(todaySession.maxTrades || 2) - trades.length} Remaining`;
+                const tradesRemainingEl = document.getElementById('tradesRemaining');
+                if (tradesRemainingEl) {
+                    tradesRemainingEl.textContent = `${(todaySession.maxTrades || 2) - trades.length} Remaining`;
+                }
             } else {
                 statusDiv.innerHTML = '<p>No session started yet. Complete "Start Trading Day" above to begin.</p>';
             }
@@ -6249,17 +6251,20 @@
                 return tradeDate >= weekStart;
             });
 
-            document.getElementById('tradesThisWeek').textContent = weekTrades.length;
+            const tradesThisWeekEl = document.getElementById('tradesThisWeek');
+            if (tradesThisWeekEl) tradesThisWeekEl.textContent = weekTrades.length;
 
             const wins = weekTrades.filter(t => t.result === 'win').length;
             const winRate = weekTrades.length > 0 ? ((wins / weekTrades.length) * 100).toFixed(0) : 0;
-            document.getElementById('winRateThisWeek').textContent = winRate + '%';
+            const winRateEl = document.getElementById('winRateThisWeek');
+            if (winRateEl) winRateEl.textContent = winRate + '%';
 
             const weekSessions = allSessions.filter(s => new Date(s.date) >= weekStart && s.rulesAdherence);
             const avgAdherence = weekSessions.length > 0
                 ? (weekSessions.reduce((sum, s) => sum + parseInt(s.rulesAdherence), 0) / weekSessions.length).toFixed(0)
                 : 0;
-            document.getElementById('rulesAdherence').textContent = avgAdherence + '%';
+            const adherenceEl = document.getElementById('rulesAdherence');
+            if (adherenceEl) adherenceEl.textContent = avgAdherence + '%';
 
             // Update Weekly P/L Progress Bar
             const weeklyPL = weekTrades.reduce((sum, t) => {
@@ -6333,7 +6338,7 @@
 
             // Circuit breaker alert
             const alertDiv = document.getElementById('circuitBreakerAlert');
-            if (todaySession) {
+            if (alertDiv && todaySession) {
                 const trades = todaySession.trades || [];
                 if (trades.length >= parseInt(todaySession.maxTrades || 2)) {
                     alertDiv.innerHTML = '<div class="circuit-breaker-warning">⛔ MAX TRADES REACHED - NO MORE TRADING TODAY ⛔</div>';
@@ -6353,7 +6358,8 @@
         // Update statistics
         function updateStatistics() {
             // Overall stats
-            document.getElementById('totalTrades').textContent = allTrades.length;
+            const totalTradesEl = document.getElementById('totalTrades');
+            if (totalTradesEl) totalTradesEl.textContent = allTrades.length;
 
             const completedTrades = allTrades.filter(t => t.result && t.result !== 'open');
             const wins = completedTrades.filter(t => t.result === 'win').length;
@@ -6364,7 +6370,8 @@
             const totalPnL = allTrades.reduce((sum, t) => sum + (t.pnl || 0), 0);
 
             const winRate = completedTrades.length > 0 ? ((wins / completedTrades.length) * 100).toFixed(0) : 0;
-            document.getElementById('overallWinRate').textContent = `${winRate}% (${wins}W / ${losses}L${breakeven > 0 ? ` / ${breakeven}BE` : ''})`;
+            const overallWinRateEl = document.getElementById('overallWinRate');
+            if (overallWinRateEl) overallWinRateEl.textContent = `${winRate}% (${wins}W / ${losses}L${breakeven > 0 ? ` / ${breakeven}BE` : ''})`;
 
             // Display total P/L
             const pnlFormatted = totalPnL >= 0 ? `+$${totalPnL.toFixed(2)}` : `($${Math.abs(totalPnL).toFixed(2)})`;
