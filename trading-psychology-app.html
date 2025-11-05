@@ -5513,8 +5513,8 @@
             const weekPrep = sundayPreps.find(p => p.date === thisWeekSundayStr);
 
             if (weekPrep) {
-                // Load the existing prep
-                loadSundayPrep(thisWeekSundayStr);
+                // Load the existing prep (skipUIActions = true to avoid infinite loop)
+                loadSundayPrep(thisWeekSundayStr, true);
 
                 // Lock only weekly sections (Daily and 4hr remain editable)
                 lockSundayPrepForm(true);
@@ -5720,7 +5720,7 @@
             viewPastSundayPrep();
         }
 
-        function loadSundayPrep(date) {
+        function loadSundayPrep(date, skipUIActions = false) {
             const sundayPreps = JSON.parse(localStorage.getItem('sundayPreps') || '[]');
             const prep = sundayPreps.find(p => p.date === date);
 
@@ -5760,10 +5760,12 @@
                 displayScreenshots('sunday4hr');
             }
 
-            closeModal();
-            switchTab('sunday-prep');
-
-            showToast('info', 'Sunday Prep Loaded', 'Sunday Prep loaded with original screenshots.', 3000);
+            // Only do UI actions if not being called during initial load
+            if (!skipUIActions) {
+                closeModal();
+                switchTab('sunday-prep');
+                showToast('info', 'Sunday Prep Loaded', 'Sunday Prep loaded with original screenshots.', 3000);
+            }
         }
 
         function viewPastPostMarket() {
