@@ -1888,9 +1888,9 @@
                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
                         <p style="color: #8b949e; font-size: 12px; text-transform: uppercase; letter-spacing: 1px;">Weekly P/L Progress</p>
                         <div style="display: flex; gap: 20px; font-size: 13px;">
-                            <span style="color: #8b949e;">Max Loss: <span style="color: #2980b9; font-weight: 600;" id="weeklyMaxLoss">-$500</span></span>
+                            <span style="color: #8b949e;">Max Loss: <span style="color: #2980b9; font-weight: 600;" id="weeklyMaxLossDisplay">-$500</span></span>
                             <span style="color: #8b949e;">Current: <span style="font-weight: 600;" id="weeklyCurrentPL">$0</span></span>
-                            <span style="color: #8b949e;">Goal: <span style="color: #5dade2; font-weight: 600;" id="weeklyGoal">+$500</span></span>
+                            <span style="color: #8b949e;">Goal: <span style="color: #5dade2; font-weight: 600;" id="weeklyGoalDisplay">+$500</span></span>
                         </div>
                     </div>
                     <div style="position: relative; height: 12px; background: rgba(13, 17, 23, 0.6); border-radius: 6px; overflow: hidden;">
@@ -3133,11 +3133,11 @@
                     <div class="inline-group">
                         <div class="form-group">
                             <label>Weekly Profit Goal ($)</label>
-                            <input type="number" id="weeklyProfitGoal" min="0" step="50" placeholder="500">
+                            <input type="number" id="weeklyProfitGoalInput" min="0" step="50" placeholder="500">
                         </div>
                         <div class="form-group">
                             <label>Weekly Max Loss ($)</label>
-                            <input type="number" id="weeklyMaxLoss" min="0" step="50" placeholder="500">
+                            <input type="number" id="weeklyMaxLossInput" min="0" step="50" placeholder="500">
                         </div>
                     </div>
 
@@ -6260,16 +6260,31 @@
             // Update Weekly P/L Progress Bar
             const weeklyPL = weekTrades.reduce((sum, t) => sum + parseFloat(t.pnl || 0), 0);
 
+            // Debug logging for P/L tracking
+            const tradesWithPnL = weekTrades.filter(t => t.pnl !== undefined && t.pnl !== null);
+            console.log('P/L Tracking:', {
+                totalWeekTrades: weekTrades.length,
+                tradesWithPnL: tradesWithPnL.length,
+                weeklyPL: weeklyPL,
+                trades: weekTrades.map(t => ({ symbol: t.symbol, date: t.date, pnl: t.pnl, result: t.result }))
+            });
+
             // Get dynamic goal settings from localStorage (defaults: 500 goal, -500 max loss)
             const goalSettings = JSON.parse(localStorage.getItem('goalSettings') || '{"profitGoal": 500, "maxLoss": 500}');
             const weeklyMaxLoss = -Math.abs(goalSettings.maxLoss); // Ensure negative
             const weeklyGoal = Math.abs(goalSettings.profitGoal); // Ensure positive
 
             // Update displayed values
-            document.getElementById('weeklyMaxLoss').textContent = '-$' + Math.abs(weeklyMaxLoss).toFixed(0);
-            document.getElementById('weeklyGoal').textContent = '+$' + weeklyGoal.toFixed(0);
-            document.getElementById('weeklyCurrentPL').textContent = '$' + weeklyPL.toFixed(2);
-            document.getElementById('weeklyCurrentPL').style.color = weeklyPL >= 0 ? '#5dade2' : '#2980b9';
+            const maxLossDisplay = document.getElementById('weeklyMaxLossDisplay');
+            const goalDisplay = document.getElementById('weeklyGoalDisplay');
+            const currentPLDisplay = document.getElementById('weeklyCurrentPL');
+
+            if (maxLossDisplay) maxLossDisplay.textContent = '-$' + Math.abs(weeklyMaxLoss).toFixed(0);
+            if (goalDisplay) goalDisplay.textContent = '+$' + weeklyGoal.toFixed(0);
+            if (currentPLDisplay) {
+                currentPLDisplay.textContent = '$' + weeklyPL.toFixed(2);
+                currentPLDisplay.style.color = weeklyPL >= 0 ? '#5dade2' : '#2980b9';
+            }
 
             // Calculate progress bar width and position
             // Bar is centered at 50% (break even)
@@ -8613,8 +8628,16 @@
 
         // Goal Settings Functions
         function saveGoalSettings() {
-            const profitGoal = parseFloat(document.getElementById('weeklyProfitGoal').value) || 500;
-            const maxLoss = parseFloat(document.getElementById('weeklyMaxLoss').value) || 500;
+            const profitGoalInput = document.getElementById('weeklyProfitGoalInput');
+            const maxLossInput = document.getElementById('weeklyMaxLossInput');
+
+            if (!profitGoalInput || !maxLossInput) {
+                showToast('error', 'Error', 'Could not find settings inputs', 3000);
+                return;
+            }
+
+            const profitGoal = parseFloat(profitGoalInput.value) || 500;
+            const maxLoss = parseFloat(maxLossInput.value) || 500;
 
             const goalSettings = {
                 profitGoal: Math.abs(profitGoal),
@@ -8625,16 +8648,17 @@
             showToast('success', 'Settings Saved', `Weekly goal: $${goalSettings.profitGoal.toFixed(0)}, Max loss: -$${goalSettings.maxLoss.toFixed(0)}`, 3000);
 
             // Refresh dashboard to show new goals
-            if (document.getElementById('dashboard').classList.contains('active')) {
-                updateDashboard();
-            }
+            updateDashboard();
         }
 
         function loadGoalSettings() {
             const goalSettings = JSON.parse(localStorage.getItem('goalSettings') || '{"profitGoal": 500, "maxLoss": 500}');
 
-            document.getElementById('weeklyProfitGoal').value = goalSettings.profitGoal;
-            document.getElementById('weeklyMaxLoss').value = goalSettings.maxLoss;
+            const profitGoalInput = document.getElementById('weeklyProfitGoalInput');
+            const maxLossInput = document.getElementById('weeklyMaxLossInput');
+
+            if (profitGoalInput) profitGoalInput.value = goalSettings.profitGoal;
+            if (maxLossInput) maxLossInput.value = goalSettings.maxLoss;
         }
 
         // Clear functions for Settings page
