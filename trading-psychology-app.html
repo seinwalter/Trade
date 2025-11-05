@@ -5999,7 +5999,20 @@
             // Load current session for this account
             const sessionKey = `currentSession_${currentAccountName}`;
             const saved = localStorage.getItem(sessionKey);
-            currentSession = saved ? JSON.parse(saved) : null;
+            const loadedSession = saved ? JSON.parse(saved) : null;
+
+            // Validate that the loaded session is actually from today
+            const today = new Date().toISOString().split('T')[0];
+            if (loadedSession && loadedSession.date === today) {
+                currentSession = loadedSession;
+            } else {
+                // Session is from a different day or doesn't exist, clear it
+                currentSession = null;
+                // Also clear the saved session if it's outdated
+                if (loadedSession && loadedSession.date !== today) {
+                    localStorage.removeItem(sessionKey);
+                }
+            }
         }
 
         function saveCurrentAccountData() {
