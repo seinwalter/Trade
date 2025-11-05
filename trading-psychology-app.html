@@ -1697,7 +1697,12 @@
         }
 
         .mini-chart {
-            height: 200px;
+            height: 150px;
+            max-width: 250px;
+        }
+
+        .mini-chart canvas {
+            max-height: 120px !important;
         }
 
         .full-chart {
@@ -1739,9 +1744,14 @@
         /* Dashboard Grid Layout */
         .dashboard-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
             gap: 15px;
             margin-bottom: 20px;
+            max-width: 100%;
+        }
+
+        .dashboard-grid > div {
+            max-width: 250px;
         }
 
         /* Data Value Styling */
@@ -4336,7 +4346,7 @@
             // Add version indicator to page
             const versionIndicator = document.createElement('div');
             versionIndicator.style.cssText = 'position: fixed; bottom: 5px; left: 5px; background: rgba(0,0,0,0.7); color: #00ff00; padding: 3px 8px; font-size: 10px; border-radius: 3px; z-index: 9999;';
-            versionIndicator.textContent = 'v2024-11-05-v4';
+            versionIndicator.textContent = 'v2024-11-05-v5';
             document.body.appendChild(versionIndicator);
             console.log('Version indicator added to page');
 
