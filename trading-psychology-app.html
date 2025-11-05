@@ -5691,55 +5691,71 @@
 
         // Save end of day
         function saveEndOfDay() {
-            const today = new Date().toISOString().split('T')[0];
+            try {
+                console.log('[saveEndOfDay] Starting EOD save...');
+                const today = new Date().toISOString().split('T')[0];
+                console.log('[saveEndOfDay] Today\'s date:', today);
 
-            // First, try to load existing session for today (could be in allSessions or currentSession)
-            let sessionToUpdate = currentSession;
+                // First, try to load existing session for today (could be in allSessions or currentSession)
+                let sessionToUpdate = currentSession;
+                console.log('[saveEndOfDay] currentSession:', currentSession);
 
-            if (!sessionToUpdate) {
-                // Try to find today's session in allSessions
-                sessionToUpdate = allSessions.find(s => s.date === today);
+                if (!sessionToUpdate) {
+                    // Try to find today's session in allSessions
+                    sessionToUpdate = allSessions.find(s => s.date === today);
+                    console.log('[saveEndOfDay] Found session in allSessions:', sessionToUpdate);
+                }
+
+                if (!sessionToUpdate) {
+                    console.error('[saveEndOfDay] No session found!');
+                    showToast('error', 'No Session', 'No active session to save. Please start your trading day first.', 3000);
+                    return;
+                }
+
+                // Update the session with EOD data (preserving existing trades and other data)
+                sessionToUpdate.circuitBreakerTriggered = document.getElementById('circuitBreakerTriggered').value;
+                sessionToUpdate.circuitBreakerNotes = document.getElementById('circuitBreakerNotes').value;
+                sessionToUpdate.rulesAdherence = document.getElementById('rulesAdherencePercent').value;
+                sessionToUpdate.biggestWin = document.getElementById('biggestWin').value;
+                sessionToUpdate.biggestChallenge = document.getElementById('biggestChallenge').value;
+                sessionToUpdate.planTomorrow = document.getElementById('planTomorrow').value;
+                sessionToUpdate.additionalNotes = document.getElementById('additionalNotes').value;
+                sessionToUpdate.completed = true;
+
+                console.log('[saveEndOfDay] Updated session data:', sessionToUpdate);
+
+                // Archive EOD screenshots with the session
+                sessionToUpdate.eodScreenshots = screenshots.eod ? [...screenshots.eod] : [];
+
+                // Only push to allSessions if it's not already there
+                const existingIndex = allSessions.findIndex(s => s.date === today);
+                if (existingIndex >= 0) {
+                    // Update existing session in place
+                    allSessions[existingIndex] = sessionToUpdate;
+                    console.log('[saveEndOfDay] Updated existing session at index', existingIndex);
+                } else {
+                    // Add new session
+                    allSessions.push(sessionToUpdate);
+                    console.log('[saveEndOfDay] Added new session to allSessions');
+                }
+
+                saveData();
+                console.log('[saveEndOfDay] Data saved to localStorage');
+
+                // Clear EOD screenshots for next day
+                screenshots.eod = [];
+                saveScreenshots();
+                displayScreenshots('eod');
+
+                showToast('success', 'End of Day Saved', `Your review for ${sessionToUpdate.date} has been successfully saved.`, 5000);
+
+                updateDashboard(); // Refresh dashboard to show completion
+                switchTab('dashboard'); // Go to dashboard
+                console.log('[saveEndOfDay] EOD save completed successfully');
+            } catch (error) {
+                console.error('[saveEndOfDay] Error saving EOD:', error);
+                showToast('error', 'Save Failed', `Error saving End of Day: ${error.message}`, 5000);
             }
-
-            if (!sessionToUpdate) {
-                showToast('error', 'No Session', 'No active session to save. Please start your trading day first.', 3000);
-                return;
-            }
-
-            // Update the session with EOD data (preserving existing trades and other data)
-            sessionToUpdate.circuitBreakerTriggered = document.getElementById('circuitBreakerTriggered').value;
-            sessionToUpdate.circuitBreakerNotes = document.getElementById('circuitBreakerNotes').value;
-            sessionToUpdate.rulesAdherence = document.getElementById('rulesAdherencePercent').value;
-            sessionToUpdate.biggestWin = document.getElementById('biggestWin').value;
-            sessionToUpdate.biggestChallenge = document.getElementById('biggestChallenge').value;
-            sessionToUpdate.planTomorrow = document.getElementById('planTomorrow').value;
-            sessionToUpdate.additionalNotes = document.getElementById('additionalNotes').value;
-            sessionToUpdate.completed = true;
-
-            // Archive EOD screenshots with the session
-            sessionToUpdate.eodScreenshots = screenshots.eod ? [...screenshots.eod] : [];
-
-            // Only push to allSessions if it's not already there
-            const existingIndex = allSessions.findIndex(s => s.date === today);
-            if (existingIndex >= 0) {
-                // Update existing session in place
-                allSessions[existingIndex] = sessionToUpdate;
-            } else {
-                // Add new session
-                allSessions.push(sessionToUpdate);
-            }
-
-            saveData();
-
-            // Clear EOD screenshots for next day
-            screenshots.eod = [];
-            saveScreenshots();
-            displayScreenshots('eod');
-
-            showToast('success', 'End of Day Saved', `Your review for ${sessionToUpdate.date} has been successfully saved.`, 5000);
-
-            updateDashboard(); // Refresh dashboard to show completion
-            switchTab('dashboard'); // Go to dashboard
         }
 
         // Sunday Prep functions
@@ -5836,82 +5852,104 @@
         }
 
         function saveSundayPrep() {
-            // Validate that date is filled
-            const dateValue = document.getElementById('sundayDate').value;
-            if (!dateValue) {
-                showToast('error', 'Date Required', 'Please enter a date for your Sunday Prep.', 3000);
-                return;
+            try {
+                console.log('[saveSundayPrep] Starting save...');
+
+                // Validate that date is filled
+                const dateValue = document.getElementById('sundayDate').value;
+                if (!dateValue) {
+                    showToast('error', 'Date Required', 'Please enter a date for your Sunday Prep.', 3000);
+                    return;
+                }
+                console.log('[saveSundayPrep] Date:', dateValue);
+
+                // Check if weekly sections are locked
+                const weeklySection = document.getElementById('weekly-plan-section');
+                const isWeeklyLocked = weeklySection && weeklySection.querySelector('input, textarea, select')?.disabled;
+                console.log('[saveSundayPrep] isWeeklyLocked:', isWeeklyLocked);
+
+                // Get existing Sunday preps
+                let sundayPreps = JSON.parse(localStorage.getItem('sundayPreps') || '[]');
+                const existingIndex = sundayPreps.findIndex(p => p.date === dateValue);
+                const existingPrep = existingIndex >= 0 ? sundayPreps[existingIndex] : null;
+                console.log('[saveSundayPrep] existingPrep:', existingPrep);
+
+                const sundayPrep = {
+                    date: dateValue,
+                    // Always update Daily and 4hr sections (these are editable)
+                    dailyTrend: document.getElementById('sundayDailyTrend')?.value || '',
+                    dailyStructure: document.getElementById('sundayDailyStructure')?.value || '',
+                    dailySupport: document.getElementById('sundayDailySupport')?.value || '',
+                    dailyResistance: document.getElementById('sundayDailyResistance')?.value || '',
+                    dailyOrderBlocks: document.getElementById('sundayDailyOrderBlocks')?.value || '',
+                    fourHrTrend: document.getElementById('sunday4hrTrend')?.value || '',
+                    fourHrStructure: document.getElementById('sunday4hrStructure')?.value || '',
+                    fourHrSupport: document.getElementById('sunday4hrSupport')?.value || '',
+                    fourHrResistance: document.getElementById('sunday4hrResistance')?.value || '',
+                    fourHrOrderBlocks: document.getElementById('sunday4hrOrderBlocks')?.value || '',
+                    // If weekly is locked, preserve existing weekly data; otherwise use form values
+                    weeklyBias: isWeeklyLocked && existingPrep ? existingPrep.weeklyBias : (document.getElementById('sundayWeeklyBias')?.value || ''),
+                    priceTargets: isWeeklyLocked && existingPrep ? existingPrep.priceTargets : (document.getElementById('sundayPriceTargets')?.value || ''),
+                    setups: isWeeklyLocked && existingPrep ? existingPrep.setups : (document.getElementById('sundaySetups')?.value || ''),
+                    keyEvents: isWeeklyLocked && existingPrep ? existingPrep.keyEvents : (document.getElementById('sundayKeyEvents')?.value || ''),
+                    avoidAreas: isWeeklyLocked && existingPrep ? existingPrep.avoidAreas : (document.getElementById('sundayAvoidAreas')?.value || ''),
+                    processGoals: isWeeklyLocked && existingPrep ? existingPrep.processGoals : (document.getElementById('sundayProcessGoals')?.value || ''),
+                    maxTrades: isWeeklyLocked && existingPrep ? existingPrep.maxTrades : (document.getElementById('sundayMaxTrades')?.value || ''),
+                    maxRisk: isWeeklyLocked && existingPrep ? existingPrep.maxRisk : (document.getElementById('sundayMaxRisk')?.value || ''),
+                    successCriteria: isWeeklyLocked && existingPrep ? existingPrep.successCriteria : (document.getElementById('sundaySuccessCriteria')?.value || ''),
+                    // Archive screenshots with the prep
+                    sundayDailyScreenshots: screenshots.sundayDaily ? [...screenshots.sundayDaily] : [],
+                    sunday4hrScreenshots: screenshots.sunday4hr ? [...screenshots.sunday4hr] : []
+                };
+
+                console.log('[saveSundayPrep] sundayPrep object created:', sundayPrep);
+
+                // Check if there's already a prep for this date and update it
+                if (existingIndex >= 0) {
+                    sundayPreps[existingIndex] = sundayPrep;
+                    console.log('[saveSundayPrep] Updated existing prep at index', existingIndex);
+                } else {
+                    sundayPreps.push(sundayPrep);
+                    console.log('[saveSundayPrep] Added new prep');
+                }
+
+                // Save to localStorage
+                localStorage.setItem('sundayPreps', JSON.stringify(sundayPreps));
+                console.log('[saveSundayPrep] Saved to localStorage');
+
+                // Verify save
+                const verifyPreps = JSON.parse(localStorage.getItem('sundayPreps') || '[]');
+                const verifySaved = verifyPreps.find(p => p.date === dateValue);
+                console.log('[saveSundayPrep] Verification - saved prep:', verifySaved);
+
+                // Clear old Sunday screenshots (weekly reset)
+                screenshots.sundayDaily = [];
+                screenshots.sunday4hr = [];
+                saveScreenshots();
+
+                // Also clear screenshot display grids
+                displayScreenshots('sundayDaily');
+                displayScreenshots('sunday4hr');
+
+                // Update dashboard to show new weekly plan
+                updateDashboard();
+
+                // Lock the form after saving if this is a new week (week is now locked)
+                if (!isWeeklyLocked) {
+                    lockSundayPrepForm(true);
+                }
+
+                const message = isWeeklyLocked
+                    ? 'Daily and 4-Hour sections updated. Weekly plan remains locked for this week.'
+                    : 'Your weekly plan is ready and now visible on the Dashboard. This week\'s prep is now locked until next week.';
+                const title = isWeeklyLocked ? 'Market Analysis Updated' : 'Sunday Research Saved';
+
+                showToast('success', title, message, 5000);
+                console.log('[saveSundayPrep] Save completed successfully');
+            } catch (error) {
+                console.error('[saveSundayPrep] Error saving Sunday prep:', error);
+                showToast('error', 'Save Failed', `Error saving market prep: ${error.message}`, 5000);
             }
-
-            // Check if weekly sections are locked
-            const weeklySection = document.getElementById('weekly-plan-section');
-            const isWeeklyLocked = weeklySection && weeklySection.querySelector('input, textarea, select')?.disabled;
-
-            // Get existing Sunday preps
-            let sundayPreps = JSON.parse(localStorage.getItem('sundayPreps') || '[]');
-            const existingIndex = sundayPreps.findIndex(p => p.date === dateValue);
-            const existingPrep = existingIndex >= 0 ? sundayPreps[existingIndex] : null;
-
-            const sundayPrep = {
-                date: dateValue,
-                // Always update Daily and 4hr sections (these are editable)
-                dailyTrend: document.getElementById('sundayDailyTrend')?.value || '',
-                dailyStructure: document.getElementById('sundayDailyStructure')?.value || '',
-                dailySupport: document.getElementById('sundayDailySupport')?.value || '',
-                dailyResistance: document.getElementById('sundayDailyResistance')?.value || '',
-                dailyOrderBlocks: document.getElementById('sundayDailyOrderBlocks')?.value || '',
-                fourHrTrend: document.getElementById('sunday4hrTrend')?.value || '',
-                fourHrStructure: document.getElementById('sunday4hrStructure')?.value || '',
-                fourHrSupport: document.getElementById('sunday4hrSupport')?.value || '',
-                fourHrResistance: document.getElementById('sunday4hrResistance')?.value || '',
-                fourHrOrderBlocks: document.getElementById('sunday4hrOrderBlocks')?.value || '',
-                // If weekly is locked, preserve existing weekly data; otherwise use form values
-                weeklyBias: isWeeklyLocked && existingPrep ? existingPrep.weeklyBias : (document.getElementById('sundayWeeklyBias')?.value || ''),
-                priceTargets: isWeeklyLocked && existingPrep ? existingPrep.priceTargets : (document.getElementById('sundayPriceTargets')?.value || ''),
-                setups: isWeeklyLocked && existingPrep ? existingPrep.setups : (document.getElementById('sundaySetups')?.value || ''),
-                keyEvents: isWeeklyLocked && existingPrep ? existingPrep.keyEvents : (document.getElementById('sundayKeyEvents')?.value || ''),
-                avoidAreas: isWeeklyLocked && existingPrep ? existingPrep.avoidAreas : (document.getElementById('sundayAvoidAreas')?.value || ''),
-                processGoals: isWeeklyLocked && existingPrep ? existingPrep.processGoals : (document.getElementById('sundayProcessGoals')?.value || ''),
-                maxTrades: isWeeklyLocked && existingPrep ? existingPrep.maxTrades : (document.getElementById('sundayMaxTrades')?.value || ''),
-                maxRisk: isWeeklyLocked && existingPrep ? existingPrep.maxRisk : (document.getElementById('sundayMaxRisk')?.value || ''),
-                successCriteria: isWeeklyLocked && existingPrep ? existingPrep.successCriteria : (document.getElementById('sundaySuccessCriteria')?.value || ''),
-                // Archive screenshots with the prep
-                sundayDailyScreenshots: screenshots.sundayDaily ? [...screenshots.sundayDaily] : [],
-                sunday4hrScreenshots: screenshots.sunday4hr ? [...screenshots.sunday4hr] : []
-            };
-
-            // Check if there's already a prep for this date and update it
-            if (existingIndex >= 0) {
-                sundayPreps[existingIndex] = sundayPrep;
-            } else {
-                sundayPreps.push(sundayPrep);
-            }
-
-            localStorage.setItem('sundayPreps', JSON.stringify(sundayPreps));
-
-            // Clear old Sunday screenshots (weekly reset)
-            screenshots.sundayDaily = [];
-            screenshots.sunday4hr = [];
-            saveScreenshots();
-
-            // Also clear screenshot display grids
-            displayScreenshots('sundayDaily');
-            displayScreenshots('sunday4hr');
-
-            // Update dashboard to show new weekly plan
-            updateDashboard();
-
-            // Lock the form after saving if this is a new week (week is now locked)
-            if (!isWeeklyLocked) {
-                lockSundayPrepForm(true);
-            }
-
-            const message = isWeeklyLocked
-                ? 'Daily and 4-Hour sections updated. Weekly plan remains locked for this week.'
-                : 'Your weekly plan is ready and now visible on the Dashboard. This week\'s prep is now locked until next week.';
-            const title = isWeeklyLocked ? 'Market Analysis Updated' : 'Sunday Research Saved';
-
-            showToast('success', title, message, 5000);
         }
 
         function viewPastSundayPrep() {
@@ -8362,22 +8400,36 @@
 
         // Load history
         function loadHistory() {
-            // Apply filters
-            let filteredTrades = allTrades;
+            try {
+                console.log('[loadHistory] Loading trade history...');
+                console.log('[loadHistory] allTrades:', allTrades);
+                console.log('[loadHistory] allTrades.length:', allTrades.length);
 
-            if (currentFilterDate) {
-                filteredTrades = filteredTrades.filter(t => t.date === currentFilterDate);
-            } else if (currentFilterRange) {
-                filteredTrades = filteredTrades.filter(t => {
-                    return t.date >= currentFilterRange.start && t.date <= currentFilterRange.end;
-                });
-            }
+                // Apply filters
+                let filteredTrades = allTrades;
 
-            // Trade history
-            const tradeHistoryDiv = document.getElementById('tradeHistory');
-            if (filteredTrades.length === 0) {
-                tradeHistoryDiv.innerHTML = '<p>No trades found for the selected filter.</p>';
-            } else {
+                if (currentFilterDate) {
+                    filteredTrades = filteredTrades.filter(t => t.date === currentFilterDate);
+                    console.log('[loadHistory] Filtered by date:', currentFilterDate, 'Result count:', filteredTrades.length);
+                } else if (currentFilterRange) {
+                    filteredTrades = filteredTrades.filter(t => {
+                        return t.date >= currentFilterRange.start && t.date <= currentFilterRange.end;
+                    });
+                    console.log('[loadHistory] Filtered by range:', currentFilterRange, 'Result count:', filteredTrades.length);
+                }
+
+                // Trade history
+                const tradeHistoryDiv = document.getElementById('tradeHistory');
+                if (!tradeHistoryDiv) {
+                    console.error('[loadHistory] Trade history div not found!');
+                    return;
+                }
+
+                if (filteredTrades.length === 0) {
+                    console.log('[loadHistory] No trades to display');
+                    tradeHistoryDiv.innerHTML = '<p>No trades found for the selected filter.</p>';
+                } else {
+                    console.log('[loadHistory] Displaying', filteredTrades.length, 'trades');
                 // Create compact table format similar to CSV preview
                 let tableHTML = `
                     <table style="width: 100%; border-collapse: collapse; background: rgba(33, 38, 45, 0.6); border-radius: 8px; overflow: hidden; font-size: 13px;">
@@ -8451,6 +8503,13 @@
                         </div>
                     </div>
                 `).join('');
+            }
+            } catch (error) {
+                console.error('[loadHistory] Error loading history:', error);
+                const tradeHistoryDiv = document.getElementById('tradeHistory');
+                if (tradeHistoryDiv) {
+                    tradeHistoryDiv.innerHTML = `<p style="color: #ef4444;">Error loading trade history: ${error.message}</p>`;
+                }
             }
         }
 
