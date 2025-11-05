@@ -4245,6 +4245,68 @@
             exportCompleteDayPDF();
         }
 
+        // Update date/time and market status
+        function updateDateTime() {
+            const now = new Date();
+
+            // Format date and time
+            const dateOptions = {
+                weekday: 'long',
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+            };
+            const timeOptions = {
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit',
+                hour12: true
+            };
+
+            const dateStr = now.toLocaleDateString('en-US', dateOptions);
+            const timeStr = now.toLocaleTimeString('en-US', timeOptions);
+
+            const dateTimeEl = document.getElementById('currentDateTime');
+            if (dateTimeEl) {
+                dateTimeEl.textContent = `${dateStr} | ${timeStr}`;
+            }
+
+            // Determine market status (US Stock Market: 9:30 AM - 4:00 PM ET, Monday-Friday)
+            const marketStatusEl = document.getElementById('marketStatus');
+            if (marketStatusEl) {
+                const dayOfWeek = now.getDay(); // 0 = Sunday, 6 = Saturday
+
+                // Check if weekend
+                if (dayOfWeek === 0 || dayOfWeek === 6) {
+                    marketStatusEl.innerHTML = '<span style="color: #6b7280;">🔴 Closed (Weekend)</span>';
+                    return;
+                }
+
+                // Get ET time (convert from system time)
+                // Note: This assumes the system is set to the correct timezone or uses UTC
+                const etTime = new Date(now.toLocaleString('en-US', { timeZone: 'America/New_York' }));
+                const hours = etTime.getHours();
+                const minutes = etTime.getMinutes();
+                const currentTime = hours * 60 + minutes; // Convert to minutes since midnight
+
+                // Market hours: 9:30 AM (570 minutes) to 4:00 PM (960 minutes)
+                const marketOpen = 9 * 60 + 30;  // 9:30 AM = 570 minutes
+                const marketClose = 16 * 60;      // 4:00 PM = 960 minutes
+                const preMarket = 4 * 60;          // 4:00 AM = 240 minutes
+                const afterHours = 20 * 60;        // 8:00 PM = 1200 minutes
+
+                if (currentTime >= marketOpen && currentTime < marketClose) {
+                    marketStatusEl.innerHTML = '<span style="color: #10b981;">🟢 Open</span>';
+                } else if (currentTime >= preMarket && currentTime < marketOpen) {
+                    marketStatusEl.innerHTML = '<span style="color: #f59e0b;">🟡 Pre-Market</span>';
+                } else if (currentTime >= marketClose && currentTime < afterHours) {
+                    marketStatusEl.innerHTML = '<span style="color: #f59e0b;">🟡 After-Hours</span>';
+                } else {
+                    marketStatusEl.innerHTML = '<span style="color: #6b7280;">🔴 Closed</span>';
+                }
+            }
+        }
+
         // Initialize app
         document.addEventListener('DOMContentLoaded', function() {
             loadData();
@@ -4252,7 +4314,12 @@
             loadSettings();
             initializeToday();
             updateDashboard();
-            initDashboardCharts();  // Initialize dashboard charts on load
+
+            // Initialize dashboard charts with a small delay to ensure DOM is fully rendered
+            setTimeout(function() {
+                initDashboardCharts();
+            }, 100);
+
             updateStatistics();
             document.getElementById('sessionDate').valueAsDate = new Date();
             document.getElementById('sundayDate').valueAsDate = new Date();
@@ -4266,8 +4333,10 @@
             document.getElementById('tradeRewardAmount').addEventListener('input', calculateRR);
 
             // Update date/time and market status every second
-            updateDateTime();
-            setInterval(updateDateTime, 1000);
+            setTimeout(function() {
+                updateDateTime();
+                setInterval(updateDateTime, 1000);
+            }, 50);
         });
 
         // Tab switching
@@ -6193,69 +6262,6 @@
                 saveScreenshots();
                 displayScreenshots('trade');
                 displayScreenshots('eod');
-            }
-        }
-
-        // Update dashboard
-        // Update date/time and market status
-        function updateDateTime() {
-            const now = new Date();
-
-            // Format date and time
-            const dateOptions = {
-                weekday: 'long',
-                year: 'numeric',
-                month: 'long',
-                day: 'numeric'
-            };
-            const timeOptions = {
-                hour: '2-digit',
-                minute: '2-digit',
-                second: '2-digit',
-                hour12: true
-            };
-
-            const dateStr = now.toLocaleDateString('en-US', dateOptions);
-            const timeStr = now.toLocaleTimeString('en-US', timeOptions);
-
-            const dateTimeEl = document.getElementById('currentDateTime');
-            if (dateTimeEl) {
-                dateTimeEl.textContent = `${dateStr} | ${timeStr}`;
-            }
-
-            // Determine market status (US Stock Market: 9:30 AM - 4:00 PM ET, Monday-Friday)
-            const marketStatusEl = document.getElementById('marketStatus');
-            if (marketStatusEl) {
-                const dayOfWeek = now.getDay(); // 0 = Sunday, 6 = Saturday
-
-                // Check if weekend
-                if (dayOfWeek === 0 || dayOfWeek === 6) {
-                    marketStatusEl.innerHTML = '<span style="color: #6b7280;">🔴 Closed (Weekend)</span>';
-                    return;
-                }
-
-                // Get ET time (convert from system time)
-                // Note: This assumes the system is set to the correct timezone or uses UTC
-                const etTime = new Date(now.toLocaleString('en-US', { timeZone: 'America/New_York' }));
-                const hours = etTime.getHours();
-                const minutes = etTime.getMinutes();
-                const currentTime = hours * 60 + minutes; // Convert to minutes since midnight
-
-                // Market hours: 9:30 AM (570 minutes) to 4:00 PM (960 minutes)
-                const marketOpen = 9 * 60 + 30;  // 9:30 AM = 570 minutes
-                const marketClose = 16 * 60;      // 4:00 PM = 960 minutes
-                const preMarket = 4 * 60;          // 4:00 AM = 240 minutes
-                const afterHours = 20 * 60;        // 8:00 PM = 1200 minutes
-
-                if (currentTime >= marketOpen && currentTime < marketClose) {
-                    marketStatusEl.innerHTML = '<span style="color: #10b981;">🟢 Open</span>';
-                } else if (currentTime >= preMarket && currentTime < marketOpen) {
-                    marketStatusEl.innerHTML = '<span style="color: #f59e0b;">🟡 Pre-Market</span>';
-                } else if (currentTime >= marketClose && currentTime < afterHours) {
-                    marketStatusEl.innerHTML = '<span style="color: #f59e0b;">🟡 After-Hours</span>';
-                } else {
-                    marketStatusEl.innerHTML = '<span style="color: #6b7280;">🔴 Closed</span>';
-                }
             }
         }
 
