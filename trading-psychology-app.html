@@ -6243,7 +6243,11 @@
             // Weekly stats
             const weekStart = new Date();
             weekStart.setDate(weekStart.getDate() - weekStart.getDay());
-            const weekTrades = allTrades.filter(t => new Date(t.date) >= weekStart);
+            weekStart.setHours(0, 0, 0, 0); // Reset to midnight to include all trades from week start
+            const weekTrades = allTrades.filter(t => {
+                const tradeDate = new Date(t.date);
+                return tradeDate >= weekStart;
+            });
 
             document.getElementById('tradesThisWeek').textContent = weekTrades.length;
 
@@ -6299,14 +6303,16 @@
             }
 
             const progressBar = document.getElementById('weeklyProgressBar');
-            if (progressPercent >= 0) {
-                progressBar.style.left = '50%';
-                progressBar.style.width = progressPercent + '%';
-                progressBar.style.background = 'linear-gradient(90deg, #5dade2, #2980b9)';
-            } else {
-                progressBar.style.left = (50 + progressPercent) + '%';
-                progressBar.style.width = (-progressPercent) + '%';
-                progressBar.style.background = 'linear-gradient(90deg, #2980b9, #5dade2)';
+            if (progressBar) {
+                if (progressPercent >= 0) {
+                    progressBar.style.left = '50%';
+                    progressBar.style.width = progressPercent + '%';
+                    progressBar.style.background = 'linear-gradient(90deg, #5dade2, #2980b9)';
+                } else {
+                    progressBar.style.left = (50 + progressPercent) + '%';
+                    progressBar.style.width = (-progressPercent) + '%';
+                    progressBar.style.background = 'linear-gradient(90deg, #2980b9, #5dade2)';
+                }
             }
 
             // Circuit breaker alert
@@ -6460,11 +6466,26 @@
             const weeklyData = {};
 
             allTrades.forEach(trade => {
-                if (!trade.date || !trade.result || trade.result === 'open') return;
+                if (!trade.date) return;
+
+                // Skip trades that are explicitly open or planned without P/L
+                if (trade.result === 'open' || (trade.status === 'planned' && !trade.pnl && !trade.exitPrice)) return;
+
+                // Calculate result from P/L if not set
+                let result = trade.result;
+                if (!result && trade.pnl !== undefined && trade.pnl !== null) {
+                    if (trade.pnl > 0) result = 'win';
+                    else if (trade.pnl < 0) result = 'loss';
+                    else result = 'breakeven';
+                }
+
+                // Skip if still no result or P/L
+                if (!result && !trade.pnl) return;
 
                 const tradeDate = new Date(trade.date);
                 const weekStart = new Date(tradeDate);
                 weekStart.setDate(tradeDate.getDate() - tradeDate.getDay()); // Start of week (Sunday)
+                weekStart.setHours(0, 0, 0, 0); // Reset to midnight
                 const weekKey = weekStart.toISOString().split('T')[0];
 
                 if (!weeklyData[weekKey]) {
@@ -6479,8 +6500,8 @@
 
                 weeklyData[weekKey].total++;
                 weeklyData[weekKey].pnl += (trade.pnl || 0);
-                if (trade.result === 'win') weeklyData[weekKey].wins++;
-                if (trade.result === 'loss') weeklyData[weekKey].losses++;
+                if (result === 'win') weeklyData[weekKey].wins++;
+                if (result === 'loss') weeklyData[weekKey].losses++;
             });
 
             // Sort weeks by date (most recent first)
@@ -8645,10 +8666,11 @@
             };
 
             localStorage.setItem('goalSettings', JSON.stringify(goalSettings));
-            showToast('success', 'Settings Saved', `Weekly goal: $${goalSettings.profitGoal.toFixed(0)}, Max loss: -$${goalSettings.maxLoss.toFixed(0)}`, 3000);
 
             // Refresh dashboard to show new goals
             updateDashboard();
+
+            showToast('success', 'Settings Saved', `Weekly goal: $${goalSettings.profitGoal.toFixed(0)}, Max loss: -$${goalSettings.maxLoss.toFixed(0)}. Dashboard updated!`, 3000);
         }
 
         function loadGoalSettings() {
