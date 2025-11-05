@@ -1871,6 +1871,7 @@
             <!-- Visual Performance Summary -->
             <div class="section">
                 <h2>This Week at a Glance</h2>
+                <p id="weekRangeHeader" style="color: #8b949e; font-size: 14px; margin-bottom: 15px; font-style: italic;"></p>
                 <div class="chart-row">
                     <div class="chart-container mini-chart">
                         <h3 style="font-size: 14px; margin-bottom: 10px; color: #8b949e;">Win Rate This Week</h3>
@@ -1911,6 +1912,10 @@
                     <div style="padding: 15px; background: rgba(21, 27, 40, 0.5); border-radius: 3px; border-left: 3px solid #5dade2;">
                         <p style="color: #8b949e; font-size: 12px; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px;">Rules Adherence</p>
                         <div class="data-value positive" id="rulesAdherence">0%</div>
+                    </div>
+                    <div style="padding: 15px; background: rgba(21, 27, 40, 0.5); border-radius: 3px; border-left: 3px solid #10b981;">
+                        <p style="color: #8b949e; font-size: 12px; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px;">Trading Days Remaining</p>
+                        <div class="data-value positive" id="tradingDaysRemaining" style="font-size: 24px;">--</div>
                     </div>
                     <div style="padding: 15px; background: rgba(21, 27, 40, 0.5); border-radius: 3px; border-left: 3px solid #2980b9;">
                         <p style="color: #8b949e; font-size: 12px; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px;">Current Phase</p>
@@ -1959,6 +1964,14 @@
                 <h2>📈 Market Levels & Analysis</h2>
                 <div id="marketLevelsDisplay" style="color: #8b949e; font-style: italic;">
                     No market prep data available. Complete Market Prep to see key levels here.
+                </div>
+            </div>
+
+            <!-- This Week's Strategic Plan -->
+            <div class="section" id="weeklyStrategicPlanSection" style="background: rgba(93, 173, 226, 0.05); border: 1px solid rgba(93, 173, 226, 0.2);">
+                <h2 style="color: #5dade2;">🎯 This Week's Strategic Plan</h2>
+                <div id="weeklyStrategicPlanDisplay" style="color: #8b949e; font-style: italic;">
+                    No Sunday Prep found for this week. Complete Market Prep to see your weekly plan here.
                 </div>
             </div>
 
@@ -4260,9 +4273,41 @@
             }
             if (tabName === 'history') loadHistory();
             if (tabName === 'trade-entry') checkPostMarketInfo();
+            if (tabName === 'end-of-day') loadEndOfDayData();
             if (tabName === 'settings') {
                 loadGoalSettings();
                 updateSettingsDataCounts();
+            }
+        }
+
+        // Load existing End of Day data for editing
+        function loadEndOfDayData() {
+            const today = new Date().toISOString().split('T')[0];
+
+            // Find today's session (either in currentSession or allSessions)
+            const todaySession = currentSession || allSessions.find(s => s.date === today);
+
+            if (todaySession && todaySession.completed) {
+                // Populate form fields with existing EOD data
+                document.getElementById('circuitBreakerTriggered').value = todaySession.circuitBreakerTriggered || 'No';
+                document.getElementById('circuitBreakerNotes').value = todaySession.circuitBreakerNotes || '';
+                document.getElementById('rulesAdherencePercent').value = todaySession.rulesAdherence || '';
+                document.getElementById('biggestWin').value = todaySession.biggestWin || '';
+                document.getElementById('biggestChallenge').value = todaySession.biggestChallenge || '';
+                document.getElementById('planTomorrow').value = todaySession.planTomorrow || '';
+                document.getElementById('additionalNotes').value = todaySession.additionalNotes || '';
+
+                // Show a subtle indicator that this is an existing review
+                showToast('info', 'Editing EOD Review', 'You are editing an existing End of Day review. Changes will be saved when you click "Save End of Day Review".', 4000);
+            } else if (todaySession) {
+                // Session exists but no EOD data yet - clear the form
+                document.getElementById('circuitBreakerTriggered').value = 'No';
+                document.getElementById('circuitBreakerNotes').value = '';
+                document.getElementById('rulesAdherencePercent').value = '';
+                document.getElementById('biggestWin').value = '';
+                document.getElementById('biggestChallenge').value = '';
+                document.getElementById('planTomorrow').value = '';
+                document.getElementById('additionalNotes').value = '';
             }
         }
 
@@ -4304,9 +4349,15 @@
 
         // Initialize Dashboard Charts
         function initDashboardCharts() {
-            // Only initialize if charts haven't been created yet
-            if (window.dashboardChartsInitialized) return;
-            window.dashboardChartsInitialized = true;
+            // Destroy existing charts before creating new ones
+            if (window.weeklyWinRateChart) {
+                window.weeklyWinRateChart.destroy();
+                window.weeklyWinRateChart = null;
+            }
+            if (window.weeklyPLChart) {
+                window.weeklyPLChart.destroy();
+                window.weeklyPLChart = null;
+            }
 
             // Win Rate Donut Chart
             const winRateCtx = document.getElementById('weeklyWinRateChart');
@@ -4330,7 +4381,7 @@
                     ctx.fillStyle = '#6b7280';
                     ctx.fillText('Start trading to see your win rate', winRateCtx.width / 2, winRateCtx.height / 2 + 10);
                 } else {
-                    new Chart(winRateCtx, {
+                    window.weeklyWinRateChart = new Chart(winRateCtx, {
                         type: 'doughnut',
                         data: {
                             labels: ['Wins', 'Losses'],
@@ -4375,7 +4426,7 @@
                     const labels = trades.map((t, i) => `T${i + 1}`);
                     const data = trades.map(t => t.pnl || 0);
 
-                    new Chart(plCtx, {
+                    window.weeklyPLChart = new Chart(plCtx, {
                         type: 'line',
                         data: {
                             labels: labels,
@@ -4887,6 +4938,10 @@
                 if (checkbox) checkbox.checked = false;
             });
 
+            // Update dashboard and charts to reflect the new trade
+            updateDashboard();
+            initDashboardCharts();
+
             switchTab('dashboard');
         }
 
@@ -5392,24 +5447,44 @@
 
         // Save end of day
         function saveEndOfDay() {
-            if (!currentSession) {
-                showToast('error', 'No Session', 'No active session to save.', 3000);
+            const today = new Date().toISOString().split('T')[0];
+
+            // First, try to load existing session for today (could be in allSessions or currentSession)
+            let sessionToUpdate = currentSession;
+
+            if (!sessionToUpdate) {
+                // Try to find today's session in allSessions
+                sessionToUpdate = allSessions.find(s => s.date === today);
+            }
+
+            if (!sessionToUpdate) {
+                showToast('error', 'No Session', 'No active session to save. Please start your trading day first.', 3000);
                 return;
             }
 
-            currentSession.circuitBreakerTriggered = document.getElementById('circuitBreakerTriggered').value;
-            currentSession.circuitBreakerNotes = document.getElementById('circuitBreakerNotes').value;
-            currentSession.rulesAdherence = document.getElementById('rulesAdherencePercent').value;
-            currentSession.biggestWin = document.getElementById('biggestWin').value;
-            currentSession.biggestChallenge = document.getElementById('biggestChallenge').value;
-            currentSession.planTomorrow = document.getElementById('planTomorrow').value;
-            currentSession.additionalNotes = document.getElementById('additionalNotes').value;
-            currentSession.completed = true;
+            // Update the session with EOD data (preserving existing trades and other data)
+            sessionToUpdate.circuitBreakerTriggered = document.getElementById('circuitBreakerTriggered').value;
+            sessionToUpdate.circuitBreakerNotes = document.getElementById('circuitBreakerNotes').value;
+            sessionToUpdate.rulesAdherence = document.getElementById('rulesAdherencePercent').value;
+            sessionToUpdate.biggestWin = document.getElementById('biggestWin').value;
+            sessionToUpdate.biggestChallenge = document.getElementById('biggestChallenge').value;
+            sessionToUpdate.planTomorrow = document.getElementById('planTomorrow').value;
+            sessionToUpdate.additionalNotes = document.getElementById('additionalNotes').value;
+            sessionToUpdate.completed = true;
 
             // Archive EOD screenshots with the session
-            currentSession.eodScreenshots = screenshots.eod ? [...screenshots.eod] : [];
+            sessionToUpdate.eodScreenshots = screenshots.eod ? [...screenshots.eod] : [];
 
-            allSessions.push(currentSession);
+            // Only push to allSessions if it's not already there
+            const existingIndex = allSessions.findIndex(s => s.date === today);
+            if (existingIndex >= 0) {
+                // Update existing session in place
+                allSessions[existingIndex] = sessionToUpdate;
+            } else {
+                // Add new session
+                allSessions.push(sessionToUpdate);
+            }
+
             saveData();
 
             // Clear EOD screenshots for next day
@@ -5417,10 +5492,8 @@
             saveScreenshots();
             displayScreenshots('eod');
 
-            showToast('success', 'End of Day Saved', 'Great work completing your documentation. Review tomorrow\'s plan before starting.', 5000);
+            showToast('success', 'End of Day Saved', `Your review for ${sessionToUpdate.date} has been successfully saved.`, 5000);
 
-            currentSession = null;
-            saveData();
             updateDashboard(); // Refresh dashboard to show completion
             switchTab('dashboard'); // Go to dashboard
         }
@@ -5970,6 +6043,118 @@
         }
 
         // Update dashboard
+        // Update week range header
+        function updateWeekRangeHeader() {
+            const headerEl = document.getElementById('weekRangeHeader');
+            if (!headerEl) return;
+
+            const today = new Date();
+            const dayOfWeek = today.getDay(); // 0 = Sunday, 6 = Saturday
+
+            // Calculate start of week (Sunday)
+            const weekStart = new Date(today);
+            weekStart.setDate(today.getDate() - dayOfWeek);
+
+            // Calculate end of week (Saturday)
+            const weekEnd = new Date(weekStart);
+            weekEnd.setDate(weekStart.getDate() + 6);
+
+            const options = { month: 'short', day: 'numeric', year: 'numeric' };
+            const startStr = weekStart.toLocaleDateString('en-US', options);
+            const endStr = weekEnd.toLocaleDateString('en-US', options);
+
+            headerEl.textContent = `Performance for week of: ${startStr} - ${endStr}`;
+        }
+
+        // Calculate and update trading days remaining in the month
+        function updateTradingDaysRemaining() {
+            const el = document.getElementById('tradingDaysRemaining');
+            if (!el) return;
+
+            const today = new Date();
+            const year = today.getFullYear();
+            const month = today.getMonth();
+
+            // Get last day of current month
+            const lastDayOfMonth = new Date(year, month + 1, 0);
+
+            // Count trading days (excluding weekends) from tomorrow until end of month
+            let tradingDays = 0;
+            const currentDate = new Date(today);
+            currentDate.setDate(currentDate.getDate() + 1); // Start from tomorrow
+
+            while (currentDate <= lastDayOfMonth) {
+                const dayOfWeek = currentDate.getDay();
+                // Count if it's not Saturday (6) or Sunday (0)
+                if (dayOfWeek !== 0 && dayOfWeek !== 6) {
+                    tradingDays++;
+                }
+                currentDate.setDate(currentDate.getDate() + 1);
+            }
+
+            el.textContent = tradingDays;
+        }
+
+        // Update Weekly Strategic Plan section
+        function updateWeeklyStrategicPlan() {
+            const container = document.getElementById('weeklyStrategicPlanDisplay');
+            if (!container) return;
+
+            const sundayPreps = JSON.parse(localStorage.getItem('sundayPreps') || '[]');
+            if (sundayPreps.length === 0) {
+                container.innerHTML = '<p style="color: #8b949e; font-style: italic;">No Sunday Prep found for this week. Complete Market Prep to see your weekly plan here.</p>';
+                return;
+            }
+
+            // Get most recent Sunday prep (same logic as updateMarketLevels)
+            const sortedPreps = [...sundayPreps].sort((a, b) => {
+                const dateA = new Date(a.date);
+                const dateB = new Date(b.date);
+                return dateB - dateA;
+            });
+            const latestPrep = sortedPreps[0];
+
+            if (!latestPrep) {
+                container.innerHTML = '<p style="color: #8b949e; font-style: italic;">No Sunday Prep found for this week.</p>';
+                return;
+            }
+
+            let html = `
+                <div style="margin-bottom: 15px; padding: 10px; background: rgba(93, 173, 226, 0.1); border-left: 3px solid #5dade2; border-radius: 3px;">
+                    <strong style="color: #5dade2;">From Sunday Prep:</strong> ${new Date(latestPrep.date).toLocaleDateString()}
+                </div>
+                <div class="dashboard-grid" style="grid-template-columns: 1fr;">
+                    ${latestPrep.weeklyBias ? `
+                        <div style="padding: 15px; background: rgba(21, 27, 40, 0.5); border-radius: 3px; border-left: 3px solid #5dade2; margin-bottom: 10px;">
+                            <h3 style="font-size: 14px; margin-bottom: 8px; color: #5dade2;">📍 Primary Bias for the Week</h3>
+                            <p style="color: #c9d1d9; font-size: 13px; white-space: pre-wrap;">${latestPrep.weeklyBias}</p>
+                        </div>
+                    ` : ''}
+                    ${latestPrep.setups ? `
+                        <div style="padding: 15px; background: rgba(21, 27, 40, 0.5); border-radius: 3px; border-left: 3px solid #10b981; margin-bottom: 10px;">
+                            <h3 style="font-size: 14px; margin-bottom: 8px; color: #10b981;">🎯 Setups to Watch For</h3>
+                            <p style="color: #c9d1d9; font-size: 13px; white-space: pre-wrap;">${latestPrep.setups}</p>
+                        </div>
+                    ` : ''}
+                    ${latestPrep.processGoals ? `
+                        <div style="padding: 15px; background: rgba(21, 27, 40, 0.5); border-radius: 3px; border-left: 3px solid #f59e0b; margin-bottom: 10px;">
+                            <h3 style="font-size: 14px; margin-bottom: 8px; color: #f59e0b;">✨ Process Goals for This Week</h3>
+                            <p style="color: #c9d1d9; font-size: 13px; white-space: pre-wrap;">${latestPrep.processGoals}</p>
+                        </div>
+                    ` : ''}
+                    ${latestPrep.successCriteria ? `
+                        <div style="padding: 15px; background: rgba(21, 27, 40, 0.5); border-radius: 3px; border-left: 3px solid #8b5cf6; margin-bottom: 10px;">
+                            <h3 style="font-size: 14px; margin-bottom: 8px; color: #8b5cf6;">🏆 What Will Make This Week Successful?</h3>
+                            <p style="color: #c9d1d9; font-size: 13px; white-space: pre-wrap;">${latestPrep.successCriteria}</p>
+                        </div>
+                    ` : ''}
+                </div>
+                <button class="btn btn-primary" onclick="switchTab('sunday-prep')" style="margin-top: 10px; padding: 8px 15px; font-size: 13px;">View Full Sunday Prep</button>
+            `;
+
+            container.innerHTML = html;
+        }
+
         function updateDashboard() {
             const today = new Date().toISOString().split('T')[0];
             const todaySession = currentSession || allSessions.find(s => s.date === today);
@@ -6174,6 +6359,11 @@
 
             // Update market levels display
             updateMarketLevels();
+
+            // Update new dashboard sections
+            updateWeekRangeHeader();
+            updateTradingDaysRemaining();
+            updateWeeklyStrategicPlan();
         }
 
         // Update market levels display on dashboard
@@ -6187,8 +6377,14 @@
                 return;
             }
 
-            // Get most recent prep
-            const latestPrep = sundayPreps.sort((a, b) => new Date(b.date) - new Date(a.date))[0];
+            // Get most recent prep - sort by date descending (newest first)
+            // Create a copy to avoid mutating the original array
+            const sortedPreps = [...sundayPreps].sort((a, b) => {
+                const dateA = new Date(a.date);
+                const dateB = new Date(b.date);
+                return dateB - dateA; // Descending order (newest first)
+            });
+            const latestPrep = sortedPreps[0];
 
             let html = `
                 <div style="margin-bottom: 15px; padding: 10px; background: rgba(93, 173, 226, 0.1); border-left: 3px solid #5dade2; border-radius: 3px;">
