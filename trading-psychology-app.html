@@ -4339,19 +4339,58 @@
 
                 console.log('Basic initialization complete');
 
-                // Set date fields
-                document.getElementById('sessionDate').valueAsDate = new Date();
-                document.getElementById('sundayDate').valueAsDate = new Date();
+                // Set date fields - with null checks
+                const sessionDateEl = document.getElementById('sessionDate');
+                if (sessionDateEl) {
+                    sessionDateEl.valueAsDate = new Date();
+                    console.log('sessionDate set to today');
+                } else {
+                    console.warn('sessionDate element not found - skipping');
+                }
 
-                // Add listeners for emotional state warning
-                document.getElementById('emotionalState').addEventListener('input', checkEmotionalState);
-                document.getElementById('dashboardEmotionalState').addEventListener('input', checkDashboardEmotionalState);
+                const sundayDateEl = document.getElementById('sundayDate');
+                if (sundayDateEl) {
+                    sundayDateEl.valueAsDate = new Date();
+                    console.log('sundayDate set to today');
+                } else {
+                    console.warn('sundayDate element not found - skipping');
+                }
 
-                // Add listeners for R:R calculation
-                document.getElementById('tradeRiskAmount').addEventListener('input', calculateRR);
-                document.getElementById('tradeRewardAmount').addEventListener('input', calculateRR);
+                // Add listeners for emotional state warning - with null checks
+                const emotionalStateEl = document.getElementById('emotionalState');
+                if (emotionalStateEl) {
+                    emotionalStateEl.addEventListener('input', checkEmotionalState);
+                    console.log('emotionalState listener added');
+                } else {
+                    console.warn('emotionalState element not found');
+                }
 
-                console.log('Event listeners added');
+                const dashboardEmotionalStateEl = document.getElementById('dashboardEmotionalState');
+                if (dashboardEmotionalStateEl) {
+                    dashboardEmotionalStateEl.addEventListener('input', checkDashboardEmotionalState);
+                    console.log('dashboardEmotionalState listener added');
+                } else {
+                    console.warn('dashboardEmotionalState element not found');
+                }
+
+                // Add listeners for R:R calculation - with null checks
+                const tradeRiskAmountEl = document.getElementById('tradeRiskAmount');
+                if (tradeRiskAmountEl) {
+                    tradeRiskAmountEl.addEventListener('input', calculateRR);
+                    console.log('tradeRiskAmount listener added');
+                } else {
+                    console.warn('tradeRiskAmount element not found');
+                }
+
+                const tradeRewardAmountEl = document.getElementById('tradeRewardAmount');
+                if (tradeRewardAmountEl) {
+                    tradeRewardAmountEl.addEventListener('input', calculateRR);
+                    console.log('tradeRewardAmount listener added');
+                } else {
+                    console.warn('tradeRewardAmount element not found');
+                }
+
+                console.log('Event listeners setup complete');
 
                 // Initialize dashboard charts - call directly, no timeout needed
                 console.log('About to initialize dashboard charts...');
