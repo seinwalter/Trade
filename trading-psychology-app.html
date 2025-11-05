@@ -3,6 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
     <title>Bowtie Capital LLC - Professional Trading Analysis</title>
 
     <!-- Favicon -->
@@ -4328,6 +4331,14 @@
         // Initialize app
         document.addEventListener('DOMContentLoaded', function() {
             console.log('=== APP INITIALIZATION STARTED ===');
+            console.log('APP VERSION: 2024-11-05-v2 - NULL CHECK FIX');
+
+            // Add version indicator to page
+            const versionIndicator = document.createElement('div');
+            versionIndicator.style.cssText = 'position: fixed; bottom: 5px; left: 5px; background: rgba(0,0,0,0.7); color: #00ff00; padding: 3px 8px; font-size: 10px; border-radius: 3px; z-index: 9999;';
+            versionIndicator.textContent = 'v2024-11-05-v2';
+            document.body.appendChild(versionIndicator);
+            console.log('Version indicator added to page');
 
             try {
                 loadData();
