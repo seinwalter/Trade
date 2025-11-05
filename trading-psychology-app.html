@@ -4243,8 +4243,10 @@
 
         // Update date/time and market status
         function updateDateTime() {
+            console.log('[updateDateTime] Function called');
             try {
                 const now = new Date();
+                console.log('[updateDateTime] Current time:', now);
 
                 // Format date and time - simpler format for smaller display
                 const timeStr = now.toLocaleTimeString('en-US', {
@@ -4258,21 +4260,28 @@
                     year: 'numeric'
                 });
 
+                console.log('[updateDateTime] Formatted strings:', { dateStr, timeStr });
+
                 const dateTimeEl = document.getElementById('currentDateTime');
+                console.log('[updateDateTime] currentDateTime element:', dateTimeEl);
                 if (dateTimeEl) {
-                    dateTimeEl.textContent = `${dateStr} | ${timeStr}`;
+                    const displayText = `${dateStr} | ${timeStr}`;
+                    dateTimeEl.textContent = displayText;
+                    console.log('[updateDateTime] Set date/time text to:', displayText);
                 } else {
-                    console.log('currentDateTime element not found');
+                    console.error('[updateDateTime] ERROR: currentDateTime element not found!');
                 }
 
                 // Determine market status (US Stock Market: 9:30 AM - 4:00 PM ET, Monday-Friday)
                 const marketStatusEl = document.getElementById('marketStatus');
+                console.log('[updateDateTime] marketStatus element:', marketStatusEl);
                 if (marketStatusEl) {
                     const dayOfWeek = now.getDay(); // 0 = Sunday, 6 = Saturday
 
                     // Check if weekend
                     if (dayOfWeek === 0 || dayOfWeek === 6) {
                         marketStatusEl.innerHTML = '<span style="color: #6b7280;">🔴 Closed</span>';
+                        console.log('[updateDateTime] Market status: Weekend - Closed');
                         return;
                     }
 
@@ -4283,62 +4292,102 @@
                         const minutes = etTime.getMinutes();
                         const currentTime = hours * 60 + minutes;
 
+                        console.log('[updateDateTime] ET time:', hours, ':', minutes, 'Total minutes:', currentTime);
+
                         // Market hours
                         const marketOpen = 9 * 60 + 30;  // 9:30 AM
                         const marketClose = 16 * 60;      // 4:00 PM
                         const preMarket = 4 * 60;          // 4:00 AM
                         const afterHours = 20 * 60;        // 8:00 PM
 
+                        let status;
                         if (currentTime >= marketOpen && currentTime < marketClose) {
-                            marketStatusEl.innerHTML = '<span style="color: #10b981;">🟢 Open</span>';
+                            status = '<span style="color: #10b981;">🟢 Open</span>';
                         } else if (currentTime >= preMarket && currentTime < marketOpen) {
-                            marketStatusEl.innerHTML = '<span style="color: #f59e0b;">🟡 Pre-Market</span>';
+                            status = '<span style="color: #f59e0b;">🟡 Pre-Market</span>';
                         } else if (currentTime >= marketClose && currentTime < afterHours) {
-                            marketStatusEl.innerHTML = '<span style="color: #f59e0b;">🟡 After-Hours</span>';
+                            status = '<span style="color: #f59e0b;">🟡 After-Hours</span>';
                         } else {
-                            marketStatusEl.innerHTML = '<span style="color: #6b7280;">🔴 Closed</span>';
+                            status = '<span style="color: #6b7280;">🔴 Closed</span>';
                         }
+                        marketStatusEl.innerHTML = status;
+                        console.log('[updateDateTime] Market status set to:', status);
                     } catch (e) {
                         // Fallback if timezone conversion fails
                         marketStatusEl.innerHTML = '<span style="color: #8b949e;">Status Unknown</span>';
-                        console.log('Timezone conversion error:', e);
+                        console.error('[updateDateTime] Timezone conversion error:', e);
                     }
                 } else {
-                    console.log('marketStatus element not found');
+                    console.error('[updateDateTime] ERROR: marketStatus element not found!');
                 }
             } catch (error) {
-                console.error('Error in updateDateTime:', error);
+                console.error('[updateDateTime] FATAL ERROR:', error);
             }
         }
 
         // Initialize app
         document.addEventListener('DOMContentLoaded', function() {
-            loadData();
-            loadScreenshots();
-            loadSettings();
-            initializeToday();
-            updateDashboard();
+            console.log('=== APP INITIALIZATION STARTED ===');
 
-            // Initialize dashboard charts with a small delay to ensure DOM is fully rendered
-            setTimeout(function() {
+            try {
+                loadData();
+                loadScreenshots();
+                loadSettings();
+                initializeToday();
+                updateDashboard();
+                updateStatistics();
+
+                console.log('Basic initialization complete');
+
+                // Set date fields
+                document.getElementById('sessionDate').valueAsDate = new Date();
+                document.getElementById('sundayDate').valueAsDate = new Date();
+
+                // Add listeners for emotional state warning
+                document.getElementById('emotionalState').addEventListener('input', checkEmotionalState);
+                document.getElementById('dashboardEmotionalState').addEventListener('input', checkDashboardEmotionalState);
+
+                // Add listeners for R:R calculation
+                document.getElementById('tradeRiskAmount').addEventListener('input', calculateRR);
+                document.getElementById('tradeRewardAmount').addEventListener('input', calculateRR);
+
+                console.log('Event listeners added');
+
+                // Initialize dashboard charts - call directly, no timeout needed
+                console.log('About to initialize dashboard charts...');
                 initDashboardCharts();
-            }, 100);
+                console.log('Dashboard charts initialized');
 
-            updateStatistics();
-            document.getElementById('sessionDate').valueAsDate = new Date();
-            document.getElementById('sundayDate').valueAsDate = new Date();
+                // Update date/time and market status immediately and every second
+                console.log('About to call updateDateTime...');
+                updateDateTime();
+                console.log('updateDateTime called successfully');
+                setInterval(updateDateTime, 1000);
 
-            // Add listeners for emotional state warning
-            document.getElementById('emotionalState').addEventListener('input', checkEmotionalState);
-            document.getElementById('dashboardEmotionalState').addEventListener('input', checkDashboardEmotionalState);
+                console.log('=== APP INITIALIZATION COMPLETE ===');
 
-            // Add listeners for R:R calculation
-            document.getElementById('tradeRiskAmount').addEventListener('input', calculateRR);
-            document.getElementById('tradeRewardAmount').addEventListener('input', calculateRR);
+                // Additional initialization (previously in second DOMContentLoaded)
+                initVoiceRecognition();
+                addVoiceButtons();
+                initCSVDragDrop();
 
-            // Update date/time and market status immediately and every second
-            updateDateTime();
-            setInterval(updateDateTime, 1000);
+                // Add window resize listener for responsive canvas sizing
+                let resizeTimeout;
+                window.addEventListener('resize', function() {
+                    clearTimeout(resizeTimeout);
+                    resizeTimeout = setTimeout(function() {
+                        // Only resize and redraw if we're on the performance tab
+                        const performanceTab = document.getElementById('performance');
+                        if (performanceTab && performanceTab.classList.contains('active')) {
+                            updateAnalytics();
+                        }
+                    }, 250); // Debounce resize events
+                });
+
+            } catch (error) {
+                console.error('ERROR during initialization:', error);
+                alert('Error initializing app: ' + error.message);
+            }
         });
 
         // Tab switching
@@ -4440,84 +4489,105 @@
 
         // Initialize Dashboard Charts
         function initDashboardCharts() {
-            // Destroy existing charts before creating new ones
-            if (window.weeklyWinRateChart) {
-                window.weeklyWinRateChart.destroy();
-                window.weeklyWinRateChart = null;
-            }
-            if (window.weeklyPLChart) {
-                window.weeklyPLChart.destroy();
-                window.weeklyPLChart = null;
-            }
+            console.log('[initDashboardCharts] Function called');
+            try {
+                // Destroy existing charts before creating new ones
+                if (window.weeklyWinRateChart) {
+                    console.log('[initDashboardCharts] Destroying existing win rate chart');
+                    window.weeklyWinRateChart.destroy();
+                    window.weeklyWinRateChart = null;
+                }
+                if (window.weeklyPLChart) {
+                    console.log('[initDashboardCharts] Destroying existing P/L chart');
+                    window.weeklyPLChart.destroy();
+                    window.weeklyPLChart = null;
+                }
 
-            // Win Rate Donut Chart
-            const winRateCtx = document.getElementById('weeklyWinRateChart');
-            if (winRateCtx) {
-                const trades = getTradesThisWeek();
-                const wins = trades.filter(t => t.result === 'win').length;
-                const losses = trades.filter(t => t.result === 'loss').length;
+                // Win Rate Donut Chart
+                const winRateCtx = document.getElementById('weeklyWinRateChart');
+                console.log('[initDashboardCharts] weeklyWinRateChart canvas element:', winRateCtx);
+                if (winRateCtx) {
+                    const trades = getTradesThisWeek();
+                    console.log('[initDashboardCharts] Trades this week:', trades);
+                    const wins = trades.filter(t => t.result === 'win').length;
+                    const losses = trades.filter(t => t.result === 'loss').length;
+                    console.log('[initDashboardCharts] Wins:', wins, 'Losses:', losses);
 
-                if (trades.length === 0) {
-                    // Show empty state message
-                    const ctx = winRateCtx.getContext('2d');
-                    winRateCtx.width = winRateCtx.offsetWidth;
-                    winRateCtx.height = winRateCtx.offsetHeight;
-                    ctx.clearRect(0, 0, winRateCtx.width, winRateCtx.height);
-                    ctx.fillStyle = '#8b949e';
-                    ctx.font = '14px Barlow';
-                    ctx.textAlign = 'center';
-                    ctx.textBaseline = 'middle';
-                    ctx.fillText('No trades this week', winRateCtx.width / 2, winRateCtx.height / 2 - 10);
-                    ctx.font = '12px Barlow';
-                    ctx.fillStyle = '#6b7280';
-                    ctx.fillText('Start trading to see your win rate', winRateCtx.width / 2, winRateCtx.height / 2 + 10);
-                } else {
-                    window.weeklyWinRateChart = new Chart(winRateCtx, {
-                        type: 'doughnut',
-                        data: {
-                            labels: ['Wins', 'Losses'],
-                            datasets: [{
-                                data: [wins, losses],
-                                backgroundColor: ['#5dade2', '#2980b9']
-                            }]
-                        },
-                        options: {
-                            responsive: true,
-                            maintainAspectRatio: false,
-                            plugins: {
-                                legend: {
-                                    labels: { color: '#c9d1d9' }
+                    if (trades.length === 0) {
+                        console.log('[initDashboardCharts] No trades - showing empty state message');
+                        // Show empty state message
+                        const ctx = winRateCtx.getContext('2d');
+                        winRateCtx.width = winRateCtx.offsetWidth;
+                        winRateCtx.height = winRateCtx.offsetHeight;
+                        console.log('[initDashboardCharts] Canvas dimensions:', winRateCtx.width, 'x', winRateCtx.height);
+                        ctx.clearRect(0, 0, winRateCtx.width, winRateCtx.height);
+                        ctx.fillStyle = '#8b949e';
+                        ctx.font = '14px Barlow';
+                        ctx.textAlign = 'center';
+                        ctx.textBaseline = 'middle';
+                        ctx.fillText('No trades this week', winRateCtx.width / 2, winRateCtx.height / 2 - 10);
+                        ctx.font = '12px Barlow';
+                        ctx.fillStyle = '#6b7280';
+                        ctx.fillText('Start trading to see your win rate', winRateCtx.width / 2, winRateCtx.height / 2 + 10);
+                        console.log('[initDashboardCharts] Empty state message drawn');
+                    } else {
+                        console.log('[initDashboardCharts] Creating win rate chart with data');
+                        window.weeklyWinRateChart = new Chart(winRateCtx, {
+                            type: 'doughnut',
+                            data: {
+                                labels: ['Wins', 'Losses'],
+                                datasets: [{
+                                    data: [wins, losses],
+                                    backgroundColor: ['#5dade2', '#2980b9']
+                                }]
+                            },
+                            options: {
+                                responsive: true,
+                                maintainAspectRatio: false,
+                                plugins: {
+                                    legend: {
+                                        labels: { color: '#c9d1d9' }
+                                    }
                                 }
                             }
-                        }
-                    });
-                }
-            }
-
-            // Weekly P/L Chart
-            const plCtx = document.getElementById('weeklyPLChart');
-            if (plCtx) {
-                const trades = getTradesThisWeek();
-
-                if (trades.length === 0) {
-                    // Show empty state message
-                    const ctx = plCtx.getContext('2d');
-                    plCtx.width = plCtx.offsetWidth;
-                    plCtx.height = plCtx.offsetHeight;
-                    ctx.clearRect(0, 0, plCtx.width, plCtx.height);
-                    ctx.fillStyle = '#8b949e';
-                    ctx.font = '14px Barlow';
-                    ctx.textAlign = 'center';
-                    ctx.textBaseline = 'middle';
-                    ctx.fillText('No trades this week', plCtx.width / 2, plCtx.height / 2 - 10);
-                    ctx.font = '12px Barlow';
-                    ctx.fillStyle = '#6b7280';
-                    ctx.fillText('Complete a trade to see your P/L trend', plCtx.width / 2, plCtx.height / 2 + 10);
+                        });
+                        console.log('[initDashboardCharts] Win rate chart created successfully');
+                    }
                 } else {
-                    const labels = trades.map((t, i) => `T${i + 1}`);
-                    const data = trades.map(t => t.pnl || 0);
+                    console.error('[initDashboardCharts] ERROR: weeklyWinRateChart canvas not found!');
+                }
 
-                    window.weeklyPLChart = new Chart(plCtx, {
+                // Weekly P/L Chart
+                const plCtx = document.getElementById('weeklyPLChart');
+                console.log('[initDashboardCharts] weeklyPLChart canvas element:', plCtx);
+                if (plCtx) {
+                    const trades = getTradesThisWeek();
+                    console.log('[initDashboardCharts] Trades for P/L chart:', trades);
+
+                    if (trades.length === 0) {
+                        console.log('[initDashboardCharts] No trades - showing P/L empty state');
+                        // Show empty state message
+                        const ctx = plCtx.getContext('2d');
+                        plCtx.width = plCtx.offsetWidth;
+                        plCtx.height = plCtx.offsetHeight;
+                        console.log('[initDashboardCharts] P/L Canvas dimensions:', plCtx.width, 'x', plCtx.height);
+                        ctx.clearRect(0, 0, plCtx.width, plCtx.height);
+                        ctx.fillStyle = '#8b949e';
+                        ctx.font = '14px Barlow';
+                        ctx.textAlign = 'center';
+                        ctx.textBaseline = 'middle';
+                        ctx.fillText('No trades this week', plCtx.width / 2, plCtx.height / 2 - 10);
+                        ctx.font = '12px Barlow';
+                        ctx.fillStyle = '#6b7280';
+                        ctx.fillText('Complete a trade to see your P/L trend', plCtx.width / 2, plCtx.height / 2 + 10);
+                        console.log('[initDashboardCharts] P/L empty state message drawn');
+                    } else {
+                        console.log('[initDashboardCharts] Creating P/L chart with data');
+                        const labels = trades.map((t, i) => `T${i + 1}`);
+                        const data = trades.map(t => t.pnl || 0);
+                        console.log('[initDashboardCharts] P/L data:', data);
+
+                        window.weeklyPLChart = new Chart(plCtx, {
                         type: 'line',
                         data: {
                             labels: labels,
@@ -4549,7 +4619,16 @@
                             }
                         }
                     });
+                        console.log('[initDashboardCharts] P/L chart created successfully');
+                    }
+                } else {
+                    console.error('[initDashboardCharts] ERROR: weeklyPLChart canvas not found!');
                 }
+
+                console.log('[initDashboardCharts] Function completed successfully');
+            } catch (error) {
+                console.error('[initDashboardCharts] FATAL ERROR:', error);
+                console.error('[initDashboardCharts] Error stack:', error.stack);
             }
         }
 
@@ -10418,25 +10497,7 @@
             console.log('If column mapping UI appeared, the system is working!');
         }
 
-        // Initialize voice features and CSV when page loads
-        document.addEventListener('DOMContentLoaded', function() {
-            initVoiceRecognition();
-            addVoiceButtons();
-            initCSVDragDrop();
-
-            // Add window resize listener for responsive canvas sizing
-            let resizeTimeout;
-            window.addEventListener('resize', function() {
-                clearTimeout(resizeTimeout);
-                resizeTimeout = setTimeout(function() {
-                    // Only resize and redraw if we're on the performance tab
-                    const performanceTab = document.getElementById('performance');
-                    if (performanceTab && performanceTab.classList.contains('active')) {
-                        updateAnalytics();
-                    }
-                }, 250); // Debounce resize events
-            });
-        });
+        // Voice features and CSV initialization merged into main DOMContentLoaded listener above
     </script>
 </body>
 </html>
