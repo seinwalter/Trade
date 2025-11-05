@@ -5500,8 +5500,15 @@
 
         // Sunday Prep functions
         function saveSundayPrep() {
+            // Validate that date is filled
+            const dateValue = document.getElementById('sundayDate').value;
+            if (!dateValue) {
+                showToast('error', 'Date Required', 'Please enter a date for your Sunday Prep.', 3000);
+                return;
+            }
+
             const sundayPrep = {
-                date: document.getElementById('sundayDate').value,
+                date: dateValue,
                 dailyTrend: document.getElementById('sundayDailyTrend').value,
                 dailyStructure: document.getElementById('sundayDailyStructure').value,
                 dailySupport: document.getElementById('sundayDailySupport').value,
@@ -5548,7 +5555,10 @@
             displayScreenshots('sundayDaily');
             displayScreenshots('sunday4hr');
 
-            showToast('success', 'Sunday Research Saved', 'Your weekly plan is ready. Previous week\'s Sunday screenshots have been cleared. Reference this throughout the week.', 5000);
+            // Update dashboard to show new weekly plan
+            updateDashboard();
+
+            showToast('success', 'Sunday Research Saved', 'Your weekly plan is ready and now visible on the Dashboard. Previous week\'s Sunday screenshots have been cleared.', 5000);
         }
 
         function viewPastSundayPrep() {
@@ -6106,46 +6116,62 @@
                 return;
             }
 
-            // Get most recent Sunday prep (same logic as updateMarketLevels)
-            const sortedPreps = [...sundayPreps].sort((a, b) => {
-                const dateA = new Date(a.date);
-                const dateB = new Date(b.date);
-                return dateB - dateA;
-            });
-            const latestPrep = sortedPreps[0];
+            // Calculate THIS week's Sunday date
+            const today = new Date();
+            const dayOfWeek = today.getDay(); // 0 = Sunday, 6 = Saturday
+            const thisWeekSunday = new Date(today);
+            thisWeekSunday.setDate(today.getDate() - dayOfWeek);
+            thisWeekSunday.setHours(0, 0, 0, 0);
+            const thisWeekSundayStr = thisWeekSunday.toISOString().split('T')[0];
 
-            if (!latestPrep) {
-                container.innerHTML = '<p style="color: #8b949e; font-style: italic;">No Sunday Prep found for this week.</p>';
+            // Try to find the prep for THIS week's Sunday
+            let weeklyPrep = sundayPreps.find(p => p.date === thisWeekSundayStr);
+            let isCurrentWeek = true;
+
+            // If not found, use the most recent Sunday prep from the past
+            if (!weeklyPrep) {
+                const sortedPreps = [...sundayPreps].sort((a, b) => {
+                    const dateA = new Date(a.date);
+                    const dateB = new Date(b.date);
+                    return dateB - dateA;
+                });
+                weeklyPrep = sortedPreps[0];
+                isCurrentWeek = false;
+            }
+
+            if (!weeklyPrep) {
+                container.innerHTML = '<p style="color: #8b949e; font-style: italic;">No Sunday Prep found.</p>';
                 return;
             }
 
             let html = `
-                <div style="margin-bottom: 15px; padding: 10px; background: rgba(93, 173, 226, 0.1); border-left: 3px solid #5dade2; border-radius: 3px;">
-                    <strong style="color: #5dade2;">From Sunday Prep:</strong> ${new Date(latestPrep.date).toLocaleDateString()}
+                <div style="margin-bottom: 15px; padding: 10px; background: rgba(93, 173, 226, 0.1); border-left: 3px solid ${isCurrentWeek ? '#5dade2' : '#f59e0b'}; border-radius: 3px;">
+                    <strong style="color: ${isCurrentWeek ? '#5dade2' : '#f59e0b'};">${isCurrentWeek ? 'This Week\'s Plan' : '⚠️ Using Previous Week\'s Plan'} (${new Date(weeklyPrep.date).toLocaleDateString()})</strong>
+                    ${!isCurrentWeek ? '<p style="color: #f59e0b; font-size: 12px; margin-top: 5px;">No prep found for this week. Complete Sunday Prep to update.</p>' : ''}
                 </div>
                 <div class="dashboard-grid" style="grid-template-columns: 1fr;">
-                    ${latestPrep.weeklyBias ? `
+                    ${weeklyPrep.weeklyBias ? `
                         <div style="padding: 15px; background: rgba(21, 27, 40, 0.5); border-radius: 3px; border-left: 3px solid #5dade2; margin-bottom: 10px;">
                             <h3 style="font-size: 14px; margin-bottom: 8px; color: #5dade2;">📍 Primary Bias for the Week</h3>
-                            <p style="color: #c9d1d9; font-size: 13px; white-space: pre-wrap;">${latestPrep.weeklyBias}</p>
+                            <p style="color: #c9d1d9; font-size: 13px; white-space: pre-wrap;">${weeklyPrep.weeklyBias}</p>
                         </div>
                     ` : ''}
-                    ${latestPrep.setups ? `
+                    ${weeklyPrep.setups ? `
                         <div style="padding: 15px; background: rgba(21, 27, 40, 0.5); border-radius: 3px; border-left: 3px solid #10b981; margin-bottom: 10px;">
                             <h3 style="font-size: 14px; margin-bottom: 8px; color: #10b981;">🎯 Setups to Watch For</h3>
-                            <p style="color: #c9d1d9; font-size: 13px; white-space: pre-wrap;">${latestPrep.setups}</p>
+                            <p style="color: #c9d1d9; font-size: 13px; white-space: pre-wrap;">${weeklyPrep.setups}</p>
                         </div>
                     ` : ''}
-                    ${latestPrep.processGoals ? `
+                    ${weeklyPrep.processGoals ? `
                         <div style="padding: 15px; background: rgba(21, 27, 40, 0.5); border-radius: 3px; border-left: 3px solid #f59e0b; margin-bottom: 10px;">
                             <h3 style="font-size: 14px; margin-bottom: 8px; color: #f59e0b;">✨ Process Goals for This Week</h3>
-                            <p style="color: #c9d1d9; font-size: 13px; white-space: pre-wrap;">${latestPrep.processGoals}</p>
+                            <p style="color: #c9d1d9; font-size: 13px; white-space: pre-wrap;">${weeklyPrep.processGoals}</p>
                         </div>
                     ` : ''}
-                    ${latestPrep.successCriteria ? `
+                    ${weeklyPrep.successCriteria ? `
                         <div style="padding: 15px; background: rgba(21, 27, 40, 0.5); border-radius: 3px; border-left: 3px solid #8b5cf6; margin-bottom: 10px;">
                             <h3 style="font-size: 14px; margin-bottom: 8px; color: #8b5cf6;">🏆 What Will Make This Week Successful?</h3>
-                            <p style="color: #c9d1d9; font-size: 13px; white-space: pre-wrap;">${latestPrep.successCriteria}</p>
+                            <p style="color: #c9d1d9; font-size: 13px; white-space: pre-wrap;">${weeklyPrep.successCriteria}</p>
                         </div>
                     ` : ''}
                 </div>
