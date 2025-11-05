@@ -4331,12 +4331,12 @@
         // Initialize app
         document.addEventListener('DOMContentLoaded', function() {
             console.log('=== APP INITIALIZATION STARTED ===');
-            console.log('APP VERSION: 2024-11-05-v2 - NULL CHECK FIX');
+            console.log('APP VERSION: 2024-11-05-v3 - CHART DEBUG');
 
             // Add version indicator to page
             const versionIndicator = document.createElement('div');
             versionIndicator.style.cssText = 'position: fixed; bottom: 5px; left: 5px; background: rgba(0,0,0,0.7); color: #00ff00; padding: 3px 8px; font-size: 10px; border-radius: 3px; z-index: 9999;';
-            versionIndicator.textContent = 'v2024-11-05-v2';
+            versionIndicator.textContent = 'v2024-11-05-v3';
             document.body.appendChild(versionIndicator);
             console.log('Version indicator added to page');
 
@@ -4733,15 +4733,28 @@
 
         // Helper function to get this week's trades
         function getTradesThisWeek() {
+            console.log('[getTradesThisWeek] Function called');
+            console.log('[getTradesThisWeek] allTrades array:', allTrades);
+            console.log('[getTradesThisWeek] allTrades length:', allTrades ? allTrades.length : 'undefined');
+
             const now = new Date();
             const weekStart = new Date(now);
             weekStart.setDate(now.getDate() - now.getDay());
             weekStart.setHours(0, 0, 0, 0);
 
-            return allTrades.filter(trade => {
+            console.log('[getTradesThisWeek] Week start date:', weekStart);
+            console.log('[getTradesThisWeek] Current date:', now);
+
+            const weekTrades = allTrades.filter(trade => {
                 const tradeDate = new Date(trade.date);
-                return tradeDate >= weekStart;
+                const isThisWeek = tradeDate >= weekStart;
+                console.log('[getTradesThisWeek] Trade date:', trade.date, 'Is this week:', isThisWeek);
+                return isThisWeek;
             });
+
+            console.log('[getTradesThisWeek] Filtered trades for this week:', weekTrades);
+            console.log('[getTradesThisWeek] Returning', weekTrades.length, 'trades');
+            return weekTrades;
         }
 
         // Timer functionality
