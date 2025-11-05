@@ -1827,28 +1827,24 @@
             </div>
         </div>
 
-        <!-- Date/Time and Market Status Bar -->
-        <div style="background: rgba(21, 27, 40, 0.6); border-bottom: 1px solid #30363d; padding: 10px 20px; display: flex; justify-content: space-between; align-items: center;">
-            <div style="display: flex; gap: 30px; align-items: center;">
-                <div>
-                    <span style="color: #8b949e; font-size: 12px; text-transform: uppercase; letter-spacing: 1px;">Date & Time</span>
-                    <div id="currentDateTime" style="color: #c9d1d9; font-size: 14px; font-weight: 600; margin-top: 2px;">Loading...</div>
+        <div class="nav-tabs" style="display: flex; justify-content: space-between; align-items: center;">
+            <div style="display: flex;">
+                <button class="nav-tab active" onclick="switchTab('dashboard')">Dashboard</button>
+                <button class="nav-tab" onclick="switchTab('sunday-prep')">Market Prep</button>
+                <button class="nav-tab" onclick="switchTab('trade-entry')">Trade Calculator</button>
+                <button class="nav-tab" onclick="switchTab('end-of-day')">End of Day</button>
+                <button class="nav-tab" onclick="switchTab('performance')">📊 Performance</button>
+                <button class="nav-tab" onclick="switchTab('history')">History</button>
+                <button class="nav-tab" onclick="switchTab('settings')">⚙️ Settings</button>
+            </div>
+            <div style="display: flex; gap: 20px; align-items: center; padding-right: 10px;">
+                <div style="text-align: right;">
+                    <div id="currentDateTime" style="color: #c9d1d9; font-size: 11px;">Loading...</div>
                 </div>
-                <div>
-                    <span style="color: #8b949e; font-size: 12px; text-transform: uppercase; letter-spacing: 1px;">Market Status</span>
-                    <div id="marketStatus" style="font-size: 14px; font-weight: 600; margin-top: 2px;">Loading...</div>
+                <div style="text-align: right;">
+                    <div id="marketStatus" style="font-size: 11px;">Loading...</div>
                 </div>
             </div>
-        </div>
-
-        <div class="nav-tabs">
-            <button class="nav-tab active" onclick="switchTab('dashboard')">Dashboard</button>
-            <button class="nav-tab" onclick="switchTab('sunday-prep')">Market Prep</button>
-            <button class="nav-tab" onclick="switchTab('trade-entry')">Trade Calculator</button>
-            <button class="nav-tab" onclick="switchTab('end-of-day')">End of Day</button>
-            <button class="nav-tab" onclick="switchTab('performance')">📊 Performance</button>
-            <button class="nav-tab" onclick="switchTab('history')">History</button>
-            <button class="nav-tab" onclick="switchTab('settings')">⚙️ Settings</button>
         </div>
 
         <!-- Dashboard Tab -->
@@ -4247,63 +4243,71 @@
 
         // Update date/time and market status
         function updateDateTime() {
-            const now = new Date();
+            try {
+                const now = new Date();
 
-            // Format date and time
-            const dateOptions = {
-                weekday: 'long',
-                year: 'numeric',
-                month: 'long',
-                day: 'numeric'
-            };
-            const timeOptions = {
-                hour: '2-digit',
-                minute: '2-digit',
-                second: '2-digit',
-                hour12: true
-            };
+                // Format date and time - simpler format for smaller display
+                const timeStr = now.toLocaleTimeString('en-US', {
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    hour12: true
+                });
+                const dateStr = now.toLocaleDateString('en-US', {
+                    month: 'short',
+                    day: 'numeric',
+                    year: 'numeric'
+                });
 
-            const dateStr = now.toLocaleDateString('en-US', dateOptions);
-            const timeStr = now.toLocaleTimeString('en-US', timeOptions);
-
-            const dateTimeEl = document.getElementById('currentDateTime');
-            if (dateTimeEl) {
-                dateTimeEl.textContent = `${dateStr} | ${timeStr}`;
-            }
-
-            // Determine market status (US Stock Market: 9:30 AM - 4:00 PM ET, Monday-Friday)
-            const marketStatusEl = document.getElementById('marketStatus');
-            if (marketStatusEl) {
-                const dayOfWeek = now.getDay(); // 0 = Sunday, 6 = Saturday
-
-                // Check if weekend
-                if (dayOfWeek === 0 || dayOfWeek === 6) {
-                    marketStatusEl.innerHTML = '<span style="color: #6b7280;">🔴 Closed (Weekend)</span>';
-                    return;
-                }
-
-                // Get ET time (convert from system time)
-                // Note: This assumes the system is set to the correct timezone or uses UTC
-                const etTime = new Date(now.toLocaleString('en-US', { timeZone: 'America/New_York' }));
-                const hours = etTime.getHours();
-                const minutes = etTime.getMinutes();
-                const currentTime = hours * 60 + minutes; // Convert to minutes since midnight
-
-                // Market hours: 9:30 AM (570 minutes) to 4:00 PM (960 minutes)
-                const marketOpen = 9 * 60 + 30;  // 9:30 AM = 570 minutes
-                const marketClose = 16 * 60;      // 4:00 PM = 960 minutes
-                const preMarket = 4 * 60;          // 4:00 AM = 240 minutes
-                const afterHours = 20 * 60;        // 8:00 PM = 1200 minutes
-
-                if (currentTime >= marketOpen && currentTime < marketClose) {
-                    marketStatusEl.innerHTML = '<span style="color: #10b981;">🟢 Open</span>';
-                } else if (currentTime >= preMarket && currentTime < marketOpen) {
-                    marketStatusEl.innerHTML = '<span style="color: #f59e0b;">🟡 Pre-Market</span>';
-                } else if (currentTime >= marketClose && currentTime < afterHours) {
-                    marketStatusEl.innerHTML = '<span style="color: #f59e0b;">🟡 After-Hours</span>';
+                const dateTimeEl = document.getElementById('currentDateTime');
+                if (dateTimeEl) {
+                    dateTimeEl.textContent = `${dateStr} | ${timeStr}`;
                 } else {
-                    marketStatusEl.innerHTML = '<span style="color: #6b7280;">🔴 Closed</span>';
+                    console.log('currentDateTime element not found');
                 }
+
+                // Determine market status (US Stock Market: 9:30 AM - 4:00 PM ET, Monday-Friday)
+                const marketStatusEl = document.getElementById('marketStatus');
+                if (marketStatusEl) {
+                    const dayOfWeek = now.getDay(); // 0 = Sunday, 6 = Saturday
+
+                    // Check if weekend
+                    if (dayOfWeek === 0 || dayOfWeek === 6) {
+                        marketStatusEl.innerHTML = '<span style="color: #6b7280;">🔴 Closed</span>';
+                        return;
+                    }
+
+                    // Get ET time (convert from system time)
+                    try {
+                        const etTime = new Date(now.toLocaleString('en-US', { timeZone: 'America/New_York' }));
+                        const hours = etTime.getHours();
+                        const minutes = etTime.getMinutes();
+                        const currentTime = hours * 60 + minutes;
+
+                        // Market hours
+                        const marketOpen = 9 * 60 + 30;  // 9:30 AM
+                        const marketClose = 16 * 60;      // 4:00 PM
+                        const preMarket = 4 * 60;          // 4:00 AM
+                        const afterHours = 20 * 60;        // 8:00 PM
+
+                        if (currentTime >= marketOpen && currentTime < marketClose) {
+                            marketStatusEl.innerHTML = '<span style="color: #10b981;">🟢 Open</span>';
+                        } else if (currentTime >= preMarket && currentTime < marketOpen) {
+                            marketStatusEl.innerHTML = '<span style="color: #f59e0b;">🟡 Pre-Market</span>';
+                        } else if (currentTime >= marketClose && currentTime < afterHours) {
+                            marketStatusEl.innerHTML = '<span style="color: #f59e0b;">🟡 After-Hours</span>';
+                        } else {
+                            marketStatusEl.innerHTML = '<span style="color: #6b7280;">🔴 Closed</span>';
+                        }
+                    } catch (e) {
+                        // Fallback if timezone conversion fails
+                        marketStatusEl.innerHTML = '<span style="color: #8b949e;">Status Unknown</span>';
+                        console.log('Timezone conversion error:', e);
+                    }
+                } else {
+                    console.log('marketStatus element not found');
+                }
+            } catch (error) {
+                console.error('Error in updateDateTime:', error);
             }
         }
 
@@ -4332,11 +4336,9 @@
             document.getElementById('tradeRiskAmount').addEventListener('input', calculateRR);
             document.getElementById('tradeRewardAmount').addEventListener('input', calculateRR);
 
-            // Update date/time and market status every second
-            setTimeout(function() {
-                updateDateTime();
-                setInterval(updateDateTime, 1000);
-            }, 50);
+            // Update date/time and market status immediately and every second
+            updateDateTime();
+            setInterval(updateDateTime, 1000);
         });
 
         // Tab switching
