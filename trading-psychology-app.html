@@ -1890,11 +1890,15 @@
                 <h2>This Week at a Glance</h2>
                 <p id="weekRangeHeader" style="color: #8b949e; font-size: 14px; margin-bottom: 15px; font-style: italic;"></p>
 
-                <!-- Donut Chart Section -->
-                <div style="display: flex; justify-content: center; margin-bottom: 20px;">
-                    <div class="chart-container" style="width: 100%; max-width: 400px; height: 280px;">
-                        <h3 style="font-size: 14px; margin-bottom: 10px; color: #8b949e; text-align: center;">Win Rate This Week</h3>
-                        <canvas id="weeklyWinRateChart" style="max-height: 220px;"></canvas>
+                <!-- Charts Side by Side -->
+                <div class="chart-row">
+                    <div class="chart-container mini-chart">
+                        <h3 style="font-size: 14px; margin-bottom: 10px; color: #8b949e;">Win Rate This Week</h3>
+                        <canvas id="weeklyWinRateChart"></canvas>
+                    </div>
+                    <div class="chart-container mini-chart">
+                        <h3 style="font-size: 14px; margin-bottom: 10px; color: #8b949e;">Weekly P/L Trend</h3>
+                        <canvas id="weeklyPLChart"></canvas>
                     </div>
                 </div>
 
@@ -1924,12 +1928,6 @@
                         <p style="color: #8b949e; font-size: 12px; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px;">Mental State</p>
                         <div class="data-value neutral" id="todayStatus" style="font-size: 18px;">Ready ✅</div>
                     </div>
-                </div>
-
-                <!-- Weekly P/L Chart -->
-                <div class="chart-container mini-chart" style="margin-bottom: 20px;">
-                    <h3 style="font-size: 14px; margin-bottom: 10px; color: #8b949e;">Weekly P/L Trend</h3>
-                    <canvas id="weeklyPLChart"></canvas>
                 </div>
 
                 <!-- Weekly P/L Progress Bar -->
