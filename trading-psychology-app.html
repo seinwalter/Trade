@@ -6336,7 +6336,7 @@
             updateDashboard();
             updateStatistics();
             updateAnalytics();
-            updateHistory();
+            loadHistory();
 
             // Reinitialize charts to ensure proper rendering
             initDashboardCharts();
@@ -8496,6 +8496,10 @@
 
             // Session history
             const sessionHistoryDiv = document.getElementById('sessionHistory');
+            if (!sessionHistoryDiv) {
+                console.error('[loadHistory] Session history div not found!');
+                return;
+            }
             if (allSessions.length === 0) {
                 sessionHistoryDiv.innerHTML = '<p>No sessions recorded yet.</p>';
             } else {
@@ -8578,7 +8582,7 @@
 
             // Save and refresh
             saveData();
-            updateHistory();
+            loadHistory();
             updateDashboard();
             updateStatistics();
             updateAnalytics();
@@ -8652,7 +8656,7 @@
 
             // Save and refresh
             saveData();
-            updateHistory();
+            loadHistory();
             updateDashboard();
             updateStatistics();
             updateAnalytics();
