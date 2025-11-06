@@ -2012,6 +2012,11 @@
                 <strong>Market Prep:</strong> Take 20 minutes to analyze the 4-hour and Daily timeframes. Use this for weekly prep (Sundays) or daily prep (evenings) to prepare for upcoming trading sessions.
             </div>
 
+            <!-- Date Indicator -->
+            <div style="background: rgba(93, 173, 226, 0.15); border: 2px solid #5dade2; padding: 12px; margin-bottom: 15px; border-radius: 8px; text-align: center;">
+                <h3 id="marketPrepDateIndicator" style="margin: 0; color: #5dade2; font-size: 18px;">📅 Market Prep</h3>
+            </div>
+
             <div class="section">
                 <h2>Market Research & Prep ⏰ (20 minutes minimum)</h2>
                 <div class="timer-display" id="sundayResearchTimer">Timer: 00:00</div>
@@ -2441,6 +2446,11 @@
 
         <!-- End of Day Tab -->
         <div id="end-of-day" class="tab-content">
+            <!-- Date Indicator -->
+            <div style="background: rgba(93, 173, 226, 0.15); border: 2px solid #5dade2; padding: 12px; margin-bottom: 15px; border-radius: 8px; text-align: center;">
+                <h3 id="eodDateIndicator" style="margin: 0; color: #5dade2; font-size: 18px;">📅 End of Day Review</h3>
+            </div>
+
             <div class="section">
                 <h2>Today's Trades Summary</h2>
                 <div id="todayTradesSummary"></div>
@@ -4486,6 +4496,9 @@
         function loadEndOfDayData() {
             const today = new Date().toISOString().split('T')[0];
 
+            // Update date indicator to show today's date
+            updateEODDateIndicator(today);
+
             // Find today's session (either in currentSession or allSessions)
             const todaySession = currentSession || allSessions.find(s => s.date === today);
 
@@ -5694,6 +5707,25 @@
         }
 
         // Save end of day
+        // Update date indicators
+        function updateMarketPrepDateIndicator(dateStr) {
+            const indicator = document.getElementById('marketPrepDateIndicator');
+            if (indicator && dateStr) {
+                const dateObj = new Date(dateStr + 'T12:00:00'); // Add time to avoid timezone issues
+                const formattedDate = dateObj.toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+                indicator.textContent = `📅 Market Prep - ${formattedDate}`;
+            }
+        }
+
+        function updateEODDateIndicator(dateStr) {
+            const indicator = document.getElementById('eodDateIndicator');
+            if (indicator && dateStr) {
+                const dateObj = new Date(dateStr + 'T12:00:00'); // Add time to avoid timezone issues
+                const formattedDate = dateObj.toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+                indicator.textContent = `📅 End of Day Review - ${formattedDate}`;
+            }
+        }
+
         // Load session for editing in End of Day tab
         function loadSessionForEditing(sessionDate) {
             const session = allSessions.find(s => s.date === sessionDate);
@@ -5707,6 +5739,9 @@
 
             // Switch to End of Day tab
             switchTab('end-of-day');
+
+            // Update date indicator
+            updateEODDateIndicator(sessionDate);
 
             // Populate "Today's Trades Summary" section
             const summaryDiv = document.getElementById('todayTradesSummary');
@@ -5833,14 +5868,11 @@
             }
         }
 
-        // Sunday Prep functions
+        // Market Prep functions
         function loadCurrentWeekPrep() {
-            // Calculate this week's Sunday date
+            // Use today's date for market prep
             const today = new Date();
-            const dayOfWeek = today.getDay();
-            const thisWeekSunday = new Date(today);
-            thisWeekSunday.setDate(today.getDate() - dayOfWeek);
-            const thisWeekSundayStr = thisWeekSunday.toISOString().split('T')[0];
+            const todayStr = today.toISOString().split('T')[0];
 
             // ALWAYS clear the form first to ensure clean state
             clearSundayPrepForm();
@@ -5853,24 +5885,23 @@
             displayScreenshots('sundayDaily');
             displayScreenshots('sunday4hr');
 
-            // Set date to this Sunday
+            // Set date to today
             const sundayDateEl = document.getElementById('sundayDate');
-            if (sundayDateEl) sundayDateEl.value = thisWeekSundayStr;
+            if (sundayDateEl) sundayDateEl.value = todayStr;
 
-            // Get existing Sunday preps
+            // Update date indicator
+            updateMarketPrepDateIndicator(todayStr);
+
+            // Get existing preps
             const sundayPreps = JSON.parse(localStorage.getItem('sundayPreps') || '[]');
-            const weekPrep = sundayPreps.find(p => p.date === thisWeekSundayStr);
+            const todayPrep = sundayPreps.find(p => p.date === todayStr);
 
-            if (weekPrep) {
+            if (todayPrep) {
                 // Load the existing prep (skipUIActions = true to avoid infinite loop)
-                loadSundayPrep(thisWeekSundayStr, true);
+                loadSundayPrep(todayStr, true);
 
-                // Lock only weekly sections (Daily and 4hr remain editable)
-                lockSundayPrepForm(true);
-
-                // Show notification
-                const message = `This week's Weekly Plan is locked (completed ${new Date(weekPrep.date).toLocaleDateString()}). You can still update Daily and 4-Hour sections.`;
-                showToast('info', 'Weekly Plan Locked', message, 5000);
+                // Show notification that we're editing existing prep
+                showToast('info', 'Editing Today\'s Prep', `Loading market prep for ${new Date(todayPrep.date).toLocaleDateString()}. You can update any section.`, 4000);
             }
         }
 
@@ -5995,14 +6026,25 @@
                     console.log('[saveSundayPrep] Added new prep');
                 }
 
-                // Save to localStorage
-                localStorage.setItem('sundayPreps', JSON.stringify(sundayPreps));
-                console.log('[saveSundayPrep] Saved to localStorage');
+                // Save to localStorage with error handling
+                try {
+                    localStorage.setItem('sundayPreps', JSON.stringify(sundayPreps));
+                    console.log('[saveSundayPrep] Saved to localStorage');
 
-                // Verify save
-                const verifyPreps = JSON.parse(localStorage.getItem('sundayPreps') || '[]');
-                const verifySaved = verifyPreps.find(p => p.date === dateValue);
-                console.log('[saveSundayPrep] Verification - saved prep:', verifySaved);
+                    // Verify save
+                    const verifyPreps = JSON.parse(localStorage.getItem('sundayPreps') || '[]');
+                    const verifySaved = verifyPreps.find(p => p.date === dateValue);
+                    console.log('[saveSundayPrep] Verification - saved prep:', verifySaved);
+                } catch (storageError) {
+                    if (storageError.name === 'QuotaExceededError') {
+                        console.error('[saveSundayPrep] Storage quota exceeded!', storageError);
+                        showToast('error', 'Storage Full', 'Unable to save: browser storage is full. Try removing old screenshots or data to free up space.', 7000);
+                    } else {
+                        console.error('[saveSundayPrep] Storage error:', storageError);
+                        showToast('error', 'Storage Error', `Unable to save: ${storageError.message}`, 5000);
+                    }
+                    return; // Exit without clearing screenshots
+                }
 
                 // Clear old Sunday screenshots (weekly reset)
                 screenshots.sundayDaily = [];
