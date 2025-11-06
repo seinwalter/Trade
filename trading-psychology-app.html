@@ -2434,6 +2434,7 @@
             </div>
 
             <button class="btn btn-success" onclick="submitTrade()">Calculate & Save Trade</button>
+            <button id="cancelEditButton" class="btn btn-warning" onclick="cancelTradeEdit()" style="display: none;">❌ Cancel Edit</button>
             <button class="btn btn-secondary" onclick="viewTodayTrades()">📜 View Today's Trades</button>
             <button class="btn btn-danger" onclick="emergencyExit()">Emergency Exit (Felt Uncomfortable)</button>
         </div>
@@ -5171,7 +5172,7 @@
             showToast('success', isEditing ? 'Trade Updated' : 'Trade Entered', successMsg, 6000);
 
             // Clear form
-            document.querySelectorAll('#trade-entry input[type="text"], #trade-entry input[type="number"], #trade-entry textarea, #trade-entry select').forEach(el => {
+            document.querySelectorAll('#trade-entry input[type="text"], #trade-entry input[type="number"], #trade-entry input[type="time"], #trade-entry textarea, #trade-entry select').forEach(el => {
                 if (!el.readOnly) el.value = '';
             });
             checkboxes.forEach(id => document.getElementById(id).checked = false);
@@ -8727,6 +8728,8 @@
         // Helper function to update Trade Calculator UI for edit/create mode
         function updateTradeCalculatorUI(isEditMode) {
             const submitButton = document.querySelector('#trade-entry button.btn-success');
+            const cancelButton = document.getElementById('cancelEditButton');
+
             if (submitButton) {
                 if (isEditMode) {
                     submitButton.textContent = '✅ Update Trade';
@@ -8734,6 +8737,53 @@
                     submitButton.textContent = 'Calculate & Save Trade';
                 }
             }
+
+            if (cancelButton) {
+                cancelButton.style.display = isEditMode ? 'inline-block' : 'none';
+            }
+        }
+
+        // Cancel trade editing and return to history
+        function cancelTradeEdit() {
+            // Clear edit mode flag
+            window.editingTradeId = null;
+
+            // Clear all form fields
+            document.querySelectorAll('#trade-entry input[type="text"], #trade-entry input[type="number"], #trade-entry input[type="time"], #trade-entry textarea, #trade-entry select').forEach(el => {
+                if (!el.readOnly) el.value = '';
+            });
+
+            // Clear all checkboxes
+            const checkboxes = [
+                'check_daily', 'check_4hr', 'check_15min', 'check_1min', 'check_refresh',
+                'check_choch', 'check_orderblock', 'check_structural', 'check_invalidation', 'check_rr',
+                'check_position', 'check_stop', 'check_target', 'check_notime',
+                'check_notfirst15', 'check_before230', 'check_waiting'
+            ];
+            checkboxes.forEach(id => {
+                const cb = document.getElementById(id);
+                if (cb) cb.checked = false;
+            });
+
+            // Clear setup type checkboxes
+            const setupIds = ['setup_fvg', 'setup_orderblock', 'setup_breaker', 'setup_liquidity', 'setup_smt', 'setup_timeframe', 'setup_premium', 'setup_killzone'];
+            setupIds.forEach(id => {
+                const checkbox = document.getElementById(id);
+                if (checkbox) checkbox.checked = false;
+            });
+
+            // Clear screenshots
+            screenshots.trade = [];
+            saveScreenshots();
+            displayScreenshots('trade');
+
+            // Reset UI to create mode
+            updateTradeCalculatorUI(false);
+
+            // Return to history tab
+            switchTab('history');
+
+            showToast('info', 'Edit Cancelled', 'Trade editing cancelled. No changes were saved.', 3000);
         }
 
         // Keep old editTrade function name for backward compatibility (now calls loadTradeForEditing)
