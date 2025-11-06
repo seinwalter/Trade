@@ -5182,6 +5182,9 @@
                 if (checkbox) checkbox.checked = false;
             });
 
+            // Reset UI to create mode
+            updateTradeCalculatorUI(false);
+
             // Update dashboard and charts to reflect the new trade
             updateDashboard();
             initDashboardCharts();
@@ -5690,19 +5693,87 @@
         }
 
         // Save end of day
+        // Load session for editing in End of Day tab
+        function loadSessionForEditing(sessionDate) {
+            const session = allSessions.find(s => s.date === sessionDate);
+            if (!session) {
+                showToast('error', 'Error', 'Session not found', 3000);
+                return;
+            }
+
+            // Store the session date we're editing
+            window.editingSessionDate = sessionDate;
+
+            // Switch to End of Day tab
+            switchTab('end-of-day');
+
+            // Populate "Today's Trades Summary" section
+            const summaryDiv = document.getElementById('todayTradesSummary');
+            if (summaryDiv) {
+                if (!session.trades || session.trades.length === 0) {
+                    summaryDiv.innerHTML = '<p>No trades recorded for this session.</p>';
+                } else {
+                    let summaryHTML = `<p><strong>Total Trades:</strong> ${session.trades.length}</p>`;
+                    session.trades.forEach((trade, index) => {
+                        const pnlValue = trade.pnl ? parseFloat(trade.pnl) : null;
+                        const pnlDisplay = pnlValue && !isNaN(pnlValue) ?
+                            (pnlValue >= 0 ? `+$${pnlValue.toFixed(2)}` : `-$${Math.abs(pnlValue).toFixed(2)}`) :
+                            (trade.resultDisplay || 'Open');
+
+                        summaryHTML += `
+                            <div style="padding: 10px; margin: 10px 0; background: rgba(21, 27, 40, 0.6); border-radius: 3px;">
+                                <strong>Trade ${index + 1}: ${trade.symbol} ${trade.direction?.toUpperCase() || 'LONG'}</strong>
+                                <div>Time: ${trade.entryTime || 'N/A'} | Entry: $${trade.entryPrice || 'N/A'} | R:R: ${trade.rrRatio || 'N/A'}</div>
+                                <div>Result: ${pnlDisplay}</div>
+                            </div>
+                        `;
+                    });
+                    summaryDiv.innerHTML = summaryHTML;
+                }
+            }
+
+            // Populate all EOD form fields
+            document.getElementById('circuitBreakerTriggered').value = session.circuitBreakerTriggered || 'No';
+            document.getElementById('circuitBreakerNotes').value = session.circuitBreakerNotes || '';
+            document.getElementById('rulesAdherencePercent').value = session.rulesAdherence || '';
+            document.getElementById('biggestWin').value = session.biggestWin || '';
+            document.getElementById('biggestChallenge').value = session.biggestChallenge || '';
+            document.getElementById('planTomorrow').value = session.planTomorrow || '';
+            document.getElementById('additionalNotes').value = session.additionalNotes || '';
+
+            // Load EOD screenshots if available
+            if (session.eodScreenshots && session.eodScreenshots.length > 0) {
+                screenshots.eod = [...session.eodScreenshots];
+                saveScreenshots();
+                displayScreenshots('eod');
+            } else {
+                screenshots.eod = [];
+                saveScreenshots();
+                displayScreenshots('eod');
+            }
+
+            showToast('info', 'Review Session', `Viewing End of Day review for ${sessionDate}. You can make changes and save.`, 5000);
+        }
+
         function saveEndOfDay() {
             try {
                 console.log('[saveEndOfDay] Starting EOD save...');
+
+                // Check if we're editing a specific session or today's session
                 const today = new Date().toISOString().split('T')[0];
-                console.log('[saveEndOfDay] Today\'s date:', today);
+                const targetDate = window.editingSessionDate || today;
+                console.log('[saveEndOfDay] Target date:', targetDate);
 
-                // First, try to load existing session for today (could be in allSessions or currentSession)
-                let sessionToUpdate = currentSession;
-                console.log('[saveEndOfDay] currentSession:', currentSession);
+                // Find the session to update
+                let sessionToUpdate = null;
 
-                if (!sessionToUpdate) {
-                    // Try to find today's session in allSessions
-                    sessionToUpdate = allSessions.find(s => s.date === today);
+                if (targetDate === today && currentSession) {
+                    // Use current session if we're saving today's EOD
+                    sessionToUpdate = currentSession;
+                    console.log('[saveEndOfDay] Using currentSession');
+                } else {
+                    // Find the session in allSessions
+                    sessionToUpdate = allSessions.find(s => s.date === targetDate);
                     console.log('[saveEndOfDay] Found session in allSessions:', sessionToUpdate);
                 }
 
@@ -5727,8 +5798,8 @@
                 // Archive EOD screenshots with the session
                 sessionToUpdate.eodScreenshots = screenshots.eod ? [...screenshots.eod] : [];
 
-                // Only push to allSessions if it's not already there
-                const existingIndex = allSessions.findIndex(s => s.date === today);
+                // Update or add to allSessions
+                const existingIndex = allSessions.findIndex(s => s.date === targetDate);
                 if (existingIndex >= 0) {
                     // Update existing session in place
                     allSessions[existingIndex] = sessionToUpdate;
@@ -5741,6 +5812,9 @@
 
                 saveData();
                 console.log('[saveEndOfDay] Data saved to localStorage');
+
+                // Clear editing session flag
+                window.editingSessionDate = null;
 
                 // Clear EOD screenshots for next day
                 screenshots.eod = [];
@@ -8599,78 +8673,72 @@
             showToast('success', 'Trade Deleted', `${trade.symbol} trade removed successfully`, 3000);
         }
 
-        // Edit trade (simple prompt-based editing for now)
-        function editTrade(tradeId) {
+        // Load trade for editing in Trade Calculator tab
+        function loadTradeForEditing(tradeId) {
             const trade = allTrades.find(t => t.id === tradeId);
             if (!trade) {
                 showToast('error', 'Error', 'Trade not found', 3000);
                 return;
             }
 
-            // Show current values and allow editing
-            const symbol = prompt('Symbol:', trade.symbol);
-            if (!symbol) return;
+            // Set global edit mode
+            window.editingTradeId = tradeId;
 
-            const direction = prompt('Direction (long/short):', trade.direction);
-            if (!direction || !['long', 'short'].includes(direction.toLowerCase())) {
-                showToast('error', 'Invalid Direction', 'Direction must be "long" or "short"', 3000);
-                return;
+            // Switch to Trade Calculator tab
+            switchTab('trade-entry');
+
+            // Populate all form fields
+            document.getElementById('tradeSymbol').value = trade.symbol || '';
+            document.getElementById('tradeEntryTime').value = trade.entryTime || '';
+            document.getElementById('tradeDirection').value = trade.direction || 'long';
+            document.getElementById('tradeThesis').value = trade.thesis || '';
+            document.getElementById('tradePositionSize').value = trade.positionSize || '';
+            document.getElementById('tradeEntryPrice').value = trade.entryPrice || '';
+            document.getElementById('tradeStopLoss').value = trade.stopLoss || '';
+            document.getElementById('tradeTarget').value = trade.target || '';
+            document.getElementById('tradeRiskAmount').value = trade.riskAmount || '';
+            document.getElementById('tradeRewardAmount').value = trade.rewardAmount || '';
+            document.getElementById('tradeRRRatio').value = trade.rrRatio || '';
+
+            // Check setup type checkboxes
+            if (trade.setupTypes && Array.isArray(trade.setupTypes)) {
+                const setupIds = ['setup_fvg', 'setup_orderblock', 'setup_breaker', 'setup_liquidity', 'setup_smt', 'setup_timeframe', 'setup_premium', 'setup_killzone'];
+                setupIds.forEach(id => {
+                    const checkbox = document.getElementById(id);
+                    if (checkbox) {
+                        checkbox.checked = trade.setupTypes.includes(checkbox.value);
+                    }
+                });
             }
 
-            const entryPrice = parseFloat(prompt('Entry Price:', trade.entryPrice));
-            if (isNaN(entryPrice)) {
-                showToast('error', 'Invalid Price', 'Entry price must be a number', 3000);
-                return;
+            // Load screenshots if available
+            if (trade.tradeScreenshots && trade.tradeScreenshots.length > 0) {
+                screenshots.trade = [...trade.tradeScreenshots];
+                saveScreenshots();
+                displayScreenshots('trade');
             }
 
-            const exitPrice = parseFloat(prompt('Exit Price:', trade.exitPrice));
-            if (isNaN(exitPrice)) {
-                showToast('error', 'Invalid Price', 'Exit price must be a number', 3000);
-                return;
+            // Update UI for edit mode
+            updateTradeCalculatorUI(true);
+
+            showToast('info', 'Edit Mode', `Editing trade: ${trade.symbol}. Make your changes and click "Update Trade".`, 5000);
+        }
+
+        // Helper function to update Trade Calculator UI for edit/create mode
+        function updateTradeCalculatorUI(isEditMode) {
+            const submitButton = document.querySelector('#trade-entry button.btn-success');
+            if (submitButton) {
+                if (isEditMode) {
+                    submitButton.textContent = '✅ Update Trade';
+                } else {
+                    submitButton.textContent = 'Calculate & Save Trade';
+                }
             }
+        }
 
-            const positionSize = parseFloat(prompt('Position Size:', trade.positionSize || 1));
-            if (isNaN(positionSize)) {
-                showToast('error', 'Invalid Size', 'Position size must be a number', 3000);
-                return;
-            }
-
-            // Calculate new P/L based on direction
-            let pnl;
-            if (direction.toLowerCase() === 'long') {
-                pnl = (exitPrice - entryPrice) * positionSize;
-            } else {
-                pnl = (entryPrice - exitPrice) * positionSize;
-            }
-
-            // Update trade
-            trade.symbol = symbol;
-            trade.direction = direction.toLowerCase();
-            trade.entryPrice = entryPrice;
-            trade.exitPrice = exitPrice;
-            trade.positionSize = positionSize;
-            trade.pnl = pnl;
-
-            // Update result
-            if (pnl > 0) {
-                trade.result = 'win';
-                trade.resultDisplay = `+$${pnl.toFixed(2)}`;
-            } else if (pnl < 0) {
-                trade.result = 'loss';
-                trade.resultDisplay = `($${Math.abs(pnl).toFixed(2)})`;
-            } else {
-                trade.result = 'breakeven';
-                trade.resultDisplay = `$${pnl.toFixed(2)}`;
-            }
-
-            // Save and refresh
-            saveData();
-            loadHistory();
-            updateDashboard();
-            updateStatistics();
-            updateAnalytics();
-
-            showToast('success', 'Trade Updated', `${trade.symbol} trade updated successfully`, 3000);
+        // Keep old editTrade function name for backward compatibility (now calls loadTradeForEditing)
+        function editTrade(tradeId) {
+            loadTradeForEditing(tradeId);
         }
 
         // Export functions
@@ -9274,28 +9342,8 @@
 
         // View session detail
         function viewSessionDetail(date) {
-            const session = allSessions.find(s => s.date === date);
-            if (!session) return;
-
-            const content = document.getElementById('tradeDetailContent');
-            content.innerHTML = `
-                <div class="section">
-                    <h3>Session: ${session.date}</h3>
-                    <p><strong>Sleep:</strong> ${session.sleepHours} hours</p>
-                    <p><strong>Emotional State:</strong> ${session.emotionalState}/10</p>
-                    <p><strong>Stress Level:</strong> ${session.stressLevel}/10</p>
-                    <p><strong>Daily Trend:</strong> ${session.dailyTrend}</p>
-                    <p><strong>4hr Structure:</strong> ${session.fourHourStructure}</p>
-                    <p><strong>Trading Plan:</strong> ${session.tradingPlan}</p>
-                    <p><strong>Trades:</strong> ${session.trades?.length || 0}</p>
-                    <p><strong>Rules Adherence:</strong> ${session.rulesAdherence || 'N/A'}%</p>
-                    ${session.biggestWin ? `<p><strong>Biggest Win:</strong> ${session.biggestWin}</p>` : ''}
-                    ${session.biggestChallenge ? `<p><strong>Biggest Challenge:</strong> ${session.biggestChallenge}</p>` : ''}
-                    ${session.planTomorrow ? `<p><strong>Plan for Tomorrow:</strong> ${session.planTomorrow}</p>` : ''}
-                </div>
-            `;
-
-            document.getElementById('tradeDetailModal').classList.add('active');
+            // Drill down into End of Day tab for editing
+            loadSessionForEditing(date);
         }
 
         // Voice Recording and Transcription
