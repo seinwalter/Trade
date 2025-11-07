@@ -9361,31 +9361,50 @@
 
             const { jsPDF } = window.jspdf;
             const doc = new jsPDF();
+            let currentPage = 1;
 
-            // Header
-            doc.setFillColor(10, 14, 39);
-            doc.rect(0, 0, 210, 40, 'F');
-            doc.setTextColor(88, 166, 255);
-            doc.setFontSize(24);
-            doc.setFont(undefined, 'bold');
-            doc.text('📊 PERFORMANCE STATISTICS', 105, 20, { align: 'center' });
-            doc.setFontSize(11);
-            doc.setTextColor(139, 148, 158);
-            doc.text(`Generated: ${new Date().toLocaleString()}`, 105, 30, { align: 'center' });
+            function addPageHeader(title) {
+                doc.setFillColor(10, 14, 39);
+                doc.rect(0, 0, 210, 35, 'F');
+                doc.setTextColor(88, 166, 255);
+                doc.setFontSize(20);
+                doc.setFont(undefined, 'bold');
+                doc.text(title, 105, 15, { align: 'center' });
+                doc.setFontSize(9);
+                doc.setTextColor(139, 148, 158);
+                doc.text(`Generated: ${new Date().toLocaleString()} | Page ${currentPage}`, 105, 25, { align: 'center' });
+            }
 
-            let y = 50;
+            function checkPageSpace(neededSpace) {
+                if (y + neededSpace > 280) {
+                    doc.addPage();
+                    currentPage++;
+                    addPageHeader('📊 PERFORMANCE REPORT (continued)');
+                    y = 45;
+                }
+            }
+
+            function addSectionHeader(title, bgColor = [88, 166, 255]) {
+                checkPageSpace(15);
+                doc.setFillColor(...bgColor);
+                doc.rect(15, y, 180, 7, 'F');
+                doc.setTextColor(255, 255, 255);
+                doc.setFontSize(12);
+                doc.setFont(undefined, 'bold');
+                doc.text(title, 20, y + 5);
+                doc.setFont(undefined, 'normal');
+                y += 12;
+            }
+
+            // Page 1: Header and Overall Performance
+            addPageHeader('📊 COMPREHENSIVE PERFORMANCE REPORT');
+            let y = 45;
 
             // Overall Performance Metrics
-            doc.setFillColor(88, 166, 255);
-            doc.rect(15, y, 180, 7, 'F');
-            doc.setTextColor(255, 255, 255);
-            doc.setFontSize(12);
-            doc.text('OVERALL PERFORMANCE METRICS', 20, y + 5);
-            y += 12;
+            addSectionHeader('OVERALL PERFORMANCE METRICS');
 
             doc.setTextColor(0, 0, 0);
             doc.setFontSize(10);
-            doc.setFont(undefined, 'normal');
 
             const totalTrades = allTrades.length;
             const wins = allTrades.filter(t => t.result === 'win').length;
@@ -9396,7 +9415,21 @@
             const grossLoss = Math.abs(allTrades.filter(t => t.result === 'loss').reduce((sum, t) => sum + (t.pnl || 0), 0));
             const profitFactor = grossLoss > 0 ? (grossProfit / grossLoss).toFixed(2) : '0.00';
 
-            doc.text(`Total Trades: ${totalTrades}`, 15, y);
+            // Calculate expectancy
+            const winningTrades = allTrades.filter(t => t.result === 'win');
+            const losingTrades = allTrades.filter(t => t.result === 'loss');
+            const avgWin = winningTrades.length > 0 ? (winningTrades.reduce((sum, t) => sum + (t.pnl || 0), 0) / winningTrades.length) : 0;
+            const avgLoss = losingTrades.length > 0 ? (losingTrades.reduce((sum, t) => sum + (t.pnl || 0), 0) / losingTrades.length) : 0;
+            const winLossRatio = avgLoss !== 0 ? (avgWin / Math.abs(avgLoss)).toFixed(2) : '0.00';
+            const expectancy = (parseFloat(winRate) / 100) * avgWin + ((100 - parseFloat(winRate)) / 100) * avgLoss;
+
+            // Calculate average R:R ratio
+            const tradesWithRR = allTrades.filter(t => t.riskReward);
+            const avgRR = tradesWithRR.length > 0
+                ? (tradesWithRR.reduce((sum, t) => sum + parseFloat(t.riskReward), 0) / tradesWithRR.length).toFixed(2)
+                : '0.00';
+
+            doc.text(`Total Trades: ${totalTrades} (${wins} wins, ${losses} losses)`, 15, y);
             y += 6;
             doc.text(`Win Rate: ${winRate}%`, 15, y);
             y += 6;
@@ -9406,48 +9439,209 @@
             doc.setTextColor(0, 0, 0);
             doc.setFont(undefined, 'normal');
             y += 6;
+            doc.text(`Gross Profit: $${grossProfit.toFixed(2)} | Gross Loss: $${grossLoss.toFixed(2)}`, 15, y);
+            y += 6;
             doc.text(`Profit Factor: ${profitFactor}`, 15, y);
+            y += 6;
+            doc.setFont(undefined, 'bold');
+            doc.text(`Expectancy: $${expectancy.toFixed(2)} per trade`, 15, y);
+            doc.setFont(undefined, 'normal');
+            y += 6;
+            doc.text(`Average R:R Ratio: ${avgRR}:1`, 15, y);
             y += 12;
 
             // Win/Loss Breakdown
-            doc.setFillColor(88, 166, 255);
-            doc.rect(15, y, 180, 7, 'F');
-            doc.setTextColor(255, 255, 255);
-            doc.text('WIN/LOSS BREAKDOWN', 20, y + 5);
-            y += 12;
-
-            const winningTrades = allTrades.filter(t => t.result === 'win');
-            const losingTrades = allTrades.filter(t => t.result === 'loss');
-            const avgWin = winningTrades.length > 0 ? (winningTrades.reduce((sum, t) => sum + (t.pnl || 0), 0) / winningTrades.length) : 0;
-            const avgLoss = losingTrades.length > 0 ? (losingTrades.reduce((sum, t) => sum + (t.pnl || 0), 0) / losingTrades.length) : 0;
-            const winLossRatio = avgLoss !== 0 ? (avgWin / Math.abs(avgLoss)).toFixed(2) : '0.00';
+            addSectionHeader('WIN/LOSS ANALYSIS');
 
             doc.setTextColor(0, 0, 0);
-            doc.text(`Winning Trades: ${wins} (${winRate}%)`, 15, y);
+            doc.text(`Average Win: $${avgWin.toFixed(2)} | Average Loss: $${avgLoss.toFixed(2)}`, 15, y);
             y += 6;
-            doc.text(`Average Win: $${avgWin.toFixed(2)}`, 15, y);
-            y += 6;
-            doc.text(`Gross Profit: $${grossProfit.toFixed(2)}`, 15, y);
-            y += 8;
-            doc.text(`Losing Trades: ${losses} (${(100 - parseFloat(winRate)).toFixed(1)}%)`, 15, y);
-            y += 6;
-            doc.text(`Average Loss: $${avgLoss.toFixed(2)}`, 15, y);
-            y += 6;
-            doc.text(`Gross Loss: $${grossLoss.toFixed(2)}`, 15, y);
-            y += 8;
             doc.setFont(undefined, 'bold');
             doc.text(`Win/Loss Ratio: ${winLossRatio}:1`, 15, y);
             doc.setFont(undefined, 'normal');
+            y += 6;
+
+            // Largest Win/Loss
+            const sortedByPnL = [...allTrades].sort((a, b) => (b.pnl || 0) - (a.pnl || 0));
+            const largestWin = sortedByPnL[0];
+            const largestLoss = sortedByPnL[sortedByPnL.length - 1];
+
+            if (largestWin && largestWin.pnl > 0) {
+                doc.setTextColor(16, 185, 129);
+                doc.text(`Largest Win: $${largestWin.pnl.toFixed(2)} (${largestWin.symbol || 'N/A'} on ${largestWin.date})`, 15, y);
+                y += 6;
+            }
+            if (largestLoss && largestLoss.pnl < 0) {
+                doc.setTextColor(239, 68, 68);
+                doc.text(`Largest Loss: $${largestLoss.pnl.toFixed(2)} (${largestLoss.symbol || 'N/A'} on ${largestLoss.date})`, 15, y);
+                y += 6;
+            }
+            doc.setTextColor(0, 0, 0);
+            y += 6;
+
+            // Risk Metrics - Drawdown
+            addSectionHeader('RISK ANALYSIS', [239, 68, 68]);
+
+            // Calculate max drawdown
+            let peak = 0;
+            let maxDrawdown = 0;
+            let currentDrawdown = 0;
+            let equity = 0;
+
+            allTrades.forEach(trade => {
+                equity += (trade.pnl || 0);
+                if (equity > peak) {
+                    peak = equity;
+                }
+                const drawdown = ((peak - equity) / peak) * 100;
+                if (drawdown > maxDrawdown) {
+                    maxDrawdown = drawdown;
+                }
+            });
+
+            if (peak > 0) {
+                currentDrawdown = ((peak - equity) / peak) * 100;
+            }
+
+            doc.text(`Max Drawdown: ${maxDrawdown.toFixed(2)}% (worst peak-to-trough decline)`, 15, y);
+            y += 6;
+            doc.text(`Current Drawdown: ${currentDrawdown.toFixed(2)}% from peak equity`, 15, y);
             y += 12;
+
+            // Streak Analysis
+            addSectionHeader('WINNING & LOSING STREAKS', [16, 185, 129]);
+
+            // Calculate streaks
+            let currentStreak = 0;
+            let currentStreakType = '';
+            let longestWinStreak = 0;
+            let longestLossStreak = 0;
+            let tempWinStreak = 0;
+            let tempLossStreak = 0;
+
+            allTrades.forEach((trade, i) => {
+                if (trade.result === 'win') {
+                    tempWinStreak++;
+                    tempLossStreak = 0;
+                    if (tempWinStreak > longestWinStreak) longestWinStreak = tempWinStreak;
+                } else if (trade.result === 'loss') {
+                    tempLossStreak++;
+                    tempWinStreak = 0;
+                    if (tempLossStreak > longestLossStreak) longestLossStreak = tempLossStreak;
+                }
+            });
+
+            // Current streak
+            for (let i = allTrades.length - 1; i >= 0; i--) {
+                if (i === allTrades.length - 1) {
+                    currentStreakType = allTrades[i].result === 'win' ? 'wins' : 'losses';
+                    currentStreak = 1;
+                } else if (allTrades[i].result === currentStreakType.slice(0, -1)) {
+                    currentStreak++;
+                } else {
+                    break;
+                }
+            }
+
+            doc.setTextColor(0, 0, 0);
+            doc.text(`Current Streak: ${currentStreak} ${currentStreakType}`, 15, y);
+            y += 6;
+            doc.text(`Longest Win Streak: ${longestWinStreak} | Longest Loss Streak: ${longestLossStreak}`, 15, y);
+            y += 12;
+
+            // Long vs Short Performance
+            addSectionHeader('LONG vs SHORT PERFORMANCE', [88, 166, 255]);
+
+            const longTrades = allTrades.filter(t => t.direction === 'Long');
+            const shortTrades = allTrades.filter(t => t.direction === 'Short');
+            const longWins = longTrades.filter(t => t.result === 'win').length;
+            const shortWins = shortTrades.filter(t => t.result === 'win').length;
+            const longWinRate = longTrades.length > 0 ? ((longWins / longTrades.length) * 100).toFixed(1) : '0.0';
+            const shortWinRate = shortTrades.length > 0 ? ((shortWins / shortTrades.length) * 100).toFixed(1) : '0.0';
+            const longPnL = longTrades.reduce((sum, t) => sum + (t.pnl || 0), 0);
+            const shortPnL = shortTrades.reduce((sum, t) => sum + (t.pnl || 0), 0);
+
+            doc.text(`Long Trades: ${longTrades.length} trades, ${longWinRate}% win rate, $${longPnL.toFixed(2)} P/L`, 15, y);
+            y += 6;
+            doc.text(`Short Trades: ${shortTrades.length} trades, ${shortWinRate}% win rate, $${shortPnL.toFixed(2)} P/L`, 15, y);
+            y += 12;
+
+            // Hold Duration Analysis
+            addSectionHeader('HOLD DURATION ANALYSIS', [255, 193, 7]);
+
+            const winnersWithDuration = winningTrades.filter(t => t.holdDuration);
+            const losersWithDuration = losingTrades.filter(t => t.holdDuration);
+            const avgHoldWinner = winnersWithDuration.length > 0
+                ? winnersWithDuration.reduce((sum, t) => sum + parseInt(t.holdDuration || 0), 0) / winnersWithDuration.length
+                : 0;
+            const avgHoldLoser = losersWithDuration.length > 0
+                ? losersWithDuration.reduce((sum, t) => sum + parseInt(t.holdDuration || 0), 0) / losersWithDuration.length
+                : 0;
+
+            doc.text(`Average Hold Time (Winners): ${avgHoldWinner.toFixed(0)} minutes`, 15, y);
+            y += 6;
+            doc.text(`Average Hold Time (Losers): ${avgHoldLoser.toFixed(0)} minutes`, 15, y);
+            y += 12;
+
+            // Day of Week Performance
+            checkPageSpace(50);
+            addSectionHeader('PERFORMANCE BY DAY OF WEEK', [88, 166, 255]);
+
+            const dayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+            const dayStats = {};
+
+            allTrades.forEach(trade => {
+                const dayOfWeek = new Date(trade.date).getDay();
+                const dayName = dayNames[dayOfWeek];
+                if (!dayStats[dayName]) {
+                    dayStats[dayName] = { trades: 0, wins: 0, pnl: 0 };
+                }
+                dayStats[dayName].trades++;
+                if (trade.result === 'win') dayStats[dayName].wins++;
+                dayStats[dayName].pnl += (trade.pnl || 0);
+            });
+
+            doc.setFontSize(9);
+            Object.entries(dayStats).forEach(([day, stats]) => {
+                const wr = stats.trades > 0 ? ((stats.wins / stats.trades) * 100).toFixed(1) : '0.0';
+                doc.text(`${day}: ${stats.trades} trades, ${wr}% WR, $${stats.pnl.toFixed(2)}`, 15, y);
+                y += 5;
+            });
+            doc.setFontSize(10);
+            y += 7;
+
+            // Symbol Performance
+            checkPageSpace(50);
+            addSectionHeader('PERFORMANCE BY SYMBOL', [88, 166, 255]);
+
+            const symbolStats = {};
+            allTrades.forEach(trade => {
+                const symbol = trade.symbol || 'Unknown';
+                if (!symbolStats[symbol]) {
+                    symbolStats[symbol] = { trades: 0, wins: 0, pnl: 0 };
+                }
+                symbolStats[symbol].trades++;
+                if (trade.result === 'win') symbolStats[symbol].wins++;
+                symbolStats[symbol].pnl += (trade.pnl || 0);
+            });
+
+            const sortedSymbols = Object.entries(symbolStats)
+                .sort((a, b) => b[1].pnl - a[1].pnl)
+                .slice(0, 10);
+
+            doc.setFontSize(9);
+            sortedSymbols.forEach(([symbol, stats]) => {
+                const wr = ((stats.wins / stats.trades) * 100).toFixed(1);
+                doc.text(`${symbol}: ${stats.trades} trades, ${wr}% WR, $${stats.pnl.toFixed(2)}`, 15, y);
+                y += 5;
+            });
+            doc.setFontSize(10);
+            y += 7;
 
             // Weekly Performance
-            doc.setFillColor(88, 166, 255);
-            doc.rect(15, y, 180, 7, 'F');
-            doc.setTextColor(255, 255, 255);
-            doc.text('RECENT WEEKLY PERFORMANCE', 20, y + 5);
-            y += 12;
+            checkPageSpace(50);
+            addSectionHeader('RECENT WEEKLY PERFORMANCE', [88, 166, 255]);
 
-            // Calculate weekly stats
             const weeklyStats = {};
             allTrades.forEach(trade => {
                 const date = new Date(trade.date);
@@ -9465,25 +9659,20 @@
 
             const sortedWeeks = Object.entries(weeklyStats)
                 .sort((a, b) => b[0].localeCompare(a[0]))
-                .slice(0, 4); // Last 4 weeks
+                .slice(0, 8);
 
-            doc.setTextColor(0, 0, 0);
             doc.setFontSize(9);
             sortedWeeks.forEach(([week, stats]) => {
-                const winRate = (stats.wins / stats.total) * 100;
-                doc.text(`Week of ${week}: ${winRate.toFixed(1)}% (${stats.total} trades, $${stats.pnl.toFixed(2)})`, 15, y);
+                const wr = (stats.wins / stats.total) * 100;
+                doc.text(`Week of ${week}: ${wr.toFixed(1)}% (${stats.total} trades, $${stats.pnl.toFixed(2)})`, 15, y);
                 y += 5;
             });
-
+            doc.setFontSize(10);
             y += 7;
 
             // Process Metrics
-            doc.setFontSize(10);
-            doc.setFillColor(255, 149, 0);
-            doc.rect(15, y, 180, 7, 'F');
-            doc.setTextColor(255, 255, 255);
-            doc.text('PROCESS METRICS', 20, y + 5);
-            y += 12;
+            checkPageSpace(40);
+            addSectionHeader('PROCESS & PSYCHOLOGY METRICS', [255, 149, 0]);
 
             const sessionsWithAdherence = allSessions.filter(s => s.rulesAdherence !== undefined && s.rulesAdherence !== null);
             const avgAdherence = sessionsWithAdherence.length > 0
@@ -9497,32 +9686,37 @@
 
             const emergencyExits = allTrades.filter(t => t.emergencyExit).length;
 
-            // Calculate current streak
-            let currentStreak = 0;
-            let streakType = 'N/A';
-            for (let i = allTrades.length - 1; i >= 0; i--) {
-                if (i === allTrades.length - 1) {
-                    streakType = allTrades[i].result === 'win' ? 'wins' : 'losses';
-                    currentStreak = 1;
-                } else if (allTrades[i].result === streakType.slice(0, -1)) {
-                    currentStreak++;
-                } else {
-                    break;
-                }
-            }
-
-            doc.setTextColor(0, 0, 0);
             doc.text(`Average Rules Adherence: ${avgAdherence}%`, 15, y);
             y += 6;
             doc.text(`Average Emotional State: ${avgEmotion}/10`, 15, y);
             y += 6;
-            doc.text(`Current Streak: ${currentStreak} ${streakType}`, 15, y);
-            y += 6;
             doc.text(`Emergency Exits Used: ${emergencyExits}`, 15, y);
+            y += 12;
+
+            // Forward Projections
+            checkPageSpace(40);
+            addSectionHeader('FORWARD PROJECTIONS', [88, 166, 255]);
+
+            // Calculate projections based on current performance
+            const avgDailyPnL = totalPnL / (new Set(allTrades.map(t => t.date)).size || 1);
+            const projectedMonthly = avgDailyPnL * 20; // Assuming 20 trading days
+            const projectedYearly = projectedMonthly * 12;
+
+            doc.text(`Average Daily P/L: $${avgDailyPnL.toFixed(2)}`, 15, y);
+            y += 6;
+            doc.text(`Projected Monthly P/L: $${projectedMonthly.toFixed(2)}`, 15, y);
+            y += 6;
+            doc.text(`Projected Yearly P/L: $${projectedYearly.toFixed(2)}`, 15, y);
+            y += 6;
+            doc.setFontSize(8);
+            doc.setTextColor(139, 148, 158);
+            doc.text('Note: Projections based on current run rate. Past performance does not guarantee future results.', 15, y);
+            doc.setTextColor(0, 0, 0);
+            doc.setFontSize(10);
 
             // Save
-            doc.save(`Trading-Statistics-${new Date().toISOString().split('T')[0]}.pdf`);
-            showToast('success', 'Statistics Exported', 'PDF saved successfully', 3000);
+            doc.save(`Trading-Performance-Report-${new Date().toISOString().split('T')[0]}.pdf`);
+            showToast('success', 'Performance Report Exported', 'Comprehensive PDF report saved successfully', 3000);
         }
 
         async function exportAnalyticsPDF() {
