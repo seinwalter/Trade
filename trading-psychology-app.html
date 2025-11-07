@@ -2003,6 +2003,41 @@
                         <span>Weekly Goal</span>
                     </div>
                 </div>
+
+                <!-- Phase Progression Status -->
+                <div style="margin-top: 20px; padding: 20px; background: rgba(21, 27, 40, 0.5); border-radius: 3px; border-left: 3px solid #ffc107;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                        <div>
+                            <p style="color: #8b949e; font-size: 12px; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 4px;">Trading Phase Status</p>
+                            <div style="font-size: 18px; font-weight: 700; color: #ffc107;" id="phaseStatusTitle">Phase 1: Eval Account Development</div>
+                        </div>
+                        <div style="text-align: right;">
+                            <p style="color: #8b949e; font-size: 12px; margin-bottom: 4px;">Days Completed</p>
+                            <div style="font-size: 24px; font-weight: 700; color: #5dade2;" id="phaseDaysCompleted">0 / 20</div>
+                        </div>
+                    </div>
+
+                    <!-- Progress Bar -->
+                    <div style="position: relative; height: 12px; background: rgba(13, 17, 23, 0.6); border-radius: 6px; overflow: hidden; margin-bottom: 12px;">
+                        <div id="phaseProgressBar" style="height: 100%; background: linear-gradient(90deg, #ffc107, #ff9800); border-radius: 6px; transition: all 0.5s ease; width: 0%;"></div>
+                    </div>
+
+                    <!-- Status Message -->
+                    <div id="phaseStatusMessage" style="font-size: 13px; color: #c9d1d9; line-height: 1.6;">
+                        Complete 20 trading days in Phase 1 to unlock Phase 2 (Multi-Account Trading Authorization)
+                    </div>
+
+                    <!-- Phase 2 Qualified Banner -->
+                    <div id="phase2QualifiedBanner" style="display: none; margin-top: 15px; padding: 15px; background: linear-gradient(135deg, rgba(16, 185, 129, 0.2), rgba(5, 150, 105, 0.1)); border: 2px solid #10b981; border-radius: 6px;">
+                        <div style="display: flex; align-items: center; gap: 12px;">
+                            <div style="font-size: 32px;">🚀</div>
+                            <div>
+                                <div style="font-size: 16px; font-weight: 700; color: #10b981; margin-bottom: 4px;">Phase 2 Qualified!</div>
+                                <div style="font-size: 13px; color: #c9d1d9;">You've completed 20+ trading days. You're now authorized for Multi-Account Trading (pending Apex funding approval).</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
 
             <!-- Active Protocols with Visual Counters -->
@@ -7376,8 +7411,81 @@
                 }
             }
 
+            // Update Phase Status
+            updatePhaseStatus();
+
             // Update protocol counters
             updateProtocolCounters();
+        }
+
+        // Update Phase Status Function
+        function updatePhaseStatus() {
+            // Calculate total unique trading days (completed sessions)
+            const completedSessions = allSessions.filter(s => s.completed);
+            const uniqueTradingDays = new Set(completedSessions.map(s => s.date)).size;
+
+            const phaseRequirement = 20; // 20 trading days required for Phase 2
+            const progressPercent = Math.min((uniqueTradingDays / phaseRequirement) * 100, 100);
+            const isPhase2Qualified = uniqueTradingDays >= phaseRequirement;
+
+            // Update phase display in the small box
+            const currentPhaseEl = document.getElementById('currentPhase');
+            if (currentPhaseEl) {
+                if (isPhase2Qualified) {
+                    currentPhaseEl.textContent = 'Phase 2';
+                    currentPhaseEl.style.color = '#10b981';
+                } else {
+                    currentPhaseEl.textContent = 'Phase 1';
+                    currentPhaseEl.style.color = '#ffc107';
+                }
+            }
+
+            // Update detailed phase status section
+            const phaseStatusTitle = document.getElementById('phaseStatusTitle');
+            if (phaseStatusTitle) {
+                if (isPhase2Qualified) {
+                    phaseStatusTitle.textContent = 'Phase 2: Multi-Account Trading';
+                    phaseStatusTitle.style.color = '#10b981';
+                } else {
+                    phaseStatusTitle.textContent = 'Phase 1: Eval Account Development';
+                    phaseStatusTitle.style.color = '#ffc107';
+                }
+            }
+
+            // Update days completed
+            const phaseDaysCompleted = document.getElementById('phaseDaysCompleted');
+            if (phaseDaysCompleted) {
+                phaseDaysCompleted.textContent = `${uniqueTradingDays} / ${phaseRequirement}`;
+            }
+
+            // Update progress bar
+            const phaseProgressBar = document.getElementById('phaseProgressBar');
+            if (phaseProgressBar) {
+                phaseProgressBar.style.width = progressPercent + '%';
+                if (isPhase2Qualified) {
+                    phaseProgressBar.style.background = 'linear-gradient(90deg, #10b981, #059669)';
+                } else {
+                    phaseProgressBar.style.background = 'linear-gradient(90deg, #ffc107, #ff9800)';
+                }
+            }
+
+            // Update status message
+            const phaseStatusMessage = document.getElementById('phaseStatusMessage');
+            if (phaseStatusMessage) {
+                if (isPhase2Qualified) {
+                    const daysOverRequirement = uniqueTradingDays - phaseRequirement;
+                    phaseStatusMessage.innerHTML = `<strong style="color: #10b981;">✓ Phase 1 Complete!</strong> You've completed ${uniqueTradingDays} trading days (${daysOverRequirement} beyond requirement). Phase 2 is now active.`;
+                } else {
+                    const daysRemaining = phaseRequirement - uniqueTradingDays;
+                    phaseStatusMessage.innerHTML = `${daysRemaining} more trading day${daysRemaining !== 1 ? 's' : ''} needed to unlock Phase 2 (Multi-Account Trading Authorization)`;
+                }
+            }
+
+            // Show/hide Phase 2 qualified banner
+            const phase2Banner = document.getElementById('phase2QualifiedBanner');
+            if (phase2Banner) {
+                phase2Banner.style.display = isPhase2Qualified ? 'block' : 'none';
+            }
         }
 
         // Update statistics
