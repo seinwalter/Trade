@@ -3016,8 +3016,9 @@
                         <p style="color: #8b949e; font-size: 10px; margin-top: 4px;">per trade</p>
                     </div>
                     <div style="padding: 15px; background: rgba(21, 27, 40, 0.5); border-radius: 3px; border-left: 3px solid #2980b9;">
-                        <p style="color: #8b949e; font-size: 12px; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px;">Avg R:R Ratio</p>
-                        <div class="data-value neutral" id="avgRR">0:1</div>
+                        <p style="color: #8b949e; font-size: 12px; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px;">Sharpe Ratio</p>
+                        <div class="data-value neutral" id="sharpeRatio">0.00</div>
+                        <p style="color: #8b949e; font-size: 10px; margin-top: 4px;">risk-adjusted return</p>
                     </div>
                 </div>
             </div>
@@ -7514,15 +7515,34 @@
                 pnlElement.style.color = totalPnL >= 0 ? '#10b981' : '#ef4444';
             }
 
-            // Average R:R
-            const avgRR = completedTrades.length > 0
-                ? (completedTrades.reduce((sum, t) => {
-                    const rr = t.rrRatio ? parseFloat(t.rrRatio.split(':')[1]) : 0;
-                    return sum + rr;
-                }, 0) / completedTrades.length).toFixed(2)
-                : 0;
-            if (document.getElementById('avgRR')) {
-                document.getElementById('avgRR').textContent = avgRR;
+            // Sharpe Ratio (risk-adjusted return)
+            // Sharpe Ratio = Mean P/L / Standard Deviation of P/L
+            let sharpeRatio = 0;
+            if (completedTrades.length > 1) {
+                const pnlValues = completedTrades.map(t => t.pnl || 0);
+                const meanPnL = pnlValues.reduce((sum, val) => sum + val, 0) / pnlValues.length;
+
+                // Calculate standard deviation
+                const squaredDiffs = pnlValues.map(val => Math.pow(val - meanPnL, 2));
+                const variance = squaredDiffs.reduce((sum, val) => sum + val, 0) / pnlValues.length;
+                const stdDev = Math.sqrt(variance);
+
+                sharpeRatio = stdDev > 0 ? (meanPnL / stdDev).toFixed(2) : '0.00';
+            }
+
+            const sharpeRatioEl = document.getElementById('sharpeRatio');
+            if (sharpeRatioEl) {
+                sharpeRatioEl.textContent = sharpeRatio;
+                // Color code: > 1.0 = good, > 2.0 = very good, < 0 = bad
+                if (parseFloat(sharpeRatio) >= 2.0) {
+                    sharpeRatioEl.style.color = '#10b981'; // Green
+                } else if (parseFloat(sharpeRatio) >= 1.0) {
+                    sharpeRatioEl.style.color = '#5dade2'; // Blue
+                } else if (parseFloat(sharpeRatio) < 0) {
+                    sharpeRatioEl.style.color = '#ef4444'; // Red
+                } else {
+                    sharpeRatioEl.style.color = '#c9d1d9'; // Gray
+                }
             }
 
             // Profit factor (total wins / total losses)
@@ -9531,11 +9551,17 @@
             const winLossRatio = avgLoss !== 0 ? (avgWin / Math.abs(avgLoss)).toFixed(2) : '0.00';
             const expectancy = (parseFloat(winRate) / 100) * avgWin + ((100 - parseFloat(winRate)) / 100) * avgLoss;
 
-            // Calculate average R:R ratio
-            const tradesWithRR = allTrades.filter(t => t.riskReward);
-            const avgRR = tradesWithRR.length > 0
-                ? (tradesWithRR.reduce((sum, t) => sum + parseFloat(t.riskReward), 0) / tradesWithRR.length).toFixed(2)
-                : '0.00';
+            // Calculate Sharpe Ratio
+            let sharpeRatio = 0;
+            const completedTrades = allTrades.filter(t => t.result && t.result !== 'open');
+            if (completedTrades.length > 1) {
+                const pnlValues = completedTrades.map(t => t.pnl || 0);
+                const meanPnL = pnlValues.reduce((sum, val) => sum + val, 0) / pnlValues.length;
+                const squaredDiffs = pnlValues.map(val => Math.pow(val - meanPnL, 2));
+                const variance = squaredDiffs.reduce((sum, val) => sum + val, 0) / pnlValues.length;
+                const stdDev = Math.sqrt(variance);
+                sharpeRatio = stdDev > 0 ? (meanPnL / stdDev).toFixed(2) : '0.00';
+            }
 
             doc.text(`Total Trades: ${totalTrades} (${wins} wins, ${losses} losses)`, 15, y);
             y += 6;
@@ -9555,7 +9581,9 @@
             doc.text(`Expectancy: $${expectancy.toFixed(2)} per trade`, 15, y);
             doc.setFont(undefined, 'normal');
             y += 6;
-            doc.text(`Average R:R Ratio: ${avgRR}:1`, 15, y);
+            doc.setFont(undefined, 'bold');
+            doc.text(`Sharpe Ratio: ${sharpeRatio} (risk-adjusted return)`, 15, y);
+            doc.setFont(undefined, 'normal');
             y += 12;
 
             // Win/Loss Breakdown
