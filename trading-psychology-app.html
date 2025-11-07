@@ -1919,9 +1919,39 @@
                             <p style="color: #8b949e; font-size: 12px; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px;">Trading Days Remaining</p>
                             <div class="data-value positive" id="tradingDaysRemaining" style="font-size: 24px;">--</div>
                         </div>
-                        <div style="padding: 15px; background: rgba(21, 27, 40, 0.5); border-radius: 3px; border-left: 3px solid #2980b9;">
+                        <div style="padding: 15px; background: rgba(21, 27, 40, 0.5); border-radius: 3px; border-left: 3px solid #2980b9; position: relative; cursor: help;" class="phase-hover-container">
                             <p style="color: #8b949e; font-size: 12px; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px;">Current Phase</p>
                             <div class="data-value neutral" id="currentPhase" style="font-size: 20px;">Phase 1</div>
+
+                            <!-- Phase Details Tooltip -->
+                            <div class="phase-tooltip" style="display: none; position: absolute; top: 100%; left: 50%; transform: translateX(-50%); margin-top: 10px; background: rgba(13, 17, 23, 0.98); border: 1px solid #5dade2; border-radius: 6px; padding: 20px; width: 350px; z-index: 1000; box-shadow: 0 8px 32px rgba(0,0,0,0.6);">
+                                <div style="margin-bottom: 15px; padding-bottom: 15px; border-bottom: 1px solid rgba(93, 173, 226, 0.3);">
+                                    <h4 style="color: #ffc107; margin-bottom: 10px; font-size: 14px;">📊 Phase 1: Eval Account Development</h4>
+                                    <p style="color: #c9d1d9; font-size: 12px; line-height: 1.6; margin-bottom: 8px;">
+                                        Trade the <strong>Eval Account ONLY</strong> for 20 trading days minimum
+                                    </p>
+                                    <ul style="color: #8b949e; font-size: 11px; line-height: 1.8; margin-left: 20px;">
+                                        <li>Focus on consistency and rule adherence</li>
+                                        <li>Build confidence with micro positions (0.25x)</li>
+                                        <li>Maximum 2 trades per day</li>
+                                        <li>No trading after any loss until next day</li>
+                                    </ul>
+                                </div>
+                                <div>
+                                    <h4 style="color: #5dade2; margin-bottom: 10px; font-size: 14px;">🚀 Phase 2: Multi-Account Trading</h4>
+                                    <p style="color: #c9d1d9; font-size: 12px; line-height: 1.6; margin-bottom: 8px;">
+                                        Trade <strong>BOTH accounts</strong> (Eval + Funded) once qualified
+                                    </p>
+                                    <ul style="color: #8b949e; font-size: 11px; line-height: 1.8; margin-left: 20px;">
+                                        <li>Minimum 20 trading days in Phase 1 completed</li>
+                                        <li>Must meet all Apex Trading funding rules</li>
+                                        <li>Increased position sizing (0.50x)</li>
+                                        <li>Maximum 3 trades per day</li>
+                                    </ul>
+                                </div>
+                                <!-- Arrow pointer -->
+                                <div style="position: absolute; bottom: 100%; left: 50%; transform: translateX(-50%); width: 0; height: 0; border-left: 8px solid transparent; border-right: 8px solid transparent; border-bottom: 8px solid #5dade2;"></div>
+                            </div>
                         </div>
                     </div>
                     <div style="padding: 15px; background: rgba(21, 27, 40, 0.5); border-radius: 3px; border-left: 3px solid #8b949e;">
@@ -1972,8 +2002,8 @@
                     <span style="font-weight: 600; color: #5dade2;">Micro (0.25x)</span>
                 </div>
                 <div class="protocol-status">
-                    <span style="font-weight: 500;">Recovery Protocol</span>
-                    <span style="font-weight: 600; color: #5dade2;">Phase 1 Active</span>
+                    <span style="font-weight: 500;">Account Authorization</span>
+                    <span style="font-weight: 600; color: #ffc107;">Phase 1: Eval Only</span>
                 </div>
             </div>
 
@@ -3364,7 +3394,17 @@
                 </div>
 
                 <div class="warning-section" style="margin-bottom: 20px;">
-                    <h3 style="margin-bottom: 15px; color: #ffc107;">Trading Recovery Protocol - Phase 1 (CURRENTLY IN EFFECT)</h3>
+                    <h3 style="margin-bottom: 15px; color: #ffc107;">📊 Phase 1: Eval Account Development (CURRENTLY IN EFFECT)</h3>
+
+                    <div style="background: rgba(255, 193, 7, 0.1); padding: 15px; border-radius: 4px; border-left: 3px solid #ffc107; margin-bottom: 15px;">
+                        <p style="color: #c9d1d9; font-size: 14px; font-weight: 600; margin-bottom: 8px;">
+                            🎯 Primary Goal: Trade the <strong>EVAL ACCOUNT ONLY</strong> for 20 Trading Days Minimum
+                        </p>
+                        <p style="color: #8b949e; font-size: 13px; line-height: 1.6;">
+                            Focus exclusively on the Eval account to build consistency, confidence, and rule adherence before advancing to multi-account trading.
+                        </p>
+                    </div>
+
                     <h4 style="color: #5dade2; margin-top: 15px;">Position Sizing Rules</h4>
                     <ul style="line-height: 2; margin-left: 20px;">
                         <li>Start with 0.25 of normal size (micro positions)</li>
@@ -3375,20 +3415,54 @@
 
                     <h4 style="color: #5dade2; margin-top: 15px;">Daily Trading Limits</h4>
                     <ul style="line-height: 2; margin-left: 20px;">
-                        <li>Maximum 2 trades per day</li>
+                        <li><strong>Maximum 2 trades per day</strong></li>
                         <li>Minimum 45-minute gap between trades</li>
                         <li>No trading after any loss until next day</li>
                         <li>Must achieve profitable week before weekend trading allowed</li>
                     </ul>
+
+                    <h4 style="color: #5dade2; margin-top: 15px;">Phase 1 Requirements</h4>
+                    <ul style="line-height: 2; margin-left: 20px;">
+                        <li><strong>Complete minimum 20 trading days</strong> in Eval account</li>
+                        <li>Demonstrate consistent rule adherence above 90%</li>
+                        <li>Build mental discipline and emotional control</li>
+                        <li>No Funded account trading during Phase 1</li>
+                    </ul>
                 </div>
 
                 <div class="success-section" style="margin-bottom: 20px;">
-                    <h3 style="margin-bottom: 15px; color: #5dade2;">Advancement Criteria - Phase 2 Requirements</h3>
+                    <h3 style="margin-bottom: 15px; color: #5dade2;">🚀 Phase 2: Multi-Account Trading Authorization</h3>
+
+                    <div style="background: rgba(93, 173, 226, 0.1); padding: 15px; border-radius: 4px; border-left: 3px solid #5dade2; margin-bottom: 15px;">
+                        <p style="color: #c9d1d9; font-size: 14px; font-weight: 600; margin-bottom: 8px;">
+                            🎯 Unlock: Trade <strong>BOTH ACCOUNTS</strong> (Eval + Funded)
+                        </p>
+                        <p style="color: #8b949e; font-size: 13px; line-height: 1.6;">
+                            Once qualified through Phase 1 completion and meeting Apex Trading funding rules, you gain authorization to trade both your Eval and Funded accounts simultaneously.
+                        </p>
+                    </div>
+
+                    <h4 style="color: #5dade2; margin-top: 15px;">Phase 2 Advancement Requirements</h4>
                     <ul style="line-height: 2; margin-left: 20px;">
-                        <li>3 consecutive profitable weeks</li>
+                        <li><strong>Minimum 20 trading days completed in Phase 1</strong></li>
+                        <li>Must meet all <strong>Apex Trading funding rules</strong>:
+                            <ul style="margin-left: 20px; margin-top: 5px;">
+                                <li>Profit target achieved (varies by account size)</li>
+                                <li>Maximum daily loss limit never breached</li>
+                                <li>Maximum trailing drawdown never breached</li>
+                                <li>Minimum trading days requirement met (typically 5-10 days)</li>
+                            </ul>
+                        </li>
                         <li>Consistent rules adherence above 90%</li>
-                        <li>Can then trade at 50% of normal size</li>
-                        <li>Maximum 3 trades per day allowed</li>
+                        <li>Demonstrated emotional control and discipline</li>
+                    </ul>
+
+                    <h4 style="color: #5dade2; margin-top: 15px;">Phase 2 Trading Parameters</h4>
+                    <ul style="line-height: 2; margin-left: 20px;">
+                        <li>Trade at <strong>50% of normal size</strong> (increased from 0.25x)</li>
+                        <li><strong>Maximum 3 trades per day</strong> allowed (increased from 2)</li>
+                        <li>Can trade both Eval and Funded accounts</li>
+                        <li>Continue following all core trading rules and protocols</li>
                     </ul>
                 </div>
 
@@ -4704,6 +4778,20 @@
             } catch (error) {
                 console.error('ERROR during initialization:', error);
                 alert('Error initializing app: ' + error.message);
+            }
+
+            // Phase tooltip hover functionality
+            const phaseContainer = document.querySelector('.phase-hover-container');
+            const phaseTooltip = document.querySelector('.phase-tooltip');
+
+            if (phaseContainer && phaseTooltip) {
+                phaseContainer.addEventListener('mouseenter', function() {
+                    phaseTooltip.style.display = 'block';
+                });
+
+                phaseContainer.addEventListener('mouseleave', function() {
+                    phaseTooltip.style.display = 'none';
+                });
             }
         });
 
