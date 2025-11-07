@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trading Settings</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .container {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            max-width: 600px;
+            width: 100%;
+            padding: 40px;
+        }
+
+        h1 {
+            color: #2d3748;
+            margin-bottom: 10px;
+            font-size: 28px;
+        }
+
+        .subtitle {
+            color: #718096;
+            margin-bottom: 30px;
+            font-size: 14px;
+        }
+
+        .section {
+            margin-bottom: 30px;
+        }
+
+        .section-title {
+            color: #2d3748;
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #e2e8f0;
+        }
+
+        .day-toggle {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px;
+            margin-bottom: 10px;
+            background: #f7fafc;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .day-toggle:hover {
+            background: #edf2f7;
+        }
+
+        .day-toggle.friday {
+            border: 2px solid #e2e8f0;
+        }
+
+        .day-name {
+            font-weight: 500;
+            color: #2d3748;
+            font-size: 16px;
+        }
+
+        .toggle-switch {
+            position: relative;
+            display: inline-block;
+            width: 50px;
+            height: 26px;
+        }
+
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #cbd5e0;
+            transition: 0.4s;
+            border-radius: 26px;
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 20px;
+            width: 20px;
+            left: 3px;
+            bottom: 3px;
+            background-color: white;
+            transition: 0.4s;
+            border-radius: 50%;
+        }
+
+        input:checked + .slider {
+            background-color: #48bb78;
+        }
+
+        input:checked + .slider:before {
+            transform: translateX(24px);
+        }
+
+        .warning-box {
+            display: none;
+            background: #fff5f5;
+            border-left: 4px solid #f56565;
+            padding: 15px;
+            margin-top: 15px;
+            border-radius: 4px;
+            animation: slideDown 0.3s ease-out;
+        }
+
+        .warning-box.show {
+            display: block;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .warning-title {
+            color: #c53030;
+            font-weight: 600;
+            margin-bottom: 5px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .warning-title::before {
+            content: "⚠️";
+            font-size: 18px;
+        }
+
+        .warning-text {
+            color: #742a2a;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+
+        .storage-button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            font-size: 16px;
+            font-weight: 600;
+            border-radius: 8px;
+            cursor: pointer;
+            width: 100%;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .storage-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
+        }
+
+        .storage-button:active {
+            transform: translateY(0);
+        }
+
+        .status-message {
+            margin-top: 15px;
+            padding: 12px;
+            border-radius: 6px;
+            text-align: center;
+            font-weight: 500;
+            display: none;
+        }
+
+        .status-message.success {
+            background: #c6f6d5;
+            color: #22543d;
+            display: block;
+        }
+
+        .status-message.error {
+            background: #fed7d7;
+            color: #742a2a;
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Trading Settings</h1>
+        <p class="subtitle">Configure your trading schedule and preferences</p>
+
+        <div class="section">
+            <h2 class="section-title">Trading Schedule</h2>
+
+            <div class="day-toggle">
+                <span class="day-name">Monday</span>
+                <label class="toggle-switch">
+                    <input type="checkbox" id="monday" checked>
+                    <span class="slider"></span>
+                </label>
+            </div>
+
+            <div class="day-toggle">
+                <span class="day-name">Tuesday</span>
+                <label class="toggle-switch">
+                    <input type="checkbox" id="tuesday" checked>
+                    <span class="slider"></span>
+                </label>
+            </div>
+
+            <div class="day-toggle">
+                <span class="day-name">Wednesday</span>
+                <label class="toggle-switch">
+                    <input type="checkbox" id="wednesday" checked>
+                    <span class="slider"></span>
+                </label>
+            </div>
+
+            <div class="day-toggle">
+                <span class="day-name">Thursday</span>
+                <label class="toggle-switch">
+                    <input type="checkbox" id="thursday" checked>
+                    <span class="slider"></span>
+                </label>
+            </div>
+
+            <div class="day-toggle friday">
+                <span class="day-name">Friday</span>
+                <label class="toggle-switch">
+                    <input type="checkbox" id="friday">
+                    <span class="slider"></span>
+                </label>
+            </div>
+
+            <div id="fridayWarning" class="warning-box">
+                <div class="warning-title">Friday Trading Warning</div>
+                <div class="warning-text">
+                    Trading on Fridays may involve increased risk due to weekend gaps and lower liquidity.
+                    Please ensure you have proper risk management strategies in place before enabling Friday trading.
+                </div>
+            </div>
+        </div>
+
+        <div class="section">
+            <button class="storage-button" onclick="saveSettings()">
+                Save Settings
+            </button>
+            <div id="statusMessage" class="status-message"></div>
+        </div>
+    </div>
+
+    <script>
+        // Get the Friday checkbox and warning box
+        const fridayCheckbox = document.getElementById('friday');
+        const fridayWarning = document.getElementById('fridayWarning');
+        const statusMessage = document.getElementById('statusMessage');
+
+        // Show/hide warning when Friday is toggled
+        fridayCheckbox.addEventListener('change', function() {
+            if (this.checked) {
+                fridayWarning.classList.add('show');
+            } else {
+                fridayWarning.classList.remove('show');
+            }
+        });
+
+        // Load settings from localStorage
+        function loadSettings() {
+            const days = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday'];
+
+            days.forEach(day => {
+                const savedValue = localStorage.getItem(`trading_${day}`);
+                const checkbox = document.getElementById(day);
+
+                if (savedValue !== null) {
+                    checkbox.checked = savedValue === 'true';
+                } else {
+                    // Set default values (Friday is disabled by default)
+                    if (day === 'friday') {
+                        checkbox.checked = false;
+                    } else {
+                        checkbox.checked = true;
+                    }
+                }
+            });
+
+            // Update Friday warning visibility on load
+            if (fridayCheckbox.checked) {
+                fridayWarning.classList.add('show');
+            }
+        }
+
+        // Save settings to localStorage
+        function saveSettings() {
+            const days = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday'];
+
+            try {
+                days.forEach(day => {
+                    const checkbox = document.getElementById(day);
+                    localStorage.setItem(`trading_${day}`, checkbox.checked);
+                });
+
+                // Show success message
+                statusMessage.className = 'status-message success';
+                statusMessage.textContent = '✓ Settings saved successfully!';
+
+                // Hide message after 3 seconds
+                setTimeout(() => {
+                    statusMessage.style.display = 'none';
+                }, 3000);
+            } catch (error) {
+                // Show error message
+                statusMessage.className = 'status-message error';
+                statusMessage.textContent = '✗ Failed to save settings. Please try again.';
+
+                setTimeout(() => {
+                    statusMessage.style.display = 'none';
+                }, 3000);
+            }
+        }
+
+        // Load settings when page loads
+        document.addEventListener('DOMContentLoaded', loadSettings);
+    </script>
+</body>
+</html>
