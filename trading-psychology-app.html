@@ -428,6 +428,29 @@
             font-family: 'Barlow', sans-serif;
         }
 
+        /* Date input Friday warning styling */
+        input[type="date"].friday-selected {
+            border: 2px solid #ef4444 !important;
+            background: rgba(239, 68, 68, 0.1) !important;
+            box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.2) !important;
+        }
+
+        .date-warning {
+            display: none;
+            margin-top: 8px;
+            padding: 8px 12px;
+            background: rgba(239, 68, 68, 0.15);
+            border-left: 3px solid #ef4444;
+            border-radius: 3px;
+            color: #ef4444;
+            font-size: 12px;
+            line-height: 1.5;
+        }
+
+        .date-warning.active {
+            display: block;
+        }
+
         .inline-group {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
@@ -1924,7 +1947,7 @@
                             <div class="data-value neutral" id="currentPhase" style="font-size: 20px;">Phase 1</div>
 
                             <!-- Phase Details Tooltip -->
-                            <div class="phase-tooltip" style="display: none; position: absolute; top: 100%; left: 50%; transform: translateX(-50%); margin-top: 10px; background: rgba(13, 17, 23, 0.98); border: 1px solid #5dade2; border-radius: 6px; padding: 20px; width: 350px; z-index: 1000; box-shadow: 0 8px 32px rgba(0,0,0,0.6);">
+                            <div class="phase-tooltip" style="display: none; position: absolute; bottom: 100%; left: 50%; transform: translateX(-50%); margin-bottom: 10px; background: rgba(13, 17, 23, 0.98); border: 1px solid #5dade2; border-radius: 6px; padding: 20px; width: 350px; z-index: 1000; box-shadow: 0 8px 32px rgba(0,0,0,0.6);">
                                 <div style="margin-bottom: 15px; padding-bottom: 15px; border-bottom: 1px solid rgba(93, 173, 226, 0.3);">
                                     <h4 style="color: #ffc107; margin-bottom: 10px; font-size: 14px;">📊 Phase 1: Eval Account Development</h4>
                                     <p style="color: #c9d1d9; font-size: 12px; line-height: 1.6; margin-bottom: 8px;">
@@ -1949,8 +1972,8 @@
                                         <li>Maximum 3 trades per day</li>
                                     </ul>
                                 </div>
-                                <!-- Arrow pointer -->
-                                <div style="position: absolute; bottom: 100%; left: 50%; transform: translateX(-50%); width: 0; height: 0; border-left: 8px solid transparent; border-right: 8px solid transparent; border-bottom: 8px solid #5dade2;"></div>
+                                <!-- Arrow pointer pointing down -->
+                                <div style="position: absolute; top: 100%; left: 50%; transform: translateX(-50%); width: 0; height: 0; border-left: 8px solid transparent; border-right: 8px solid transparent; border-top: 8px solid #5dade2;"></div>
                             </div>
                         </div>
                     </div>
@@ -2055,6 +2078,9 @@
                 <div class="form-group">
                     <label class="required">Research Date</label>
                     <input type="date" id="sundayDate" required>
+                    <div class="date-warning" id="sundayDateWarning">
+                        ⚠️ <strong>Friday Selected:</strong> No trading on Fridays per trading protocol. This date is for research/prep only.
+                    </div>
                 </div>
             </div>
 
@@ -2802,6 +2828,9 @@
                     <button class="btn btn-secondary" onclick="navigateDay(-1)">← Previous Day</button>
                     <div style="text-align: center; flex: 1;">
                         <input type="date" id="selectedDate" onchange="updateSelectedDay()" style="font-size: 16px; padding: 10px; text-align: center; width: 200px;">
+                        <div class="date-warning" id="selectedDateWarning" style="max-width: 400px; margin: 8px auto 0;">
+                            ⚠️ <strong>Friday Selected:</strong> No trading allowed on Fridays per protocol rules.
+                        </div>
                         <div id="dayStats" style="margin-top: 10px; font-size: 14px; color: #8b949e;"></div>
                     </div>
                     <button class="btn btn-secondary" onclick="navigateDay(1)">Next Day →</button>
@@ -4793,7 +4822,82 @@
                     phaseTooltip.style.display = 'none';
                 });
             }
+
+            // Friday detection for date inputs
+            initializeFridayDetection();
         });
+
+        // Friday detection and warning system
+        function checkIfFriday(dateString) {
+            if (!dateString) return false;
+            const date = new Date(dateString + 'T00:00:00');
+            return date.getDay() === 5; // 5 = Friday
+        }
+
+        function updateDateWarning(inputId, warningId) {
+            const dateInput = document.getElementById(inputId);
+            const warning = document.getElementById(warningId);
+
+            if (!dateInput || !warning) return;
+
+            const dateValue = dateInput.value;
+            if (dateValue && checkIfFriday(dateValue)) {
+                dateInput.classList.add('friday-selected');
+                warning.classList.add('active');
+            } else {
+                dateInput.classList.remove('friday-selected');
+                warning.classList.remove('active');
+            }
+        }
+
+        function initializeFridayDetection() {
+            // Sunday/Market Prep date
+            const sundayDateInput = document.getElementById('sundayDate');
+            if (sundayDateInput) {
+                sundayDateInput.addEventListener('change', function() {
+                    updateDateWarning('sundayDate', 'sundayDateWarning');
+                });
+                // Check on page load if there's already a value
+                updateDateWarning('sundayDate', 'sundayDateWarning');
+            }
+
+            // History selected date
+            const selectedDateInput = document.getElementById('selectedDate');
+            if (selectedDateInput) {
+                // Already has onchange="updateSelectedDay()", so we'll add our check there
+                const originalOnChange = selectedDateInput.onchange;
+                selectedDateInput.onchange = function() {
+                    if (originalOnChange) originalOnChange.call(this);
+                    updateDateWarning('selectedDate', 'selectedDateWarning');
+                };
+                // Check on page load
+                updateDateWarning('selectedDate', 'selectedDateWarning');
+            }
+
+            // Filter date inputs
+            const filterStartDate = document.getElementById('filterStartDate');
+            if (filterStartDate) {
+                filterStartDate.addEventListener('change', function() {
+                    // Just visual warning, don't prevent filtering
+                    if (this.value && checkIfFriday(this.value)) {
+                        this.classList.add('friday-selected');
+                    } else {
+                        this.classList.remove('friday-selected');
+                    }
+                });
+            }
+
+            const filterEndDate = document.getElementById('filterEndDate');
+            if (filterEndDate) {
+                filterEndDate.addEventListener('change', function() {
+                    if (this.value && checkIfFriday(this.value)) {
+                        this.classList.add('friday-selected');
+                    } else {
+                        this.classList.remove('friday-selected');
+                    }
+                });
+            }
+        }
 
         // Tab switching
         function switchTab(tabName) {
