@@ -8225,7 +8225,11 @@
             html += '<div style="display: grid; grid-template-columns: repeat(7, 1fr); gap: 5px; margin-bottom: 5px;">';
             const dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
             dayNames.forEach(day => {
-                html += `<div style="text-align: center; font-size: 11px; font-weight: bold; color: #8b949e; padding: 5px;">${day}</div>`;
+                const isFridayHeader = day === 'Fri';
+                const headerStyle = isFridayHeader
+                    ? 'text-align: center; font-size: 11px; font-weight: bold; color: #ef4444; padding: 5px; background: rgba(239, 68, 68, 0.1); border-radius: 3px;'
+                    : 'text-align: center; font-size: 11px; font-weight: bold; color: #8b949e; padding: 5px;';
+                html += `<div style="${headerStyle}">${day}</div>`;
             });
             html += '</div>';
 
@@ -8242,17 +8246,32 @@
                 const date = new Date(selectedYear, selectedMonth, day);
                 const dateStr = date.toISOString().split('T')[0];
                 const data = tradesByDate[dateStr];
+                const dayOfWeek = date.getDay(); // 0 = Sunday, 5 = Friday
+                const isFriday = dayOfWeek === 5;
 
                 let bgColor = 'rgba(139, 148, 158, 0.1)';
                 let borderColor = '#30363d';
                 let title = dateStr;
 
+                // Apply Friday shading first (base layer)
+                if (isFriday) {
+                    bgColor = 'rgba(239, 68, 68, 0.15)'; // Light red for Fridays
+                    borderColor = 'rgba(239, 68, 68, 0.3)';
+                    title += '\n⚠️ NO TRADING - Friday';
+                }
+
+                // Override with trade data if exists
                 if (data) {
                     const intensity = Math.min(1, Math.abs(data.pnl) / maxAbsPnL);
                     const color = data.pnl >= 0 ? '16, 185, 129' : '239, 68, 68';
                     bgColor = `rgba(${color}, ${0.3 + intensity * 0.7})`;
                     borderColor = data.pnl >= 0 ? '#10b981' : '#ef4444';
                     title = `${dateStr}\n${data.count} trades\nP/L: ${data.pnl >= 0 ? '+' : ''}$${data.pnl.toFixed(2)}`;
+
+                    // If it's a Friday with trades, add warning to title
+                    if (isFriday) {
+                        title += '\n⚠️ FRIDAY - No Trading Rule Violated!';
+                    }
                 }
 
                 const pnlDisplay = data ? (data.pnl >= 0 ? `+$${data.pnl.toFixed(0)}` : `-$${Math.abs(data.pnl).toFixed(0)}`) : '';
