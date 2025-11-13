@@ -7381,7 +7381,8 @@
                 progressPercent = Math.min((weeklyPL / weeklyGoal) * 50, 50); // Max 50% to the right
             } else {
                 // Negative P/L - move left toward max loss
-                progressPercent = Math.max((weeklyPL / weeklyMaxLoss) * 50, -50); // Max 50% to the left
+                // Use Math.abs to avoid dividing two negatives (which gives positive)
+                progressPercent = Math.max((weeklyPL / Math.abs(weeklyMaxLoss)) * 50, -50); // Max 50% to the left
             }
 
             const progressBar = document.getElementById('weeklyProgressBar');
