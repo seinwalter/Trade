@@ -3310,10 +3310,10 @@
                     <p style="font-size: 13px; color: #8b949e; line-height: 1.6; margin-bottom: 15px;">
                         Store screenshots on your desktop instead of browser storage for better performance. Click the button below to select a storage location (recommended: Desktop).
                     </p>
-                    <button class="btn btn-primary" onclick="requestDirectoryAccess()" style="background: #2980b9; color: white; margin-bottom: 10px;">
+                    <button id="configureStorageBtn" class="btn btn-primary" onclick="requestDirectoryAccess()" style="background: #2980b9; color: white; margin-bottom: 10px;">
                         📁 Configure Desktop Storage
                     </button>
-                    <div style="margin-top: 10px; padding: 12px; background: rgba(93, 173, 226, 0.1); border-left: 3px solid #5dade2; border-radius: 3px;">
+                    <div id="storageNotice" style="margin-top: 10px; padding: 12px; background: rgba(93, 173, 226, 0.1); border-left: 3px solid #5dade2; border-radius: 3px;">
                         <p style="font-size: 12px; color: #8b949e; margin: 0;">
                             <strong style="color: #5dade2;">Note:</strong> Images will be saved to Desktop/TradingScreenshots. This prevents browser storage from getting full and slowing down the app. Supported in Chrome and Edge browsers.
                         </p>
@@ -3762,8 +3762,38 @@
             }
         }
 
+        function updateStorageUI() {
+            const storageBtn = document.getElementById('configureStorageBtn');
+            const storageNotice = document.getElementById('storageNotice');
+
+            if (!storageBtn || !storageNotice) return;
+
+            // Check if File System Access API is supported
+            if (!('showDirectoryPicker' in window)) {
+                // Safari or unsupported browser
+                storageBtn.disabled = true;
+                storageBtn.style.opacity = '0.5';
+                storageBtn.style.cursor = 'not-allowed';
+                storageBtn.innerHTML = '📁 Desktop Storage (Not Available in Safari)';
+
+                storageNotice.style.background = 'rgba(255, 193, 7, 0.1)';
+                storageNotice.style.borderLeft = '3px solid #ffc107';
+                storageNotice.innerHTML = `
+                    <p style="font-size: 12px; color: #8b949e; margin: 0;">
+                        <strong style="color: #ffc107;">Safari Browser Detected:</strong> Desktop storage is not available in Safari. The app will use browser storage instead. For desktop storage support, please use Chrome or Edge browsers.
+                    </p>
+                `;
+            }
+        }
+
         async function requestDirectoryAccess() {
             try {
+                // Check if File System Access API is supported
+                if (!('showDirectoryPicker' in window)) {
+                    showToast('warning', 'Not Supported in Safari', 'Desktop storage requires Chrome or Edge. Using browser storage instead.', 5000);
+                    return false;
+                }
+
                 // Request user to select a directory (typically Desktop)
                 desktopDirHandle = await window.showDirectoryPicker({
                     mode: 'readwrite',
@@ -4799,6 +4829,9 @@
                 loadData();
                 loadScreenshots();
                 loadSettings();
+
+                // Update storage UI based on browser support
+                updateStorageUI();
 
                 // Initialize file system storage for desktop screenshots
                 // This will prompt the user to select a directory on first use
