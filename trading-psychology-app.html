@@ -3222,6 +3222,19 @@
             <!-- Data Management -->
             <div class="section">
                 <h2>Data Management</h2>
+
+                <div style="margin-bottom: 20px; padding: 15px; background: rgba(93, 173, 226, 0.1); border-left: 4px solid #5dade2; border-radius: 4px;">
+                    <p style="font-size: 13px; color: #8b949e; line-height: 1.6; margin: 0;">
+                        <strong style="color: #5dade2;">📱 Cross-Browser Data Access:</strong> Your trading data is stored locally in your browser. Each browser (Safari, Chrome, Edge) has its own separate storage. To access your data in a different browser:
+                        <br><br>
+                        1️⃣ Export a backup from your primary browser<br>
+                        2️⃣ Open the app in the other browser<br>
+                        3️⃣ Import the backup file
+                        <br><br>
+                        <strong>Tip:</strong> Export regular backups to keep your data safe and accessible across all your devices and browsers.
+                    </p>
+                </div>
+
                 <button class="btn btn-primary" onclick="exportAllData()">💾 Export Complete Backup</button>
                 <button class="btn btn-success" onclick="importAllData()">📥 Import Backup</button>
                 <button class="btn btn-danger" onclick="clearAllData()">🗑️ Clear All Data</button>
@@ -10078,15 +10091,19 @@
 
         function exportAllData() {
             const sundayPreps = JSON.parse(localStorage.getItem('sundayPreps') || '[]');
+            const goalSettings = JSON.parse(localStorage.getItem('goalSettings') || '{}');
+            const appSettings = JSON.parse(localStorage.getItem('appSettings') || '{}');
+            const postMarketReviews = JSON.parse(localStorage.getItem('postMarketReviews') || '[]');
 
             const data = {
-                sessions: allSessions,
-                trades: allTrades,
-                screenshots: screenshots,
+                accountsData: accountsData, // Export ALL accounts
+                currentAccountName: currentAccountName, // Remember which account was active
                 sundayPreps: sundayPreps,
-                currentSession: currentSession,
+                goalSettings: goalSettings,
+                appSettings: appSettings,
+                postMarketReviews: postMarketReviews,
                 exportDate: new Date().toISOString(),
-                version: '1.0'
+                version: '2.0' // Bumped version to indicate new format
             };
 
             const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
@@ -10097,7 +10114,7 @@
             a.click();
             URL.revokeObjectURL(url);
 
-            showToast('success', 'Backup Exported', 'Complete backup exported with all sessions, trades, screenshots, and Sunday preps. Save this file to restore your data later.', 6000);
+            showToast('success', 'Backup Exported', 'Complete backup exported with ALL accounts, sessions, trades, screenshots, settings, and Sunday preps. Save this file to restore your data in any browser.', 6000);
         }
 
         function importAllData() {
@@ -10115,21 +10132,48 @@
                         const data = JSON.parse(event.target.result);
 
                         if (confirm('⚠️ This will replace ALL current data with the backup.\n\nAre you sure?')) {
-                            // Restore all data
-                            if (data.sessions) allSessions = data.sessions;
-                            if (data.trades) allTrades = data.trades;
-                            if (data.screenshots) screenshots = data.screenshots;
-                            if (data.currentSession) currentSession = data.currentSession;
+                            // Check if this is new format (v2.0) with full accounts data
+                            if (data.version === '2.0' && data.accountsData) {
+                                // Restore all accounts
+                                accountsData = data.accountsData;
+                                localStorage.setItem('accountsData', JSON.stringify(accountsData));
 
-                            // Save to localStorage
-                            saveData();
-                            saveScreenshots();
+                                // Restore current account name
+                                if (data.currentAccountName) {
+                                    currentAccountName = data.currentAccountName;
+                                    localStorage.setItem('currentAccountName', currentAccountName);
+                                }
 
-                            if (data.sundayPreps) {
-                                localStorage.setItem('sundayPreps', JSON.stringify(data.sundayPreps));
+                                // Restore settings
+                                if (data.goalSettings) {
+                                    localStorage.setItem('goalSettings', JSON.stringify(data.goalSettings));
+                                }
+                                if (data.appSettings) {
+                                    localStorage.setItem('appSettings', JSON.stringify(data.appSettings));
+                                }
+                                if (data.postMarketReviews) {
+                                    localStorage.setItem('postMarketReviews', JSON.stringify(data.postMarketReviews));
+                                }
+                                if (data.sundayPreps) {
+                                    localStorage.setItem('sundayPreps', JSON.stringify(data.sundayPreps));
+                                }
+                            } else {
+                                // Old format (v1.0) - restore to current account only
+                                if (data.sessions) allSessions = data.sessions;
+                                if (data.trades) allTrades = data.trades;
+                                if (data.screenshots) screenshots = data.screenshots;
+                                if (data.currentSession) currentSession = data.currentSession;
+
+                                // Save to localStorage
+                                saveData();
+                                saveScreenshots();
+
+                                if (data.sundayPreps) {
+                                    localStorage.setItem('sundayPreps', JSON.stringify(data.sundayPreps));
+                                }
                             }
 
-                            showToast('success', 'Data Restored', 'Data restored successfully! Reloading page...', 3000);
+                            showToast('success', 'Data Restored', 'All accounts and settings restored successfully! Reloading page...', 3000);
                             setTimeout(() => location.reload(), 3000);
                         }
                     } catch (error) {
