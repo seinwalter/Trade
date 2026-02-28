@@ -103,6 +103,10 @@ enforceStopGate = input.bool(true, "Enforce stop gate (block entry if stop inval
 fallbackStopBehavior = input.string("Skip Trade", "If pivot stop unavailable...", options = ["Skip Trade", "Use Fixed"], group = g_risk)
 enforceMaxStopDistance = input.bool(true, "Reject trades with stop > Max Stop Distance", group = g_risk)
 maxStopDistancePts = input.float(10.0, "Max Stop Distance (points)", step = 0.25, group = g_risk)
+g_date = "Date Filter"
+useDateFilter = input.bool(false, "Enable Date Filter", group = g_date)
+dateStart = input.time(timestamp("2025-01-01 00:00 +0000"), "Start Date", group = g_date)
+dateEnd = input.time(timestamp("2026-12-31 23:59 +0000"), "End Date", group = g_date)
 g_dbg = "Debug"
 showSignalMarks = input.bool(true, "Plot Signal Markers", group = g_dbg)
 showLastBarLabel = input.bool(false, "Show Last-Bar Debug Label", group = g_dbg)
@@ -421,10 +425,15 @@ bool estStopOkShort = (not usePivotStop) or estPivotOkShort or (fallbackStopBeha
 if enforceMaxStopDistance
     estStopOkShort := estStopOkShort and (estDistShort <= maxStopDistancePts)
 //=============================================================================
+// DATE FILTER
+//=============================================================================
+bool inDateRange = not useDateFilter or (time >= dateStart and time <= dateEnd)
+bool dateJustEnded = useDateFilter and inDateRange[1] and (not inDateRange)
+//=============================================================================
 // FINAL SIGNALS (confirmed only) — stop gate can be bypassed via input
 //=============================================================================
-longSignal = barstate.isconfirmed and inRTH and longSignalRaw and supportLong and (not enforceStopGate or estStopOkLong)
-shortSignal = barstate.isconfirmed and inRTH and shortSignalRaw and supportShort and (not enforceStopGate or estStopOkShort)
+longSignal = barstate.isconfirmed and inRTH and inDateRange and longSignalRaw and supportLong and (not enforceStopGate or estStopOkLong)
+shortSignal = barstate.isconfirmed and inRTH and inDateRange and shortSignalRaw and supportShort and (not enforceStopGate or estStopOkShort)
 //=============================================================================
 // POSITION STATE (snapped)
 //=============================================================================
@@ -574,8 +583,9 @@ if failsafeStopClose and (posAbsQty > _QTY_EPS)
         failsafeStopPx := beActive ? (avg - beOffsetPts) : baseStop
         closeForFailsafeStop := not na(failsafeStopPx) and (high >= failsafeStopPx)
 bool closeForRTH = forceFlatAtRTHClose and rthJustClosed and (posAbsQty > _QTY_EPS)
+bool closeForDateEnd = dateJustEnded and (posAbsQty > _QTY_EPS)
 bool closeForMaxBars = (maxBarsInTrade > 0) and (posAbsQty > _QTY_EPS) and (not na(entryBar)) and ((bar_index - entryBar) >= maxBarsInTrade)
-bool forceFlatNow = closeForRTH or closeForMaxBars or closeForFailsafeStop
+bool forceFlatNow = closeForRTH or closeForDateEnd or closeForMaxBars or closeForFailsafeStop
 bool countAsRTHFlat = closeForRTH
 bool countAsSafeStop = (not closeForRTH) and closeForFailsafeStop
 if countAsRTHFlat and (rthFlatCountBar != bar_index)
@@ -585,7 +595,7 @@ if countAsSafeStop and (safeStopCountBar != bar_index)
     safeStopCount += 1
     safeStopCountBar := bar_index
 if forceFlatNow
-    string closeReason = closeForRTH ? "RTH-Flat" : closeForMaxBars ? "TimeStop" : "SafeStop"
+    string closeReason = closeForRTH ? "RTH-Flat" : closeForDateEnd ? "DateEnd" : closeForMaxBars ? "TimeStop" : "SafeStop"
     strategy.close_all(comment = closeReason)
     strategy.cancel("L-TP1")
     strategy.cancel("L-TP2")
@@ -727,7 +737,8 @@ if showLastBarLabel and barstate.islast
       "FINAL L/S: " + str.tostring(longSignal) + "/" + str.tostring(shortSignal) + "\n" +
       "pos=" + str.tostring(strategy.position_size) + " snapped=" + str.tostring(posNow) + " avg=" + str.tostring(strategy.position_avg_price, format.mintick) + "\n" +
       "entryAbsQty=" + str.tostring(entryAbsQty) + " tp1Hit=" + str.tostring(tp1Hit) + " tp2Hit=" + str.tostring(tp2Hit) + " tp1TouchedForBE=" + str.tostring(tp1TouchedForBE) + " beActive=" + str.tostring(beActive) + "\n" +
-      "forceFlatNow=" + str.tostring(forceFlatNow) + " closeForRTH=" + str.tostring(closeForRTH) + " closeForMaxBars=" + str.tostring(closeForMaxBars) + " closeForFailsafeStop=" + str.tostring(closeForFailsafeStop) + "\n" +
+      "forceFlatNow=" + str.tostring(forceFlatNow) + " closeForRTH=" + str.tostring(closeForRTH) + " closeForDateEnd=" + str.tostring(closeForDateEnd) + " closeForMaxBars=" + str.tostring(closeForMaxBars) + " closeForFailsafeStop=" + str.tostring(closeForFailsafeStop) + "\n" +
+      "inDateRange=" + str.tostring(inDateRange) + "\n" +
       "failsafeStopPx=" + str.tostring(failsafeStopPx, format.mintick) + "\n" +
       "needTP1/2/3=" + str.tostring(needTP1) + "/" + str.tostring(needTP2) + "/" + str.tostring(needTP3) + " lockedStop=" + str.tostring(lockedStop, format.mintick) + "\n" +
       "lastEntryBar=" + str.tostring(lastEntryBar) + " canEnterThisBar=" + str.tostring(canEnterThisBar)
