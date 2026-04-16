@@ -1,745 +1,312 @@
 //@version=6
-strategy("DBTT Simple Structure Strategy (A+ + SMA/MACD) v1.1.4",
+strategy("DBTT Hybrid ORB + Bias v2.0.0",
      overlay = true,
      pyramiding = 0,
      initial_capital = 100000,
      margin_long = 0,
      margin_short = 0,
      calc_on_every_tick = false,
-     calc_on_order_fills = true,
+     calc_on_order_fills = false,
      process_orders_on_close = false)
-//=============================================================================
-// THEME (ICT Default)
-//=============================================================================
-ICT_BULL = #089981
-ICT_BEAR = #f23645
-ICT_BG   = #0c0e14
-//=============================================================================
-// INTERNAL CONSTANTS
-//=============================================================================
-float _QTY_EPS = 1e-6
 //=============================================================================
 // INPUTS
 //=============================================================================
-g_sig = "Signals"
-tradingMode = input.string("Both", "Trading Mode", options = ["Bull Mode", "Bear Mode", "Both"], group = g_sig)
-timeframePreset = input.string("Intraday (5/15/240)", "Timeframe Preset",
-     options = ["Custom", "Scalp (5/15/60)", "Intraday (5/15/240)", "Swing (60/240/1D)"], group = g_sig)
-customLTF = input.timeframe("5", "Custom LTF", group = g_sig)
-customMTF = input.timeframe("15", "Custom MTF", group = g_sig)
-customHTF = input.timeframe("240", "Custom HTF", group = g_sig)
-useMTFInAlignment = input.bool(true, "Require MTF Alignment", group = g_sig)
-structLength = input.int(20, "Structure Lookback", minval = 1, maxval = 50, group = g_sig)
-bosConfType = input.string("Wicks", "BOS Confirmation", options = ["Candle Close", "Wicks"], group = g_sig)
-entrySignalMode = input.string("A+ State + Structure Break", "Entry Signal Mode",
-     options = ["A+ Trigger (First Bar)", "A+ State + Structure Break", "Structure Break Only"], group = g_sig)
-entryWindowBars = input.int(3, "Structure entry window (bars)", minval = 1, maxval = 20, tooltip = "Bars after a structure break to still allow entry (1 = only break bar; higher = more chances)", group = g_sig)
-g_filters = "Filters"
-tradeSide = input.string("Both", "Trade Side", options = ["Both", "Long Only", "Short Only"], group = g_filters)
-useRTH = input.bool(true, "Only trade RTH (NY 09:30-16:00)", group = g_filters)
-rthSession = input.session("0930-1600", "RTH Session", group = g_filters)
-rthTZ = input.string("America/New_York", "RTH Timezone", options = ["America/New_York", "America/Chicago", "UTC", "Europe/London"], group = g_filters)
-g_ap = "A+ Confluence (Master)"
-requireBiasAlign = input.bool(true, "Require LTF/MTF/HTF Alignment", group = g_ap)
-requirePDZone = input.bool(true, "Require Premium/Discount Zone", group = g_ap)
-requireLiqSweep = input.bool(true, "Require Liquidity Sweep", group = g_ap)
-requireFVG = input.bool(false, "Require Valid FVG", group = g_ap)
-g_pd = "Premium / Discount"
-enablePD = input.bool(true, "Enable PD Filter", group = g_pd)
-pdTFSource = input.string("HTF", "P/D Timeframe", options = ["LTF", "MTF", "HTF"], group = g_pd)
-pdSwingLen = input.int(80, "P/D Swing Lookback", minval = 10, maxval = 500, group = g_pd)
-g_liq = "Liquidity Sweep"
-liquidityEnabled = input.bool(true, "Enable Liquidity Sweep Engine", group = g_liq)
-liqLeft = input.int(15, "Pivot Left Bars", minval = 1, maxval = 100, group = g_liq)
-liqRight = input.int(5, "Pivot Right Bars", minval = 1, maxval = 100, group = g_liq)
-liqLevelLimit = input.int(25, "Liquidity Level Memory (per side)", minval = 5, maxval = 200, group = g_liq)
-sweepMemoryBars = input.int(10, "Sweep Memory (bars)", minval = 1, maxval = 200, group = g_liq)
-sweepConfirmType = input.string("Wick", "Sweep Confirmation", options = ["Close", "Wick"], group = g_liq)
-g_fvg = "Fair Value Gap"
-enableFVG = input.bool(true, "Enable FVG Engine", group = g_fvg)
-fvgLookback = input.int(20, "FVG Lookback Bars", minval = 5, maxval = 200, group = g_fvg)
-g_support = "10 SMA / MACD Support"
-supportTFIn = input.timeframe("", "Support TF (blank = chart)", group = g_support)
-useSMAFilter = input.bool(true, "Require 10 SMA Support", group = g_support)
-smaLength = input.int(10, "SMA Length", minval = 1, group = g_support)
-showSMALine = input.bool(true, "Plot SMA", group = g_support)
-useMACDFilter = input.bool(true, "Require MACD cross (same direction)", group = g_support)
-useMACDHistFilter = input.bool(false, "Require momentum cross (same direction)", group = g_support)
-macdFastLength = input.int(12, "MACD Fast", minval = 1, group = g_support)
-macdSlowLength = input.int(26, "MACD Slow", minval = 1, group = g_support)
-macdSignalLength = input.int(9, "MACD Signal", minval = 1, group = g_support)
-macdCrossLookback = input.int(3, "MACD / momentum cross lookback (bars)", minval = 1, maxval = 10, tooltip = "Bars after a cross to still allow entry", group = g_support)
+g_orb = "Opening Range"
+orSession    = input.session("0930-1000", "OR Window", group = g_orb)
+minORRange   = input.float(2.0,  "Min OR Range (pts)", step = 0.25, minval = 0, group = g_orb)
+maxORRange   = input.float(15.0, "Max OR Range (pts)", step = 0.25, minval = 0, group = g_orb)
+showORLevels = input.bool(true, "Show OR Levels", group = g_orb)
+
+g_bias = "Structure Bias"
+ltfTF          = input.timeframe("5",  "LTF", group = g_bias)
+mtfTF          = input.timeframe("15", "MTF", group = g_bias)
+swingLen       = input.int(10, "Swing Lookback", minval = 3, maxval = 50, group = g_bias)
+requireBothTFs = input.bool(true, "Require LTF + MTF Alignment", group = g_bias)
+
+g_filt = "Filters"
+tradeSide     = input.string("Both", "Trade Side", options = ["Both", "Long Only", "Short Only"], group = g_filt)
+sessionTZ     = input.string("America/New_York", "Session Timezone", options = ["America/New_York", "America/Chicago", "UTC", "Europe/London"], group = g_filt)
+useRTH        = input.bool(true, "Only Trade RTH", group = g_filt)
+rthSession    = input.session("0930-1600", "RTH Session", group = g_filt)
+useDateFilter = input.bool(false, "Enable Date Filter", group = g_filt)
+dateStart     = input.time(timestamp("2025-01-01 00:00 +0000"), "Start Date", group = g_filt)
+dateEnd       = input.time(timestamp("2026-12-31 23:59 +0000"), "End Date", group = g_filt)
+
+g_tgt = "Targets / Stops"
+profile    = input.string("MNQ", "Profile", options = ["MNQ", "ES"], group = g_tgt)
+mnqTP1In   = input.float(6.0,  "MNQ TP1 (pts)", step = 0.25, group = g_tgt)
+mnqTP2In   = input.float(20.0, "MNQ TP2 (pts)", step = 0.25, group = g_tgt)
+mnqTP3In   = input.float(50.0, "MNQ TP3 (pts)", step = 0.25, group = g_tgt)
+esTP1In    = input.float(1.5,  "ES TP1 (pts)", step = 0.25, group = g_tgt)
+esTP2In    = input.float(3.0,  "ES TP2 (pts)", step = 0.25, group = g_tgt)
+esTP3In    = input.float(7.0,  "ES TP3 (pts)", step = 0.25, group = g_tgt)
+stopMode   = input.string("OR Range", "Stop Mode", options = ["OR Range", "Fixed"], group = g_tgt)
+stopBuffer = input.float(0.5,  "Stop Buffer (pts)", step = 0.25, tooltip = "Added beyond OR opposite side", group = g_tgt)
+fixedSL    = input.float(10.0, "Fixed SL (pts)", step = 0.25, tooltip = "Used when Stop Mode = Fixed", group = g_tgt)
+
 g_exec = "Execution"
-contracts = input.int(3, "Total Contracts", minval = 1, group = g_exec)
-tp1QtyIn = input.int(1, "TP1 Contracts", minval = 0, group = g_exec)
-tp2QtyIn = input.int(1, "TP2 Contracts", minval = 0, group = g_exec)
-beOffsetPts = input.float(0.0, "Breakeven Offset (points)", step = 0.25, group = g_exec)
-forceFlatAtRTHClose = input.bool(true, "Force Flat At RTH Close", tooltip = "Closes any open position on the first bar after the RTH session ends.", group = g_exec)
+contracts      = input.int(3, "Total Contracts", minval = 1, group = g_exec)
+tp1QtyIn       = input.int(1, "TP1 Contracts", minval = 0, group = g_exec)
+tp2QtyIn       = input.int(1, "TP2 Contracts", minval = 0, group = g_exec)
+beOffsetPts    = input.float(0.0, "BE Offset (pts)", step = 0.25, group = g_exec)
+forceFlatRTH   = input.bool(true, "Force Flat At RTH Close", group = g_exec)
 maxBarsInTrade = input.int(0, "Max Bars In Trade (0 = off)", minval = 0, group = g_exec)
-failsafeStopClose = input.bool(true, "Emergency Stop-Close", tooltip = "If a position is still open when price crosses the active stop, force a market close.", group = g_exec)
-g_inst = "Instrument Profile"
-profile = input.string("Auto", "Profile", options = ["Auto", "MNQ", "ES"], group = g_inst)
-g_tgt = "Targets / Stops (points)"
-stopMode = input.string("Prior Pivot", "Stop Mode", options = ["Fixed (points)", "Prior Pivot"], group = g_tgt)
-stopPivotTFIn = input.timeframe("", "Stop Pivot TF (blank = chart)", group = g_tgt)
-stopPivotLeft = input.int(5, "Stop Pivot Left Bars", minval = 1, maxval = 50, group = g_tgt)
-stopPivotRight = input.int(5, "Stop Pivot Right Bars", minval = 1, maxval = 50, group = g_tgt)
-pivotStopBufferPts = input.float(0.0, "Pivot Stop Buffer (points)", step = 0.25, group = g_tgt)
-useCustomTargets = input.bool(false, "Override With Custom Targets", group = g_tgt)
-mnqTP1In = input.float(6.0, "MNQ TP1", step = 0.25, group = g_tgt)
-mnqTP2In = input.float(20.0, "MNQ TP2", step = 0.25, group = g_tgt)
-mnqTP3In = input.float(50.0, "MNQ TP3", step = 0.25, group = g_tgt)
-mnqSLIn  = input.float(100.0, "MNQ SL", step = 0.25, group = g_tgt)
-esTP1In = input.float(1.5, "ES TP1", step = 0.25, group = g_tgt)
-esTP2In = input.float(3.0, "ES TP2", step = 0.25, group = g_tgt)
-esTP3In = input.float(7.0, "ES TP3", step = 0.25, group = g_tgt)
-esSLIn  = input.float(20.0, "ES SL", step = 0.25, group = g_tgt)
-custTP1 = input.float(6.0, "Custom TP1", step = 0.25, group = g_tgt)
-custTP2 = input.float(20.0, "Custom TP2", step = 0.25, group = g_tgt)
-custTP3 = input.float(50.0, "Custom TP3", step = 0.25, group = g_tgt)
-custSL  = input.float(100.0, "Custom SL", step = 0.25, group = g_tgt)
-g_risk = "Risk / Stop Quality"
-enforceStopGate = input.bool(true, "Enforce stop gate (block entry if stop invalid)", tooltip = "If false, entries are allowed even when pivot stop is missing or too far; exit orders still use pivot or fixed stop.", group = g_risk)
-fallbackStopBehavior = input.string("Skip Trade", "If pivot stop unavailable...", options = ["Skip Trade", "Use Fixed"], group = g_risk)
-enforceMaxStopDistance = input.bool(true, "Reject trades with stop > Max Stop Distance", group = g_risk)
-maxStopDistancePts = input.float(10.0, "Max Stop Distance (points)", step = 0.25, group = g_risk)
-g_date = "Date Filter"
-useDateFilter = input.bool(false, "Enable Date Filter", group = g_date)
-dateStart = input.time(timestamp("2025-01-01 00:00 +0000"), "Start Date", group = g_date)
-dateEnd = input.time(timestamp("2026-12-31 23:59 +0000"), "End Date", group = g_date)
-g_dbg = "Debug"
-showSignalMarks = input.bool(true, "Plot Signal Markers", group = g_dbg)
-showLastBarLabel = input.bool(false, "Show Last-Bar Debug Label", group = g_dbg)
-showStopGateMarks = input.bool(false, "Plot Stop-Gate Markers", group = g_dbg)
-showAuditTable = input.bool(true, "Show Audit Counter Table", group = g_dbg)
 //=============================================================================
-// TIMEFRAMES (Preset -> LTF / MTF / HTF)
+// DERIVED CONSTANTS
 //=============================================================================
-string ltfTF = customLTF
-string mtfTF = customMTF
-string htfTF = customHTF
-if timeframePreset == "Scalp (5/15/60)"
-    ltfTF := "5"
-    mtfTF := "15"
-    htfTF := "60"
-else if timeframePreset == "Intraday (5/15/240)"
-    ltfTF := "5"
-    mtfTF := "15"
-    htfTF := "240"
-else if timeframePreset == "Swing (60/240/1D)"
-    ltfTF := "60"
-    mtfTF := "240"
-    htfTF := "1D"
+bool isES  = profile == "ES"
+float tp1  = isES ? esTP1In : mnqTP1In
+float tp2  = isES ? esTP2In : mnqTP2In
+float tp3  = isES ? esTP3In : mnqTP3In
+int tp1Q   = math.min(tp1QtyIn, contracts)
+int tp2Q   = math.min(tp2QtyIn, contracts - tp1Q)
+int tp3Q   = contracts - tp1Q - tp2Q
+tp3Q      := tp3Q < 0 ? 0 : tp3Q
 //=============================================================================
-// HELPERS
+// STRUCTURE BIAS (non-repainting confirmed pivots)
 //=============================================================================
-msPackStr() =>
-    pivHi = ta.pivothigh(high, structLength, structLength)
-    pivLo = ta.pivotlow(low, structLength, structLength)
-    hiSrc = bosConfType == "Candle Close" ? close : high
-    loSrc = bosConfType == "Candle Close" ? close : low
-    var float prevHigh = na
-    var float prevLow = na
-    var int swingDir = 0
-    var string pat = ""
+biasCalc(swLen) =>
+    pivHi = ta.pivothigh(high, swLen, swLen)
+    pivLo = ta.pivotlow(low, swLen, swLen)
+    var float prevHi = na
+    var float currHi = na
+    var float prevLo = na
+    var float currLo = na
+    var int bias = 0
     if not na(pivHi)
-        prevHigh := pivHi
+        prevHi := currHi
+        currHi := pivHi
     if not na(pivLo)
-        prevLow := pivLo
-    if not na(prevHigh) and hiSrc > prevHigh
-        pat := swingDir < 0 ? "CHoCH" : "BOS"
-        swingDir := 1
-        prevHigh := high
-    if not na(prevLow) and loSrc < prevLow
-        pat := swingDir > 0 ? "CHoCH" : "BOS"
-        swingDir := -1
-        prevLow := low
-    str.tostring(swingDir) + "|" + pat
-msPackFromTF(tf) =>
-    request.security(syminfo.tickerid, tf, msPackStr(), lookahead = barmerge.lookahead_off)
-msDirFromPack(pack) =>
-    parts = str.split(pack, "|")
-    dStr = array.size(parts) > 0 ? array.get(parts, 0) : "0"
-    dVal = str.tonumber(dStr)
-    na(dVal) ? 0 : int(dVal)
-msPatFromPack(pack) =>
-    parts = str.split(pack, "|")
-    array.size(parts) > 1 ? array.get(parts, 1) : ""
-pdPctCalc() =>
-    hh = ta.highest(high, pdSwingLen)
-    ll = ta.lowest(low, pdSwingLen)
-    rng = hh - ll
-    rng > 0 ? (close - ll) / rng * 100.0 : 50.0
-macdTupleCalc() =>
-    [m, s, h] = ta.macd(close, macdFastLength, macdSlowLength, macdSignalLength)
-    [m, s, h]
-f_snapAbsQty(_q) =>
-    float a = math.abs(_q)
-    float r = math.round(a)
-    math.abs(a - r) <= _QTY_EPS ? r : a
-f_snapSignedQty(_q) =>
-    float s = _q > 0 ? 1.0 : _q < 0 ? -1.0 : 0.0
-    s * f_snapAbsQty(_q)
+        prevLo := currLo
+        currLo := pivLo
+    if not na(prevHi) and not na(currHi) and not na(prevLo) and not na(currLo)
+        if currHi > prevHi and currLo > prevLo
+            bias := 1
+        else if currHi < prevHi and currLo < prevLo
+            bias := -1
+    bias
+
+int biasLTF = request.security(syminfo.tickerid, ltfTF, biasCalc(swingLen), lookahead = barmerge.lookahead_off)
+int biasMTF = request.security(syminfo.tickerid, mtfTF, biasCalc(swingLen), lookahead = barmerge.lookahead_off)
+bool biasLong  = biasLTF == 1  and (not requireBothTFs or biasMTF == 1)
+bool biasShort = biasLTF == -1 and (not requireBothTFs or biasMTF == -1)
 //=============================================================================
-// SESSION FILTER (RTH)
+// SESSION FILTERS
 //=============================================================================
-inRTH = not useRTH or not na(time(timeframe.period, rthSession, rthTZ))
-rthJustClosed = useRTH and inRTH[1] and (not inRTH)
+bool inRTH         = not useRTH or not na(time(timeframe.period, rthSession, sessionTZ))
+bool rthJustClosed = useRTH and inRTH[1] and not inRTH
+bool inDateRange   = not useDateFilter or (time >= dateStart and time <= dateEnd)
+bool dateJustEnded = useDateFilter and inDateRange[1] and not inDateRange
 //=============================================================================
-// MULTI-TF STRUCTURE (Master Bias)
+// OPENING RANGE
 //=============================================================================
-string packLTF = msPackFromTF(ltfTF)
-string packMTF = useMTFInAlignment ? msPackFromTF(mtfTF) : packLTF
-string packHTF = msPackFromTF(htfTF)
-int dirLTF = msDirFromPack(packLTF)
-int dirMTF = msDirFromPack(packMTF)
-int dirHTF = msDirFromPack(packHTF)
-string patLTF = msPatFromPack(packLTF)
-biasAligned = useMTFInAlignment ? (dirLTF == dirMTF and dirMTF == dirHTF and dirLTF != 0) : (dirLTF == dirHTF and dirLTF != 0)
+bool inORWindow = not na(time(timeframe.period, orSession, sessionTZ))
+
+var bool _wasInOR = false
+bool orWindowOpen  = inORWindow and not _wasInOR
+bool orWindowClose = _wasInOR and not inORWindow
+
+var float orHigh      = na
+var float orLow       = na
+var bool  orDefined   = false
+var bool  orLongTaken = false
+var bool  orShortTaken = false
+
+if orWindowOpen
+    orHigh       := na
+    orLow        := na
+    orDefined    := false
+    orLongTaken  := false
+    orShortTaken := false
+
+if inORWindow
+    orHigh := na(orHigh) ? high : math.max(orHigh, high)
+    orLow  := na(orLow)  ? low  : math.min(orLow, low)
+
+if orWindowClose and not na(orHigh) and not na(orLow)
+    orDefined := true
+
+_wasInOR := inORWindow
+
+float orRange = orDefined ? (orHigh - orLow) : na
+bool  rangeOk = not na(orRange) and orRange >= minORRange and orRange <= maxORRange
 //=============================================================================
-// STRUCTURE ENTRY WINDOW (more than one bar to enter after a break)
+// BREAKOUT + BIAS SIGNALS
 //=============================================================================
-isStructEvent = (patLTF == "BOS" or patLTF == "CHoCH")
-structBreakThisBar = isStructEvent and (patLTF != patLTF[1])
-var int lastStructLongBar = na
-var int lastStructShortBar = na
-if structBreakThisBar and dirLTF > 0
-    lastStructLongBar := bar_index
-if structBreakThisBar and dirLTF < 0
-    lastStructShortBar := bar_index
-// Expire long window when opposite structure appears
-if dirLTF < 0 and (patLTF == "BOS" or patLTF == "CHoCH")
-    lastStructLongBar := na
-if dirLTF > 0 and (patLTF == "BOS" or patLTF == "CHoCH")
-    lastStructShortBar := na
-inLongWindow = (patLTF == "BOS" or patLTF == "CHoCH") and dirLTF > 0 and (structBreakThisBar or (not na(lastStructLongBar) and (bar_index - lastStructLongBar) >= 1 and (bar_index - lastStructLongBar) <= entryWindowBars))
-inShortWindow = (patLTF == "BOS" or patLTF == "CHoCH") and dirLTF < 0 and (structBreakThisBar or (not na(lastStructShortBar) and (bar_index - lastStructShortBar) >= 1 and (bar_index - lastStructShortBar) <= entryWindowBars))
-structLongEdge = inLongWindow
-structShortEdge = inShortWindow
-//=============================================================================
-// PD ZONE (Premium / Discount)
-//=============================================================================
-string pdTF = pdTFSource == "LTF" ? ltfTF : pdTFSource == "MTF" ? mtfTF : htfTF
-pdPct = enablePD ? request.security(syminfo.tickerid, pdTF, pdPctCalc(), lookahead = barmerge.lookahead_off) : 50.0
-isPremium = pdPct > 50.0
-isDiscount = pdPct < 50.0
-//=============================================================================
-// LIQUIDITY SWEEP (pivot levels + breach)
-//=============================================================================
-var array<float> hiLvls = array.new_float()
-var array<float> loLvls = array.new_float()
-ph = ta.pivothigh(high, liqLeft, liqRight)
-pl = ta.pivotlow(low, liqLeft, liqRight)
-if liquidityEnabled and not na(ph)
-    array.push(hiLvls, ph)
-if liquidityEnabled and not na(pl)
-    array.push(loLvls, pl)
-while array.size(hiLvls) > liqLevelLimit
-    array.shift(hiLvls)
-while array.size(loLvls) > liqLevelLimit
-    array.shift(loLvls)
-var int lastHighSweepBar = na
-var int lastLowSweepBar = na
-bool hiSweptNow = false
-bool loSweptNow = false
-if liquidityEnabled and barstate.isconfirmed
-    breachHi = sweepConfirmType == "Close" ? close : high
-    if array.size(hiLvls) > 0
-        for i = array.size(hiLvls) - 1 to 0 by 1
-            lvl = array.get(hiLvls, i)
-            if breachHi > lvl
-                array.remove(hiLvls, i)
-                hiSweptNow := true
-    breachLo = sweepConfirmType == "Close" ? close : low
-    if array.size(loLvls) > 0
-        for i = array.size(loLvls) - 1 to 0 by 1
-            lvl = array.get(loLvls, i)
-            if breachLo < lvl
-                array.remove(loLvls, i)
-                loSweptNow := true
-if hiSweptNow
-    lastHighSweepBar := bar_index
-if loSweptNow
-    lastLowSweepBar := bar_index
-highSweptRecently = not na(lastHighSweepBar) and (bar_index - lastHighSweepBar <= sweepMemoryBars)
-lowSweptRecently  = not na(lastLowSweepBar) and (bar_index - lastLowSweepBar  <= sweepMemoryBars)
-//=============================================================================
-// FVG ENGINE (simple valid FVG detection)
-//=============================================================================
-var array<float> bullBots = array.new_float()
-var array<int>   bullBars = array.new_int()
-var array<float> bearTops = array.new_float()
-var array<int>   bearBars = array.new_int()
-bullFVG = enableFVG and (high[2] < low)
-bullBot = high[2]
-bearFVG = enableFVG and (low[2] > high)
-bearTop = low[2]
-if bullFVG
-    array.push(bullBots, bullBot)
-    array.push(bullBars, bar_index)
-if bearFVG
-    array.push(bearTops, bearTop)
-    array.push(bearBars, bar_index)
-if enableFVG and array.size(bullBars) > 0
-    for i = array.size(bullBars) - 1 to 0 by 1
-        tooOld = (bar_index - array.get(bullBars, i)) > fvgLookback
-        mitigated = low <= array.get(bullBots, i)
-        if tooOld or mitigated
-            array.remove(bullBots, i)
-            array.remove(bullBars, i)
-if enableFVG and array.size(bearBars) > 0
-    for i = array.size(bearBars) - 1 to 0 by 1
-        tooOld = (bar_index - array.get(bearBars, i)) > fvgLookback
-        mitigated = high >= array.get(bearTops, i)
-        if tooOld or mitigated
-            array.remove(bearTops, i)
-            array.remove(bearBars, i)
-bool hasBullFVG = not enableFVG
-bool hasBearFVG = not enableFVG
-if enableFVG
-    hasBullFVG := false
-    if array.size(bullBots) > 0
-        for i = array.size(bullBots) - 1 to 0 by 1
-            lvl = array.get(bullBots, i)
-            if close > lvl
-                hasBullFVG := true
-                break
-    hasBearFVG := false
-    if array.size(bearTops) > 0
-        for i = array.size(bearTops) - 1 to 0 by 1
-            lvl = array.get(bearTops, i)
-            if close < lvl
-                hasBearFVG := true
-                break
-//=============================================================================
-// SMA / MACD SUPPORT (on chosen support TF) — MACD & momentum = cross in same direction
-//=============================================================================
-string supportTF = supportTFIn == "" ? timeframe.period : supportTFIn
-aboveSMA = request.security(syminfo.tickerid, supportTF, close > ta.sma(close, smaLength), lookahead = barmerge.lookahead_off)
-smaSeries = request.security(syminfo.tickerid, supportTF, ta.sma(close, smaLength), lookahead = barmerge.lookahead_off)
-[mTF, sTF, hTF] = request.security(syminfo.tickerid, supportTF, macdTupleCalc(), lookahead = barmerge.lookahead_off)
-// Cross this bar: MACD line vs signal
-macdCrossUp = mTF > sTF and mTF[1] <= sTF[1]
-macdCrossDown = mTF < sTF and mTF[1] >= sTF[1]
-macdCrossUpRecent = false
-macdCrossDownRecent = false
-for i = 0 to math.min(macdCrossLookback - 1, bar_index)
-    if macdCrossUp[i]
-        macdCrossUpRecent := true
-    if macdCrossDown[i]
-        macdCrossDownRecent := true
-// Cross this bar: histogram vs zero (momentum shift)
-histCrossUp = hTF > 0 and hTF[1] <= 0
-histCrossDown = hTF < 0 and hTF[1] >= 0
-histCrossUpRecent = false
-histCrossDownRecent = false
-for i = 0 to math.min(macdCrossLookback - 1, bar_index)
-    if histCrossUp[i]
-        histCrossUpRecent := true
-    if histCrossDown[i]
-        histCrossDownRecent := true
-//=============================================================================
-// ENTRY LOGIC (Structure-based + A+ confluence)
-//=============================================================================
-allowLongMode = tradingMode != "Bear Mode"
-allowShortMode = tradingMode != "Bull Mode"
-canLong = (tradeSide == "Both" or tradeSide == "Long Only") and allowLongMode
-canShort = (tradeSide == "Both" or tradeSide == "Short Only") and allowShortMode
-condBias = not requireBiasAlign or biasAligned
-condZoneLong = not requirePDZone or (enablePD and isDiscount)
-condZoneShort = not requirePDZone or (enablePD and isPremium)
-condLiqLong = not requireLiqSweep or (liquidityEnabled and lowSweptRecently)
-condLiqShort = not requireLiqSweep or (liquidityEnabled and highSweptRecently)
-condFVGLong = not requireFVG or (enableFVG and hasBullFVG)
-condFVGShort = not requireFVG or (enableFVG and hasBearFVG)
-isAPlusLong = condBias and condZoneLong and condLiqLong and condFVGLong and canLong
-isAPlusShort = condBias and condZoneShort and condLiqShort and condFVGShort and canShort
-aPlusLongTrigger = isAPlusLong and not isAPlusLong[1]
-aPlusShortTrigger = isAPlusShort and not isAPlusShort[1]
-supportLong = (not useSMAFilter or aboveSMA) and (not useMACDFilter or macdCrossUpRecent) and (not useMACDHistFilter or histCrossUpRecent)
-supportShort = (not useSMAFilter or not aboveSMA) and (not useMACDFilter or macdCrossDownRecent) and (not useMACDHistFilter or histCrossDownRecent)
-bool longSignalRaw = false
-bool shortSignalRaw = false
-if entrySignalMode == "A+ Trigger (First Bar)"
-    longSignalRaw := aPlusLongTrigger
-    shortSignalRaw := aPlusShortTrigger
-else if entrySignalMode == "A+ State + Structure Break"
-    longSignalRaw := isAPlusLong and structLongEdge
-    shortSignalRaw := isAPlusShort and structShortEdge
-else
-    longSignalRaw := structLongEdge
-    shortSignalRaw := structShortEdge
-//=============================================================================
-// INSTRUMENT PROFILE (MNQ vs ES)
-//=============================================================================
-string root = str.upper(syminfo.root)
-bool isES = false
-bool isMNQ = false
-if profile == "Auto"
-    isES := str.contains(root, "ES")
-    isMNQ := str.contains(root, "MNQ") or (not isES and str.contains(root, "NQ"))
-else
-    isES := profile == "ES"
-    isMNQ := profile == "MNQ"
-float tp1 = useCustomTargets ? custTP1 : (isES ? esTP1In : mnqTP1In)
-float tp2 = useCustomTargets ? custTP2 : (isES ? esTP2In : mnqTP2In)
-float tp3 = useCustomTargets ? custTP3 : (isES ? esTP3In : mnqTP3In)
-float slPts = useCustomTargets ? custSL : (isES ? esSLIn : mnqSLIn)
-//=============================================================================
-// EXIT QUANTITY SPLITS (contracts)
-//=============================================================================
-int tp1Qty_i = tp1QtyIn > contracts ? contracts : tp1QtyIn
-int remAfter1 = contracts - tp1Qty_i
-int tp2Qty_i = tp2QtyIn > remAfter1 ? remAfter1 : tp2QtyIn
-int tp3Qty_i = contracts - tp1Qty_i - tp2Qty_i
-tp3Qty_i := tp3Qty_i < 0 ? 0 : tp3Qty_i
-//=============================================================================
-// STOP-LOSS PIVOTS (structure-based stop)
-//=============================================================================
-bool usePivotStop = stopMode == "Prior Pivot"
-string stopPivotTF = stopPivotTFIn == "" ? timeframe.period : stopPivotTFIn
-pivStopHi = request.security(syminfo.tickerid, stopPivotTF, ta.pivothigh(high, stopPivotLeft, stopPivotRight), lookahead = barmerge.lookahead_off)
-pivStopLo = request.security(syminfo.tickerid, stopPivotTF, ta.pivotlow(low, stopPivotLeft, stopPivotRight), lookahead = barmerge.lookahead_off)
-var float lastStopHi = na
-var float lastStopLo = na
-if not na(pivStopHi)
-    lastStopHi := pivStopHi
-if not na(pivStopLo)
-    lastStopLo := pivStopLo
-//=============================================================================
-// STOP QUALITY GATE (pre-entry)
-//=============================================================================
-float estEntry = close
-float estPivStopLong = not na(lastStopLo) ? (lastStopLo - pivotStopBufferPts) : na
-bool estPivotOkLong = usePivotStop and not na(estPivStopLong) and (estPivStopLong < estEntry)
-float estStopLong = usePivotStop ? (estPivotOkLong ? estPivStopLong : (estEntry - slPts)) : (estEntry - slPts)
-float estDistLong = estEntry - estStopLong
-bool estStopOkLong = (not usePivotStop) or estPivotOkLong or (fallbackStopBehavior == "Use Fixed")
-if enforceMaxStopDistance
-    estStopOkLong := estStopOkLong and (estDistLong <= maxStopDistancePts)
-float estPivStopShort = not na(lastStopHi) ? (lastStopHi + pivotStopBufferPts) : na
-bool estPivotOkShort = usePivotStop and not na(estPivStopShort) and (estPivStopShort > estEntry)
-float estStopShort = usePivotStop ? (estPivotOkShort ? estPivStopShort : (estEntry + slPts)) : (estEntry + slPts)
-float estDistShort = estStopShort - estEntry
-bool estStopOkShort = (not usePivotStop) or estPivotOkShort or (fallbackStopBehavior == "Use Fixed")
-if enforceMaxStopDistance
-    estStopOkShort := estStopOkShort and (estDistShort <= maxStopDistancePts)
-//=============================================================================
-// DATE FILTER
-//=============================================================================
-bool inDateRange = not useDateFilter or (time >= dateStart and time <= dateEnd)
-bool dateJustEnded = useDateFilter and inDateRange[1] and (not inDateRange)
-//=============================================================================
-// FINAL SIGNALS (confirmed only) — stop gate can be bypassed via input
-//=============================================================================
-longSignal = barstate.isconfirmed and inRTH and inDateRange and longSignalRaw and supportLong and (not enforceStopGate or estStopOkLong)
-shortSignal = barstate.isconfirmed and inRTH and inDateRange and shortSignalRaw and supportShort and (not enforceStopGate or estStopOkShort)
-//=============================================================================
-// POSITION STATE (snapped)
-//=============================================================================
-float posNow = f_snapSignedQty(strategy.position_size)
-var float posPrevExec = 0.0
-float posPrev = posPrevExec
-float posAbsQty = math.abs(posNow)
-bool isFlat = posAbsQty <= _QTY_EPS
-bool wasFlat = math.abs(posPrev) <= _QTY_EPS
-bool newPos = wasFlat and (not isFlat)
-bool flatNow = (not wasFlat) and isFlat
-posPrevExec := posNow
-//=============================================================================
-// ENTRIES (one-side priority — max one entry per bar)
-//=============================================================================
+bool canLong  = tradeSide != "Short Only"
+bool canShort = tradeSide != "Long Only"
+
+bool orbLongBreak  = orDefined and rangeOk and close > orHigh and not orLongTaken
+bool orbShortBreak = orDefined and rangeOk and close < orLow  and not orShortTaken
+
 var int lastEntryBar = na
-bool canEnterThisBar = na(lastEntryBar) or bar_index > lastEntryBar
-if isFlat and longSignal and canEnterThisBar
-    strategy.entry("L", strategy.long, qty = float(contracts))
+bool canEnter = na(lastEntryBar) or bar_index > lastEntryBar
+
+bool longSignal  = barstate.isconfirmed and inRTH and inDateRange and orbLongBreak  and biasLong  and canLong  and canEnter
+bool shortSignal = barstate.isconfirmed and inRTH and inDateRange and orbShortBreak and biasShort and canShort and canEnter
+//=============================================================================
+// POSITION STATE
+//=============================================================================
+float posSize = strategy.position_size
+float posAbs  = math.abs(posSize)
+bool  isFlat  = posSize == 0
+bool  wasFlat = posSize[1] == 0 or na(posSize[1])
+bool  newPos  = wasFlat and not isFlat
+bool  flatNow = not wasFlat and isFlat
+//=============================================================================
+// ENTRIES (one per bar, one per direction per session)
+//=============================================================================
+if isFlat and longSignal
+    strategy.entry("L", strategy.long, qty = contracts)
+    orLongTaken  := true
     lastEntryBar := bar_index
-else if isFlat and shortSignal and canEnterThisBar
-    strategy.entry("S", strategy.short, qty = float(contracts))
+else if isFlat and shortSignal
+    strategy.entry("S", strategy.short, qty = contracts)
+    orShortTaken := true
     lastEntryBar := bar_index
 //=============================================================================
-// TRADE MANAGEMENT — staged scale-out + BE after TP1 (FIXED)
+// TRADE MANAGEMENT
 //=============================================================================
-var int   entryBar = na
-var float entryAbsQty = na
+var int   entryBar   = na
 var float entryPrice = na
-var bool  tp1Hit = false
-var bool  tp2Hit = false
-var bool  tp1TouchedForBE = false
 var float lockedStop = na
-var int   entryClosedCount = 0
-var int   tp1TouchCount = 0
-var int   beActiveCount = 0
-var int   safeStopCount = 0
-var int   rthFlatCount = 0
-var bool  tp1TouchCountedThisTrade = false
-var bool  beActiveCountedThisTrade = false
-var int   safeStopCountBar = na
-var int   rthFlatCountBar = na
+var bool  tp1Hit     = false
+var bool  tp2Hit     = false
+var bool  tp1Touched = false
+
 if newPos
-    entryBar := bar_index
+    entryBar     := bar_index
+    entryPrice   := strategy.position_avg_price
     lastEntryBar := bar_index
-    entryPrice := strategy.position_avg_price
-    entryAbsQty := math.max(posAbsQty, float(contracts))
-    tp1Hit := false
-    tp2Hit := false
-    tp1TouchedForBE := false
-    tp1TouchCountedThisTrade := false
-    beActiveCountedThisTrade := false
-    entryClosedCount := strategy.closedtrades
-    float eAvg = entryPrice
-    float pivLoRef = lastStopLo[1]
-    float pivHiRef = lastStopHi[1]
-    if posNow > 0
-        float pivStop = not na(pivLoRef) ? (pivLoRef - pivotStopBufferPts) : na
-        bool pivOk = usePivotStop and not na(pivStop) and (pivStop < eAvg)
-        lockedStop := pivOk ? pivStop : (eAvg - slPts)
-    else if posNow < 0
-        float pivStop = not na(pivHiRef) ? (pivHiRef + pivotStopBufferPts) : na
-        bool pivOk = usePivotStop and not na(pivStop) and (pivStop > eAvg)
-        lockedStop := pivOk ? pivStop : (eAvg + slPts)
+    tp1Hit       := false
+    tp2Hit       := false
+    tp1Touched   := false
+    float avg = entryPrice
+    if posSize > 0
+        lockedStop := stopMode == "OR Range" ? (orLow - stopBuffer) : (avg - fixedSL)
+    else
+        lockedStop := stopMode == "OR Range" ? (orHigh + stopBuffer) : (avg + fixedSL)
+
 if flatNow
-    entryBar := na
-    entryAbsQty := na
+    entryBar   := na
     entryPrice := na
-    tp1Hit := false
-    tp2Hit := false
-    tp1TouchedForBE := false
-    tp1TouchCountedThisTrade := false
-    beActiveCountedThisTrade := false
     lockedStop := na
-    entryClosedCount := strategy.closedtrades
+    tp1Hit     := false
+    tp2Hit     := false
+    tp1Touched := false
     strategy.cancel("L-TP1")
     strategy.cancel("L-TP2")
     strategy.cancel("L-TP3")
     strategy.cancel("S-TP1")
     strategy.cancel("S-TP2")
     strategy.cancel("S-TP3")
-bool needRecovery = (not isFlat) and (na(entryPrice) or na(entryAbsQty) or (entryAbsQty <= _QTY_EPS))
-if needRecovery
-    entryBar := bar_index
-    entryPrice := strategy.position_avg_price
-    entryAbsQty := math.max(posAbsQty, float(contracts))
-    entryClosedCount := strategy.closedtrades
-    // Infer TP fills from position size so remainder (e.g. TP3) always gets an exit
-    float closedQty = entryAbsQty - posAbsQty
-    closedQty := closedQty < 0 ? 0.0 : closedQty
-    if closedQty >= float(tp1Qty_i)
+
+float entryAbsQty = float(contracts)
+if posAbs > 0 and not na(entryPrice)
+    float closed = entryAbsQty - posAbs
+    closed := closed < 0 ? 0 : closed
+    if closed >= float(tp1Q) - 0.001
         tp1Hit := true
-    if closedQty >= float(tp1Qty_i + tp2Qty_i)
+    if closed >= float(tp1Q + tp2Q) - 0.001
         tp2Hit := true
-    float eAvg = entryPrice
-    if posNow > 0
-        float pivLoRef = lastStopLo
-        float pivStop = not na(pivLoRef) ? (pivLoRef - pivotStopBufferPts) : na
-        bool pivOk = usePivotStop and not na(pivStop) and (pivStop < eAvg)
-        lockedStop := pivOk ? pivStop : (eAvg - slPts)
-    else if posNow < 0
-        float pivHiRef = lastStopHi
-        float pivStop = not na(pivHiRef) ? (pivHiRef + pivotStopBufferPts) : na
-        bool pivOk = usePivotStop and not na(pivStop) and (pivStop > eAvg)
-        lockedStop := pivOk ? pivStop : (eAvg + slPts)
+
 float avg = not na(entryPrice) ? entryPrice : strategy.position_avg_price
-float tp1Qty_f = 0.0
-float tp2Qty_f = 0.0
-float tp3Qty_f = 0.0
-if not na(entryAbsQty) and (entryAbsQty > _QTY_EPS)
-    tp1Qty_f := math.min(float(tp1Qty_i), entryAbsQty)
-    float remAfter1_f = entryAbsQty - tp1Qty_f
-    remAfter1_f := remAfter1_f < 0 ? 0 : remAfter1_f
-    tp2Qty_f := math.min(float(tp2Qty_i), remAfter1_f)
-    tp3Qty_f := entryAbsQty - tp1Qty_f - tp2Qty_f
-    tp3Qty_f := tp3Qty_f < 0 ? 0 : tp3Qty_f
-// Infer TP1/TP2 hits from position size (reliable; closedtrades exit_id can be unreliable)
-if (posAbsQty > _QTY_EPS) and (not na(entryBar)) and (not na(entryAbsQty)) and (entryAbsQty > _QTY_EPS)
-    float closedSoFar = entryAbsQty - posAbsQty
-    closedSoFar := closedSoFar < 0 ? 0.0 : closedSoFar
-    if closedSoFar >= tp1Qty_f - _QTY_EPS
-        tp1Hit := true
-    if closedSoFar >= (tp1Qty_f + tp2Qty_f) - _QTY_EPS
-        tp2Hit := true
-// BE trigger is based on TP1 target touch/fill semantics, not generic partial closes.
-if (posAbsQty > _QTY_EPS) and (not na(avg))
-    if posNow > 0 and high >= (avg + tp1)
-        tp1TouchedForBE := true
-    else if posNow < 0 and low <= (avg - tp1)
-        tp1TouchedForBE := true
-bool beActive = tp1TouchedForBE and (tp1Qty_f > _QTY_EPS)
-if tp1TouchedForBE and (not tp1TouchCountedThisTrade)
-    tp1TouchCount += 1
-    tp1TouchCountedThisTrade := true
-if beActive and (not beActiveCountedThisTrade)
-    beActiveCount += 1
-    beActiveCountedThisTrade := true
-float failsafeStopPx = na
-bool closeForFailsafeStop = false
-if failsafeStopClose and (posAbsQty > _QTY_EPS)
-    if posNow > 0
-        float baseStop = not na(lockedStop) ? lockedStop : (avg - slPts)
-        failsafeStopPx := beActive ? (avg + beOffsetPts) : baseStop
-        closeForFailsafeStop := not na(failsafeStopPx) and (low <= failsafeStopPx)
-    else if posNow < 0
-        float baseStop = not na(lockedStop) ? lockedStop : (avg + slPts)
-        failsafeStopPx := beActive ? (avg - beOffsetPts) : baseStop
-        closeForFailsafeStop := not na(failsafeStopPx) and (high >= failsafeStopPx)
-bool closeForRTH = forceFlatAtRTHClose and rthJustClosed and (posAbsQty > _QTY_EPS)
-bool closeForDateEnd = dateJustEnded and (posAbsQty > _QTY_EPS)
-bool closeForMaxBars = (maxBarsInTrade > 0) and (posAbsQty > _QTY_EPS) and (not na(entryBar)) and ((bar_index - entryBar) >= maxBarsInTrade)
-bool forceFlatNow = closeForRTH or closeForDateEnd or closeForMaxBars or closeForFailsafeStop
-bool countAsRTHFlat = closeForRTH
-bool countAsSafeStop = (not closeForRTH) and closeForFailsafeStop
-if countAsRTHFlat and (rthFlatCountBar != bar_index)
-    rthFlatCount += 1
-    rthFlatCountBar := bar_index
-if countAsSafeStop and (safeStopCountBar != bar_index)
-    safeStopCount += 1
-    safeStopCountBar := bar_index
+if posAbs > 0 and not na(avg)
+    if posSize > 0 and high >= avg + tp1
+        tp1Touched := true
+    else if posSize < 0 and low <= avg - tp1
+        tp1Touched := true
+
+bool beActive = tp1Touched and tp1Q > 0
+//=============================================================================
+// FORCE FLAT
+//=============================================================================
+bool closeForRTH     = forceFlatRTH and rthJustClosed and posAbs > 0
+bool closeForDateEnd = dateJustEnded and posAbs > 0
+bool closeForMaxBars = maxBarsInTrade > 0 and posAbs > 0 and not na(entryBar) and (bar_index - entryBar) >= maxBarsInTrade
+bool forceFlatNow    = closeForRTH or closeForDateEnd or closeForMaxBars
+
 if forceFlatNow
-    string closeReason = closeForRTH ? "RTH-Flat" : closeForDateEnd ? "DateEnd" : closeForMaxBars ? "TimeStop" : "SafeStop"
-    strategy.close_all(comment = closeReason)
+    strategy.close_all(comment = closeForRTH ? "RTH-Flat" : closeForDateEnd ? "DateEnd" : "TimeStop")
     strategy.cancel("L-TP1")
     strategy.cancel("L-TP2")
     strategy.cancel("L-TP3")
     strategy.cancel("S-TP1")
     strategy.cancel("S-TP2")
     strategy.cancel("S-TP3")
+//=============================================================================
+// EXIT ORDERS (3-TP scale-out + BE after TP1)
+//=============================================================================
 float needTP1 = 0.0
 float needTP2 = 0.0
 float needTP3 = 0.0
-if posAbsQty > _QTY_EPS
-    needTP1 := (tp1Qty_f > _QTY_EPS and not tp1Hit) ? math.min(tp1Qty_f, posAbsQty) : 0.0
-    float rem1 = posAbsQty - needTP1
-    rem1 := rem1 < 0 ? 0 : rem1
-    needTP2 := (tp2Qty_f > _QTY_EPS and not tp2Hit) ? math.min(tp2Qty_f, rem1) : 0.0
-    float rem2 = rem1 - needTP2
-    rem2 := rem2 < 0 ? 0 : rem2
-    needTP3 := math.max(rem2, posAbsQty - needTP1 - needTP2)
-    needTP3 := needTP3 < 0 ? 0.0 : needTP3
-    needTP3 := math.min(needTP3, posAbsQty)
-    // Safeguard: remainder always has an exit (never "lose" last contract)
-    if posAbsQty > _QTY_EPS and needTP1 <= _QTY_EPS and needTP2 <= _QTY_EPS
-        needTP3 := math.max(needTP3, posAbsQty)
-if posNow > 0 and not forceFlatNow
-    float baseStop = not na(lockedStop) ? lockedStop : (avg - slPts)
-    float stopBE = beActive ? (avg + beOffsetPts) : baseStop
-    float stopTP2 = stopBE
-    float stopTP3 = stopBE
-    if needTP1 > _QTY_EPS
-        float lim1 = avg + tp1
-        float st1 = baseStop
-        st1 := st1 >= lim1 ? (lim1 - syminfo.mintick) : st1
-        strategy.exit("L-TP1", from_entry = "L", limit = lim1, stop = st1, qty = needTP1)
+
+if posAbs > 0
+    needTP1 := (not tp1Hit and tp1Q > 0) ? math.min(float(tp1Q), posAbs) : 0
+    float rem1 = math.max(posAbs - needTP1, 0)
+    needTP2 := (not tp2Hit and tp2Q > 0) ? math.min(float(tp2Q), rem1) : 0
+    needTP3 := math.max(posAbs - needTP1 - needTP2, 0)
+    if needTP1 == 0 and needTP2 == 0
+        needTP3 := posAbs
+
+if posSize > 0 and not forceFlatNow
+    float baseStop = not na(lockedStop) ? lockedStop : (avg - fixedSL)
+    float beStop   = avg + beOffsetPts
+    if needTP1 > 0
+        float lim = avg + tp1
+        float st  = baseStop
+        st := st >= lim ? lim - syminfo.mintick : st
+        strategy.exit("L-TP1", "L", limit = lim, stop = st, qty = needTP1)
     else
         strategy.cancel("L-TP1")
-    if needTP2 > _QTY_EPS
-        float lim2 = avg + tp2
-        float st2 = stopTP2
-        st2 := st2 >= lim2 ? (lim2 - syminfo.mintick) : st2
-        strategy.exit("L-TP2", from_entry = "L", limit = lim2, stop = st2, qty = needTP2)
+    if needTP2 > 0
+        float lim = avg + tp2
+        float st  = beActive ? beStop : baseStop
+        st := st >= lim ? lim - syminfo.mintick : st
+        strategy.exit("L-TP2", "L", limit = lim, stop = st, qty = needTP2)
     else
         strategy.cancel("L-TP2")
-    if needTP3 > _QTY_EPS
-        float lim3 = avg + tp3
-        float st3 = stopTP3
-        st3 := st3 >= lim3 ? (lim3 - syminfo.mintick) : st3
-        strategy.exit("L-TP3", from_entry = "L", limit = lim3, stop = st3, qty = needTP3)
+    if needTP3 > 0
+        float lim = avg + tp3
+        float st  = beActive ? beStop : baseStop
+        st := st >= lim ? lim - syminfo.mintick : st
+        strategy.exit("L-TP3", "L", limit = lim, stop = st, qty = needTP3)
     else
         strategy.cancel("L-TP3")
-if posNow < 0 and not forceFlatNow
-    float baseStop = not na(lockedStop) ? lockedStop : (avg + slPts)
-    float stopBE = beActive ? (avg - beOffsetPts) : baseStop
-    float stopTP2 = stopBE
-    float stopTP3 = stopBE
-    if needTP1 > _QTY_EPS
-        float lim1 = avg - tp1
-        float st1 = baseStop
-        st1 := st1 <= lim1 ? (lim1 + syminfo.mintick) : st1
-        strategy.exit("S-TP1", from_entry = "S", limit = lim1, stop = st1, qty = needTP1)
+
+if posSize < 0 and not forceFlatNow
+    float baseStop = not na(lockedStop) ? lockedStop : (avg + fixedSL)
+    float beStop   = avg - beOffsetPts
+    if needTP1 > 0
+        float lim = avg - tp1
+        float st  = baseStop
+        st := st <= lim ? lim + syminfo.mintick : st
+        strategy.exit("S-TP1", "S", limit = lim, stop = st, qty = needTP1)
     else
         strategy.cancel("S-TP1")
-    if needTP2 > _QTY_EPS
-        float lim2 = avg - tp2
-        float st2 = stopTP2
-        st2 := st2 <= lim2 ? (lim2 + syminfo.mintick) : st2
-        strategy.exit("S-TP2", from_entry = "S", limit = lim2, stop = st2, qty = needTP2)
+    if needTP2 > 0
+        float lim = avg - tp2
+        float st  = beActive ? beStop : baseStop
+        st := st <= lim ? lim + syminfo.mintick : st
+        strategy.exit("S-TP2", "S", limit = lim, stop = st, qty = needTP2)
     else
         strategy.cancel("S-TP2")
-    if needTP3 > _QTY_EPS
-        float lim3 = avg - tp3
-        float st3 = stopTP3
-        st3 := st3 <= lim3 ? (lim3 + syminfo.mintick) : st3
-        strategy.exit("S-TP3", from_entry = "S", limit = lim3, stop = st3, qty = needTP3)
+    if needTP3 > 0
+        float lim = avg - tp3
+        float st  = beActive ? beStop : baseStop
+        st := st <= lim ? lim + syminfo.mintick : st
+        strategy.exit("S-TP3", "S", limit = lim, stop = st, qty = needTP3)
     else
         strategy.cancel("S-TP3")
 //=============================================================================
-// PLOTS (compile-safe)
+// PLOTS
 //=============================================================================
-plot(showSMALine ? smaSeries : na, title = "SMA", color = color.new(color.blue, 0), linewidth = 2)
-plotLong = showSignalMarks and longSignal
-plotShort = showSignalMarks and shortSignal
-plotAPlusLong = showSignalMarks and aPlusLongTrigger
-plotAPlusShort = showSignalMarks and aPlusShortTrigger
-plotshape(plotLong, title = "Long Entry", style = shape.triangleup, location = location.belowbar, color = color.new(ICT_BULL, 0), size = size.tiny, text = "L")
-plotshape(plotShort, title = "Short Entry", style = shape.triangledown, location = location.abovebar, color = color.new(ICT_BEAR, 0), size = size.tiny, text = "S")
-plotshape(plotAPlusLong, title = "A+ Long Trigger", style = shape.circle, location = location.belowbar, color = color.new(ICT_BULL, 60), size = size.tiny)
-plotshape(plotAPlusShort, title = "A+ Short Trigger", style = shape.circle, location = location.abovebar, color = color.new(ICT_BEAR, 60), size = size.tiny)
-plotStopGateLong = showStopGateMarks and barstate.isconfirmed and longSignalRaw and supportLong and inRTH and enforceStopGate and (not estStopOkLong)
-plotStopGateShort = showStopGateMarks and barstate.isconfirmed and shortSignalRaw and supportShort and inRTH and enforceStopGate and (not estStopOkShort)
-plotshape(plotStopGateLong, title = "Long Blocked (Stop Gate)", style = shape.xcross, location = location.belowbar, color = color.new(color.yellow, 0), size = size.tiny)
-plotshape(plotStopGateShort, title = "Short Blocked (Stop Gate)", style = shape.xcross, location = location.abovebar, color = color.new(color.yellow, 0), size = size.tiny)
-//=============================================================================
-// AUDIT COUNTER TABLE (optional)
-//=============================================================================
-var table auditTable = na
-if showAuditTable
-    if na(auditTable)
-        auditTable := table.new(position.top_right, 2, 6, bgcolor = color.new(color.black, 70), frame_color = color.new(color.white, 50), frame_width = 1, border_width = 1)
-    if barstate.islast
-        table.cell(auditTable, 0, 0, "Metric", text_color = color.white, bgcolor = color.new(color.gray, 70))
-        table.cell(auditTable, 1, 0, "Count", text_color = color.white, bgcolor = color.new(color.gray, 70))
-        table.cell(auditTable, 0, 1, "TP1 Touch", text_color = color.white)
-        table.cell(auditTable, 1, 1, str.tostring(tp1TouchCount), text_color = color.white)
-        table.cell(auditTable, 0, 2, "BE Active", text_color = color.white)
-        table.cell(auditTable, 1, 2, str.tostring(beActiveCount), text_color = color.white)
-        table.cell(auditTable, 0, 3, "SafeStop", text_color = color.white)
-        table.cell(auditTable, 1, 3, str.tostring(safeStopCount), text_color = color.white)
-        table.cell(auditTable, 0, 4, "RTH-Flat", text_color = color.white)
-        table.cell(auditTable, 1, 4, str.tostring(rthFlatCount), text_color = color.white)
-        table.cell(auditTable, 0, 5, "BE Active Now", text_color = color.white)
-        table.cell(auditTable, 1, 5, str.tostring(beActive), text_color = color.white)
-else
-    if not na(auditTable)
-        table.delete(auditTable)
-        auditTable := na
-//=============================================================================
-// LAST-BAR DEBUG LABEL (optional)
-//=============================================================================
-var label dbgLabel = na
-if not showLastBarLabel and not na(dbgLabel)
-    label.delete(dbgLabel)
-    dbgLabel := na
-if showLastBarLabel and barstate.islast
-    if not na(dbgLabel)
-        label.delete(dbgLabel)
-    txt =
-      "inRTH=" + str.tostring(inRTH) + "\n" +
-      "TFs L/M/H: " + ltfTF + "/" + mtfTF + "/" + htfTF + "\n" +
-      "dirLTF=" + str.tostring(dirLTF) + " dirMTF=" + str.tostring(dirMTF) + " dirHTF=" + str.tostring(dirHTF) + " aligned=" + str.tostring(biasAligned) + "\n" +
-      "patLTF=" + patLTF + " structLEdge=" + str.tostring(structLongEdge) + " structSEdge=" + str.tostring(structShortEdge) + "\n" +
-      "inLongWin=" + str.tostring(inLongWindow) + " inShortWin=" + str.tostring(inShortWindow) + "\n" +
-      "A+ state L/S: " + str.tostring(isAPlusLong) + "/" + str.tostring(isAPlusShort) + "  trig L/S: " + str.tostring(aPlusLongTrigger) + "/" + str.tostring(aPlusShortTrigger) + "\n" +
-      "support L/S: " + str.tostring(supportLong) + "/" + str.tostring(supportShort) + "  SMAabove=" + str.tostring(aboveSMA) + " MACDcrossUp=" + str.tostring(macdCrossUpRecent) + " histCrossUp=" + str.tostring(histCrossUpRecent) + "\n" +
-      "PD%=" + str.tostring(pdPct, "#.##") + " prem=" + str.tostring(isPremium) + " disc=" + str.tostring(isDiscount) + "\n" +
-      "Sweeps hi/lo recent: " + str.tostring(highSweptRecently) + "/" + str.tostring(lowSweptRecently) + "\n" +
-      "FVG bull/bear valid: " + str.tostring(hasBullFVG) + "/" + str.tostring(hasBearFVG) + "\n" +
-      "StopGate L/S: " + str.tostring(estStopOkLong) + "/" + str.tostring(estStopOkShort) + "  enforce=" + str.tostring(enforceStopGate) + " maxStop=" + str.tostring(maxStopDistancePts) + "\n" +
-      "Mode=" + entrySignalMode + " raw L/S: " + str.tostring(longSignalRaw) + "/" + str.tostring(shortSignalRaw) + "\n" +
-      "FINAL L/S: " + str.tostring(longSignal) + "/" + str.tostring(shortSignal) + "\n" +
-      "pos=" + str.tostring(strategy.position_size) + " snapped=" + str.tostring(posNow) + " avg=" + str.tostring(strategy.position_avg_price, format.mintick) + "\n" +
-      "entryAbsQty=" + str.tostring(entryAbsQty) + " tp1Hit=" + str.tostring(tp1Hit) + " tp2Hit=" + str.tostring(tp2Hit) + " tp1TouchedForBE=" + str.tostring(tp1TouchedForBE) + " beActive=" + str.tostring(beActive) + "\n" +
-      "forceFlatNow=" + str.tostring(forceFlatNow) + " closeForRTH=" + str.tostring(closeForRTH) + " closeForDateEnd=" + str.tostring(closeForDateEnd) + " closeForMaxBars=" + str.tostring(closeForMaxBars) + " closeForFailsafeStop=" + str.tostring(closeForFailsafeStop) + "\n" +
-      "inDateRange=" + str.tostring(inDateRange) + "\n" +
-      "failsafeStopPx=" + str.tostring(failsafeStopPx, format.mintick) + "\n" +
-      "needTP1/2/3=" + str.tostring(needTP1) + "/" + str.tostring(needTP2) + "/" + str.tostring(needTP3) + " lockedStop=" + str.tostring(lockedStop, format.mintick) + "\n" +
-      "lastEntryBar=" + str.tostring(lastEntryBar) + " canEnterThisBar=" + str.tostring(canEnterThisBar)
-    dbgLabel := label.new(bar_index, high, txt, style = label.style_label_down, textcolor = color.white, color = color.new(color.black, 0))
+ICT_BULL = #089981
+ICT_BEAR = #f23645
+
+p_orHi = plot(showORLevels and orDefined ? orHigh : na, "OR High", color = color.new(ICT_BULL, 30), style = plot.style_linebr, linewidth = 2)
+p_orLo = plot(showORLevels and orDefined ? orLow  : na, "OR Low",  color = color.new(ICT_BEAR, 30), style = plot.style_linebr, linewidth = 2)
+fill(p_orHi, p_orLo, color = showORLevels and orDefined ? color.new(color.gray, 92) : na, title = "OR Range")
+
+plotshape(longSignal  and isFlat, "Long Entry",  shape.triangleup,   location.belowbar, color.new(ICT_BULL, 0), size = size.tiny, text = "L")
+plotshape(shortSignal and isFlat, "Short Entry", shape.triangledown, location.abovebar, color.new(ICT_BEAR, 0), size = size.tiny, text = "S")
