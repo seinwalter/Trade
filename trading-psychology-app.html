@@ -11,6 +11,9 @@
     <!-- Favicon -->
     <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect fill='%230a0e27' width='100' height='100'/><path d='M20,80 L35,40 L50,60 L65,30 L80,50' stroke='%235dade2' stroke-width='4' fill='none'/><circle cx='35' cy='40' r='3' fill='%235dade2'/><circle cx='50' cy='60' r='3' fill='%232980b9'/><circle cx='65' cy='30' r='3' fill='%235dade2'/></svg>">
 
+    <!-- Electron Storage Adapter (loads first to replace localStorage with native storage) -->
+    <script src="electron-storage-adapter.js"></script>
+
     <!-- PapaParse CSV Parser -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
 
@@ -10089,7 +10092,7 @@
             showToast('success', 'Analytics Exported', 'PDF saved successfully', 3000);
         }
 
-        function exportAllData() {
+        async function exportAllData() {
             const sundayPreps = JSON.parse(localStorage.getItem('sundayPreps') || '[]');
             const goalSettings = JSON.parse(localStorage.getItem('goalSettings') || '{}');
             const appSettings = JSON.parse(localStorage.getItem('appSettings') || '{}');
@@ -10106,84 +10109,110 @@
                 version: '2.0' // Bumped version to indicate new format
             };
 
-            const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = `trading-psychology-FULL-BACKUP-${new Date().toISOString().split('T')[0]}.json`;
-            a.click();
-            URL.revokeObjectURL(url);
+            const jsonContent = JSON.stringify(data, null, 2);
+            const defaultName = `trading-psychology-FULL-BACKUP-${new Date().toISOString().split('T')[0]}.json`;
 
-            showToast('success', 'Backup Exported', 'Complete backup exported with ALL accounts, sessions, trades, screenshots, settings, and Sunday preps. Save this file to restore your data in any browser.', 6000);
+            // Use native save dialog in Electron, browser download otherwise
+            if (window.electronAPI && window.electronAPI.isElectron) {
+                const result = await window.electronExportData(defaultName, jsonContent);
+                if (result.success) {
+                    showToast('success', 'Backup Exported', `Saved to: ${result.path}`, 6000);
+                } else {
+                    showToast('warning', 'Export Cancelled', 'No file was saved.', 3000);
+                }
+            } else {
+                const blob = new Blob([jsonContent], { type: 'application/json' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = defaultName;
+                a.click();
+                URL.revokeObjectURL(url);
+                showToast('success', 'Backup Exported', 'Complete backup exported with ALL accounts, sessions, trades, screenshots, settings, and Sunday preps.', 6000);
+            }
         }
 
-        function importAllData() {
-            const input = document.createElement('input');
-            input.type = 'file';
-            input.accept = '.json';
+        async function importAllData() {
+            function processImportedData(jsonContent) {
+                try {
+                    const data = JSON.parse(jsonContent);
 
-            input.onchange = function(e) {
-                const file = e.target.files[0];
-                if (!file) return;
+                    if (confirm('⚠️ This will replace ALL current data with the backup.\n\nAre you sure?')) {
+                        // Check if this is new format (v2.0) with full accounts data
+                        if (data.version === '2.0' && data.accountsData) {
+                            // Restore all accounts
+                            accountsData = data.accountsData;
+                            localStorage.setItem('accountsData', JSON.stringify(accountsData));
 
-                const reader = new FileReader();
-                reader.onload = function(event) {
-                    try {
-                        const data = JSON.parse(event.target.result);
-
-                        if (confirm('⚠️ This will replace ALL current data with the backup.\n\nAre you sure?')) {
-                            // Check if this is new format (v2.0) with full accounts data
-                            if (data.version === '2.0' && data.accountsData) {
-                                // Restore all accounts
-                                accountsData = data.accountsData;
-                                localStorage.setItem('accountsData', JSON.stringify(accountsData));
-
-                                // Restore current account name
-                                if (data.currentAccountName) {
-                                    currentAccountName = data.currentAccountName;
-                                    localStorage.setItem('currentAccountName', currentAccountName);
-                                }
-
-                                // Restore settings
-                                if (data.goalSettings) {
-                                    localStorage.setItem('goalSettings', JSON.stringify(data.goalSettings));
-                                }
-                                if (data.appSettings) {
-                                    localStorage.setItem('appSettings', JSON.stringify(data.appSettings));
-                                }
-                                if (data.postMarketReviews) {
-                                    localStorage.setItem('postMarketReviews', JSON.stringify(data.postMarketReviews));
-                                }
-                                if (data.sundayPreps) {
-                                    localStorage.setItem('sundayPreps', JSON.stringify(data.sundayPreps));
-                                }
-                            } else {
-                                // Old format (v1.0) - restore to current account only
-                                if (data.sessions) allSessions = data.sessions;
-                                if (data.trades) allTrades = data.trades;
-                                if (data.screenshots) screenshots = data.screenshots;
-                                if (data.currentSession) currentSession = data.currentSession;
-
-                                // Save to localStorage
-                                saveData();
-                                saveScreenshots();
-
-                                if (data.sundayPreps) {
-                                    localStorage.setItem('sundayPreps', JSON.stringify(data.sundayPreps));
-                                }
+                            // Restore current account name
+                            if (data.currentAccountName) {
+                                currentAccountName = data.currentAccountName;
+                                localStorage.setItem('currentAccountName', currentAccountName);
                             }
 
-                            showToast('success', 'Data Restored', 'All accounts and settings restored successfully! Reloading page...', 3000);
-                            setTimeout(() => location.reload(), 3000);
-                        }
-                    } catch (error) {
-                        showToast('error', 'Import Failed', 'Error importing data: ' + error.message, 5000);
-                    }
-                };
-                reader.readAsText(file);
-            };
+                            // Restore settings
+                            if (data.goalSettings) {
+                                localStorage.setItem('goalSettings', JSON.stringify(data.goalSettings));
+                            }
+                            if (data.appSettings) {
+                                localStorage.setItem('appSettings', JSON.stringify(data.appSettings));
+                            }
+                            if (data.postMarketReviews) {
+                                localStorage.setItem('postMarketReviews', JSON.stringify(data.postMarketReviews));
+                            }
+                            if (data.sundayPreps) {
+                                localStorage.setItem('sundayPreps', JSON.stringify(data.sundayPreps));
+                            }
+                        } else {
+                            // Old format (v1.0) - restore to current account only
+                            if (data.sessions) allSessions = data.sessions;
+                            if (data.trades) allTrades = data.trades;
+                            if (data.screenshots) screenshots = data.screenshots;
+                            if (data.currentSession) currentSession = data.currentSession;
 
-            input.click();
+                            // Save to localStorage
+                            saveData();
+                            saveScreenshots();
+
+                            if (data.sundayPreps) {
+                                localStorage.setItem('sundayPreps', JSON.stringify(data.sundayPreps));
+                            }
+                        }
+
+                        showToast('success', 'Data Restored', 'All accounts and settings restored successfully! Reloading page...', 3000);
+                        setTimeout(() => location.reload(), 3000);
+                    }
+                } catch (error) {
+                    showToast('error', 'Import Failed', 'Error importing data: ' + error.message, 5000);
+                }
+            }
+
+            // Use native open dialog in Electron, browser file input otherwise
+            if (window.electronAPI && window.electronAPI.isElectron) {
+                const result = await window.electronImportData();
+                if (result.success) {
+                    processImportedData(result.content);
+                } else {
+                    showToast('warning', 'Import Cancelled', 'No file was selected.', 3000);
+                }
+            } else {
+                const input = document.createElement('input');
+                input.type = 'file';
+                input.accept = '.json';
+
+                input.onchange = function(e) {
+                    const file = e.target.files[0];
+                    if (!file) return;
+
+                    const reader = new FileReader();
+                    reader.onload = function(event) {
+                        processImportedData(event.target.result);
+                    };
+                    reader.readAsText(file);
+                };
+
+                input.click();
+            }
         }
 
         function clearAllData() {
